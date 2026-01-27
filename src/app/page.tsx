@@ -67,7 +67,7 @@ export default function Home() {
         </h1>
         <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
           Skip the VPS setup. We host <a href="https://github.com/clawdbot/clawdbot" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">ClawdBot</a> for you on dedicated Linux or macOS servers. 
-          Pre-configured, always online, ready in hours.
+          Pre-configured, always online, fully managed.
         </p>
         <div className="flex items-center justify-center gap-4 text-sm text-muted-foreground">
           <div className="flex items-center gap-1">
@@ -86,7 +86,7 @@ export default function Home() {
             <svg className="h-4 w-4 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
-            <span>Ready in 2-3 hours</span>
+            <span>Fully managed</span>
           </div>
         </div>
       </section>
@@ -149,10 +149,10 @@ export default function Home() {
           </div>
           
           <div className="border rounded-lg p-6 bg-background/80 backdrop-blur-sm hover:border-primary/30 transition-colors">
-            <h3 className="font-semibold mb-2">How long does setup take?</h3>
+            <h3 className="font-semibold mb-2">How does it work?</h3>
             <p className="text-muted-foreground text-sm">
-              After payment, we provision your instance and configure ClawdBot. 
-              You will receive an email with your instance details within 2-3 hours.
+              After payment, we provision your dedicated instance and configure ClawdBot. 
+              You will receive an email with your access details once your instance is ready.
             </p>
           </div>
 
