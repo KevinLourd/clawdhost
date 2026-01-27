@@ -14,10 +14,11 @@ export default function Home() {
       />
       {/* Subtle dot grid pattern */}
       <div 
-        className="absolute inset-0 -z-15 opacity-40"
+        className="absolute inset-0 opacity-30"
         style={{
           backgroundImage: 'radial-gradient(circle, #E87C7C 1px, transparent 1px)',
-          backgroundSize: '24px 24px',
+          backgroundSize: '32px 32px',
+          zIndex: -15,
         }}
       />
       {/* Gradient orbs */}
@@ -57,7 +58,7 @@ export default function Home() {
       <section className="container mx-auto px-4 py-16 md:py-24 text-center">
         <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 rounded-full px-4 py-1.5 mb-6">
           <span className="text-lg">🦞</span>
-          <span className="text-sm font-medium">Turnkey ClawdBot Hosting</span>
+          <span className="text-sm font-medium">Managed ClawdBot Hosting</span>
         </div>
         <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-6">
           Your ClawdBot,
