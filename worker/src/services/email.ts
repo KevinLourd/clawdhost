@@ -21,6 +21,8 @@ interface CredentialsEmailParams {
   customerName?: string;
   terminalUrl: string;
   planName: string;
+  terminalUsername?: string;
+  terminalPassword?: string;
 }
 
 export async function sendCredentialsEmail({
@@ -28,8 +30,11 @@ export async function sendCredentialsEmail({
   customerName,
   terminalUrl,
   planName,
+  terminalUsername,
+  terminalPassword,
 }: CredentialsEmailParams) {
   const greeting = customerName ? `Hi ${customerName}` : "Hi there";
+  const hasCredentials = terminalUsername && terminalPassword;
 
   const resend = getResendClient();
   const { data, error } = await resend.emails.send({
@@ -64,6 +69,20 @@ export async function sendCredentialsEmail({
               Or copy this link: <a href="${terminalUrl}" style="color: #059669;">${terminalUrl}</a>
             </p>
           </div>
+          
+          ${hasCredentials ? `
+          <div style="background: #fef3c7; border: 1px solid #f59e0b; border-radius: 8px; padding: 20px; margin: 24px 0;">
+            <h3 style="margin: 0 0 12px 0; font-size: 16px; color: #92400e;">Terminal Login Credentials</h3>
+            <p style="margin: 0 0 8px 0; font-size: 14px;">Your browser will ask for these credentials when you first access the terminal:</p>
+            <div style="background: #1e1e1e; color: #d4d4d4; padding: 12px; border-radius: 6px; font-family: monospace; font-size: 14px;">
+              <div style="margin-bottom: 4px;"><span style="color: #9ca3af;">Username:</span> <strong style="color: #fbbf24;">${terminalUsername}</strong></div>
+              <div><span style="color: #9ca3af;">Password:</span> <strong style="color: #fbbf24;">${terminalPassword}</strong></div>
+            </div>
+            <p style="margin: 12px 0 0 0; font-size: 12px; color: #92400e;">
+              Keep these credentials safe. Your browser will remember them after the first login.
+            </p>
+          </div>
+          ` : ''}
           
           <div style="background: #f8f9fa; border-radius: 8px; padding: 20px; margin: 24px 0;">
             <h3 style="margin: 0 0 12px 0; font-size: 16px;">Getting started</h3>

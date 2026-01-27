@@ -23,6 +23,7 @@ export interface ProvisionOptions {
   customerName?: string;
   tunnelToken?: string;
   tunnelHostname?: string;
+  terminalPassword?: string;
 }
 
 export interface Provider {

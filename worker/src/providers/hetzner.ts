@@ -56,9 +56,10 @@ export class HetznerProvider implements Provider {
 
     console.log(`[Hetzner] Creating server: ${serverName}`);
     console.log(`[Hetzner] Tunnel token provided: ${options.tunnelToken ? 'yes' : 'no'}`);
+    console.log(`[Hetzner] Terminal password provided: ${options.terminalPassword ? 'yes' : 'no'}`);
 
     // Cloud-init script to install everything at boot
-    const cloudInit = this.generateCloudInit(serverName, options.tunnelToken);
+    const cloudInit = this.generateCloudInit(serverName, options.tunnelToken, options.terminalPassword);
 
     const response = await hetznerFetch<HetznerServerResponse>("/servers", {
       method: "POST",
@@ -88,13 +89,18 @@ export class HetznerProvider implements Provider {
     };
   }
 
-  private generateCloudInit(serverName: string, tunnelToken?: string): string {
+  private generateCloudInit(serverName: string, tunnelToken?: string, terminalPassword?: string): string {
     // Use named tunnel if token provided, otherwise fallback to direct IP
     const cloudflaredExecStart = tunnelToken
       ? `/usr/bin/cloudflared tunnel run --token ${tunnelToken}`
       : `/usr/bin/cloudflared tunnel --url http://localhost:7681 --logfile /var/log/cloudflared.log`;
     
     const cloudflaredRestartSec = tunnelToken ? "10" : "60";
+    
+    // ttyd command with optional basic auth
+    const ttydCommand = terminalPassword
+      ? `/usr/bin/ttyd -p 7681 -W -c clawdbot:${terminalPassword} bash`
+      : `/usr/bin/ttyd -p 7681 -W bash`;
 
     return `#cloud-config
 package_update: true
@@ -118,7 +124,7 @@ write_files:
       Type=simple
       User=clawdbot
       WorkingDirectory=/home/clawdbot
-      ExecStart=/usr/bin/ttyd -p 7681 -W bash
+      ExecStart=${ttydCommand}
       Restart=always
       RestartSec=3
       

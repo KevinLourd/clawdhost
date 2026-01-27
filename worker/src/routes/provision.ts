@@ -17,8 +17,22 @@ import {
   trackProvisioningComplete,
   trackProvisioningFailed,
 } from "../services/analytics";
+import crypto from "crypto";
 
 const router = Router();
+
+/**
+ * Generate a secure random password
+ */
+function generateSecurePassword(length: number = 16): string {
+  const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  const randomBytes = crypto.randomBytes(length);
+  let password = "";
+  for (let i = 0; i < length; i++) {
+    password += chars[randomBytes[i] % chars.length];
+  }
+  return password;
+}
 
 // Simple auth middleware using a shared secret
 const authMiddleware = (req: Request, res: Response, next: () => void) => {
@@ -89,6 +103,10 @@ async function processProvisioning(request: ProvisionRequest) {
     // Generate server name ONCE to use for both tunnel and server
     const timestamp = Date.now();
     const serverName = `${planId}-${timestamp}`;
+    
+    // Generate random password for terminal auth
+    const terminalPassword = generateSecurePassword(16);
+    const terminalUsername = "clawdbot";
 
     // Step 1: Create Cloudflare tunnel (if configured)
     let tunnelToken: string | undefined;
@@ -112,7 +130,7 @@ async function processProvisioning(request: ProvisionRequest) {
       console.log(`[Provision] Cloudflare not configured, using direct IP access`);
     }
 
-    // Step 2: Create server with tunnel token
+    // Step 2: Create server with tunnel token and terminal password
     const server = await provider.createServer({
       name: `clawdhost-${serverName}`,
       planId,
@@ -120,6 +138,7 @@ async function processProvisioning(request: ProvisionRequest) {
       customerName,
       tunnelToken,
       tunnelHostname,
+      terminalPassword,
     });
 
     serverId = server.id;
@@ -174,6 +193,8 @@ async function processProvisioning(request: ProvisionRequest) {
       customerName,
       terminalUrl: terminalUrl,
       planName: planNames[planId] || planId,
+      terminalUsername,
+      terminalPassword,
     });
 
     console.log(`[Provision] Complete for ${customerEmail}`);
