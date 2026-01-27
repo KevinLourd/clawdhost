@@ -117,7 +117,7 @@ export async function sendProvisioningStartedEmail({ to, customerName, planName 
           <div style="background: #fef3c7; border: 1px solid #f59e0b; border-radius: 8px; padding: 20px; margin: 24px 0; text-align: center;">
             <div style="font-size: 40px; margin-bottom: 12px;">⏳</div>
             <h3 style="margin: 0 0 8px 0; font-size: 18px; color: #92400e;">Setting up your server...</h3>
-            <p style="margin: 0; color: #b45309;">Estimated time: 5-10 minutes</p>
+            <p style="margin: 0; color: #b45309;">Estimated time: ${planName.toLowerCase().includes('macos') || planName.toLowerCase().includes('mac') ? 'a few hours' : '3-4 minutes'}</p>
           </div>
           
           <div style="background: #f8f9fa; border-radius: 8px; padding: 20px; margin: 24px 0;">

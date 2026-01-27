@@ -97,10 +97,10 @@ export class HetznerProvider implements Provider {
     
     const cloudflaredRestartSec = tunnelToken ? "10" : "60";
     
-    // ttyd command with optional basic auth
+    // ttyd command with optional basic auth - runs startup script instead of bash
     const ttydCommand = terminalPassword
-      ? `/usr/bin/ttyd -p 7681 -W -c clawdbot:${terminalPassword} bash`
-      : `/usr/bin/ttyd -p 7681 -W bash`;
+      ? `/usr/bin/ttyd -p 7681 -W -c clawdbot:${terminalPassword} /home/clawdbot/start.sh`
+      : `/usr/bin/ttyd -p 7681 -W /home/clawdbot/start.sh`;
 
     return `#cloud-config
 package_update: true
@@ -114,6 +114,32 @@ packages:
   - ttyd
 
 write_files:
+  - path: /home/clawdbot/start.sh
+    permissions: '0755'
+    content: |
+      #!/bin/bash
+      # ClawdHost startup script
+      # Auto-runs clawdbot onboard on first connection
+      
+      MARKER_FILE="$HOME/.clawdbot-onboarded"
+      
+      if [ ! -f "$MARKER_FILE" ]; then
+        echo ""
+        echo "Welcome to ClawdBot! Starting the onboarding wizard..."
+        echo ""
+        clawdbot onboard
+        
+        # Mark as onboarded after completion
+        touch "$MARKER_FILE"
+        echo ""
+        echo "Onboarding complete! You now have a regular shell."
+        echo "Reconnect anytime to manage your ClawdBot."
+        echo ""
+      fi
+      
+      # Drop to regular shell
+      exec bash
+
   - path: /etc/systemd/system/clawdhost-ttyd.service
     content: |
       [Unit]
@@ -153,6 +179,7 @@ runcmd:
   - curl -fsSL https://deb.nodesource.com/setup_22.x | bash -
   - apt-get install -y nodejs
   - useradd -m -s /bin/bash clawdbot
+  - chown clawdbot:clawdbot /home/clawdbot/start.sh
   - npm install -g clawdbot@latest
   - curl -L https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb -o /tmp/cloudflared.deb
   - dpkg -i /tmp/cloudflared.deb
