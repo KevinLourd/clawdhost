@@ -183,9 +183,9 @@ async function processProvisioning(request: ProvisionRequest) {
 
     // Step 5: Send credentials email with terminal link
     const planNames: Record<string, string> = {
-      linux: "Linux",
-      "macos-m1": "macOS M1",
-      "macos-m4": "macOS M4",
+      linux: "Essential",
+      "macos-m1": "Apple",
+      "macos-m4": "Pro",
     };
 
     await sendCredentialsEmail({
