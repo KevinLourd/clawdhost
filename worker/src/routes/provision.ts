@@ -172,6 +172,36 @@ async function processProvisioning(request: ProvisionRequest) {
     console.log(`[Provision] ClawdBot installed on ${readyServer.ip}`);
     console.log(`[Provision] Terminal URL: ${terminalUrl}`);
 
+    // Step 4b: Wait for tunnel to be accessible (up to 2 minutes)
+    if (tunnelHostname) {
+      console.log(`[Provision] Waiting for tunnel to be accessible...`);
+      const maxTunnelAttempts = 24; // 24 * 5s = 2 minutes
+      let tunnelReady = false;
+      
+      for (let attempt = 1; attempt <= maxTunnelAttempts; attempt++) {
+        try {
+          const response = await fetch(terminalUrl, { 
+            method: 'HEAD',
+            redirect: 'manual',
+          });
+          // 401 = auth required (ttyd basic auth), 200 = accessible
+          if (response.status === 401 || response.status === 200) {
+            tunnelReady = true;
+            console.log(`[Provision] Tunnel accessible (status: ${response.status})`);
+            break;
+          }
+          console.log(`[Provision] Tunnel check attempt ${attempt}/${maxTunnelAttempts}: status ${response.status}`);
+        } catch (error) {
+          console.log(`[Provision] Tunnel check attempt ${attempt}/${maxTunnelAttempts}: ${error instanceof Error ? error.message : 'error'}`);
+        }
+        await new Promise(r => setTimeout(r, 5000));
+      }
+      
+      if (!tunnelReady) {
+        console.log(`[Provision] Warning: Tunnel not accessible after 2 minutes, sending email anyway`);
+      }
+    }
+
     // Track installation complete
     trackInstallationComplete({
       planId,
