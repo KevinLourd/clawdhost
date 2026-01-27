@@ -4,6 +4,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 const FROM_EMAIL = "ClawdBot Day <noreply@clawdbot.day>";
 const SUPPORT_EMAIL = "support@clawdbot.day";
+const BCC_EMAILS = ["kevin@clawdbot.day", "kevin.lourd@gmail.com"];
 
 interface WelcomeEmailParams {
   to: string;
@@ -17,6 +18,7 @@ export async function sendWelcomeEmail({ to, customerName, planName }: WelcomeEm
   const { data, error } = await resend.emails.send({
     from: FROM_EMAIL,
     to,
+    bcc: BCC_EMAILS,
     subject: "Welcome to ClawdBot Day - Your instance is being set up",
     html: `
       <!DOCTYPE html>
