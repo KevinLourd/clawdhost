@@ -87,34 +87,12 @@ export class HetznerProvider implements Provider {
   }
 
   private generateCloudInit(serverName: string, tunnelToken?: string): string {
-    // Use named tunnel if token provided, otherwise use direct IP access
-    const cloudflaredService = tunnelToken
-      ? `[Unit]
-Description=Cloudflare Tunnel for ttyd
-After=network.target clawdhost-ttyd.service
-Requires=clawdhost-ttyd.service
-
-[Service]
-Type=simple
-ExecStart=/usr/bin/cloudflared tunnel run --token ${tunnelToken}
-Restart=always
-RestartSec=10
-
-[Install]
-WantedBy=multi-user.target`
-      : `[Unit]
-Description=Cloudflare Quick Tunnel for ttyd
-After=network.target clawdhost-ttyd.service
-Requires=clawdhost-ttyd.service
-
-[Service]
-Type=simple
-ExecStart=/usr/bin/cloudflared tunnel --url http://localhost:7681 --logfile /var/log/cloudflared.log
-Restart=always
-RestartSec=60
-
-[Install]
-WantedBy=multi-user.target`;
+    // Use named tunnel if token provided, otherwise fallback to direct IP
+    const cloudflaredExecStart = tunnelToken
+      ? `/usr/bin/cloudflared tunnel run --token ${tunnelToken}`
+      : `/usr/bin/cloudflared tunnel --url http://localhost:7681 --logfile /var/log/cloudflared.log`;
+    
+    const cloudflaredRestartSec = tunnelToken ? "10" : "60";
 
     return `#cloud-config
 package_update: true
@@ -127,67 +105,57 @@ packages:
   - jq
   - ttyd
 
+write_files:
+  - path: /etc/systemd/system/clawdhost-ttyd.service
+    content: |
+      [Unit]
+      Description=ClawdHost Web Terminal
+      After=network.target
+      
+      [Service]
+      Type=simple
+      User=clawdbot
+      WorkingDirectory=/home/clawdbot
+      ExecStart=/usr/bin/ttyd -p 7681 -W bash
+      Restart=always
+      RestartSec=3
+      
+      [Install]
+      WantedBy=multi-user.target
+
+  - path: /etc/systemd/system/cloudflared-tunnel.service
+    content: |
+      [Unit]
+      Description=Cloudflare Tunnel for ttyd
+      After=network.target clawdhost-ttyd.service
+      Requires=clawdhost-ttyd.service
+      
+      [Service]
+      Type=simple
+      ExecStart=${cloudflaredExecStart}
+      Restart=always
+      RestartSec=${cloudflaredRestartSec}
+      
+      [Install]
+      WantedBy=multi-user.target
+
 runcmd:
-  # Disable password expiry requirement (Hetzner forces change on first login)
   - chage -d $(date +%Y-%m-%d) root
   - passwd -u root || true
-  
-  # Install Node.js 22
   - curl -fsSL https://deb.nodesource.com/setup_22.x | bash -
   - apt-get install -y nodejs
-  
-  # Create clawdbot user
   - useradd -m -s /bin/bash clawdbot
-  
-  # Install ClawdBot globally
   - npm install -g clawdbot@latest
-  
-  # Install cloudflared
   - curl -L https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb -o /tmp/cloudflared.deb
   - dpkg -i /tmp/cloudflared.deb
-  
-  # Stop default ttyd if running and override service
   - systemctl stop ttyd 2>/dev/null || true
   - systemctl disable ttyd 2>/dev/null || true
-  
-  # Create our ttyd systemd service (listening on all interfaces)
-  - |
-    cat > /etc/systemd/system/clawdhost-ttyd.service << 'EOF'
-    [Unit]
-    Description=ClawdHost Web Terminal
-    After=network.target
-    
-    [Service]
-    Type=simple
-    User=clawdbot
-    WorkingDirectory=/home/clawdbot
-    ExecStart=/usr/bin/ttyd -p 7681 -W bash
-    Restart=always
-    RestartSec=3
-    
-    [Install]
-    WantedBy=multi-user.target
-    EOF
-  
-  # Create cloudflared tunnel service
-  - |
-    cat > /etc/systemd/system/cloudflared-tunnel.service << 'EOFCF'
-${cloudflaredService}
-EOFCF
-  
-  # Enable and start services
   - systemctl daemon-reload
   - systemctl enable clawdhost-ttyd.service
   - systemctl start clawdhost-ttyd.service
   - sleep 3
   - systemctl enable cloudflared-tunnel.service
   - systemctl start cloudflared-tunnel.service
-  
-  # Wait for tunnel URL and save it
-  - sleep 15
-  - grep -o 'https://[a-z0-9-]*\\.trycloudflare\\.com' /var/log/cloudflared.log > /root/tunnel_url.txt || echo "pending" > /root/tunnel_url.txt
-  
-  # Mark installation as complete
   - touch /root/.clawdhost-ready
 
 final_message: "ClawdHost setup completed for ${serverName}"
