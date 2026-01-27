@@ -1,6 +1,6 @@
 import { PricingCard } from "@/components/pricing-card";
+import { LogoDownload } from "@/components/logo-download";
 import { plans } from "@/lib/plans";
-import Image from "next/image";
 
 export default function Home() {
   return (
@@ -20,16 +20,7 @@ export default function Home() {
       {/* Header */}
       <header className="border-b bg-background/80 backdrop-blur-sm sticky top-0 z-50">
         <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Image 
-              src="/clawdhost_logo_27kb.jpg" 
-              alt="Clawd Host Logo" 
-              width={44} 
-              height={44}
-              className="rounded-lg"
-            />
-            <span className="font-bold text-xl">Clawd Host</span>
-          </div>
+          <LogoDownload size="md" />
           <nav className="flex items-center gap-6">
             <a 
               href="https://clawd.bot" 
@@ -187,16 +178,7 @@ export default function Home() {
       <footer className="border-t bg-muted/30">
         <div className="container mx-auto px-4 py-8">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <Image 
-                src="/clawdhost_logo_27kb.jpg" 
-                alt="Clawd Host Logo" 
-                width={32} 
-                height={32}
-                className="rounded-md"
-              />
-              <span className="font-semibold">Clawd Host</span>
-            </div>
+            <LogoDownload size="sm" />
             <div className="flex items-center gap-6 text-sm text-muted-foreground">
               <a 
                 href="https://github.com/KevinLourd/clawdhost" 
