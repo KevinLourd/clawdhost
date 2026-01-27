@@ -5,8 +5,6 @@ import { plans } from "@/lib/plans";
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
 async function getOrCreatePrice(plan: typeof plans[0]): Promise<string> {
-  const productId = `clawdbot_${plan.id}`;
-  
   // Try to find existing product
   const existingProducts = await stripe.products.search({
     query: `metadata['plan_id']:'${plan.id}'`,
@@ -61,10 +59,29 @@ async function getOrCreatePrice(plan: typeof plans[0]): Promise<string> {
   return newPrice.id;
 }
 
+async function getOrCreateCustomer(email: string): Promise<string> {
+  // Search for existing customer by email
+  const existingCustomers = await stripe.customers.list({
+    email: email,
+    limit: 1,
+  });
+
+  if (existingCustomers.data.length > 0) {
+    return existingCustomers.data[0].id;
+  }
+
+  // Create new customer
+  const newCustomer = await stripe.customers.create({
+    email: email,
+  });
+
+  return newCustomer.id;
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { planId } = body;
+    const { planId, email } = body;
 
     const plan = plans.find((p) => p.id === planId);
     if (!plan) {
@@ -74,7 +91,8 @@ export async function POST(request: NextRequest) {
     // Get or create the Stripe price
     const priceId = await getOrCreatePrice(plan);
 
-    const session = await stripe.checkout.sessions.create({
+    // Build session options
+    const sessionOptions: Stripe.Checkout.SessionCreateParams = {
       mode: "subscription",
       payment_method_types: ["card"],
       line_items: [
@@ -93,7 +111,15 @@ export async function POST(request: NextRequest) {
           planId: plan.id,
         },
       },
-    });
+    };
+
+    // If email provided, get or create customer
+    if (email) {
+      const customerId = await getOrCreateCustomer(email);
+      sessionOptions.customer = customerId;
+    }
+
+    const session = await stripe.checkout.sessions.create(sessionOptions);
 
     return NextResponse.json({ url: session.url });
   } catch (error) {
