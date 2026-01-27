@@ -183,6 +183,11 @@ runcmd:
   - npm install -g clawdbot@latest
   - apt-get install -y build-essential procps curl file git
   - chown -R clawdbot:clawdbot /home/clawdbot
+  - |
+    # Install Homebrew as clawdbot user (needs sudo for /home/linuxbrew)
+    sudo -u clawdbot bash -c 'NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"' || echo "Homebrew install failed, continuing..."
+  - echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> /home/clawdbot/.bashrc
+  - chown clawdbot:clawdbot /home/clawdbot/.bashrc
   - curl -L https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb -o /tmp/cloudflared.deb
   - dpkg -i /tmp/cloudflared.deb
   - systemctl stop ttyd 2>/dev/null || true
