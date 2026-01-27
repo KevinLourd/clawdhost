@@ -99,6 +99,7 @@ export class HetznerProvider implements Provider {
     
     // ttyd command with optional basic auth - runs startup script instead of bash
     // Mobile-friendly options from xterm.js ITerminalOptions
+    // -I uses custom index.html with mobile detection
     const ttydOptions = [
       '-t fontSize=16',
       '-t lineHeight=1.2',
@@ -106,6 +107,7 @@ export class HetznerProvider implements Provider {
       '-t cursorStyle=bar',
       '-t disableResizeOverlay=true',
       '-t titleFixed=ClawdBot',
+      '-I /var/www/ttyd/index.html',
     ].join(' ');
     const ttydCommand = terminalPassword
       ? `/usr/bin/ttyd -p 7681 -W ${ttydOptions} -c clawdbot:${terminalPassword} /home/clawdbot/start.sh`
