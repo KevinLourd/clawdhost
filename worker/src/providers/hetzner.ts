@@ -151,6 +151,69 @@ write_files:
       # Drop to regular shell
       exec bash
 
+  - path: /var/www/ttyd/index.html
+    permissions: '0644'
+    content: |
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>ClawdBot Terminal</title>
+        <style>
+          * { margin: 0; padding: 0; box-sizing: border-box; }
+          body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+          .mobile-warning {
+            display: none;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #fdf2f4 0%, #f8f9fa 100%);
+            padding: 40px 20px;
+            text-align: center;
+          }
+          .mobile-warning.show { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+          .mobile-warning img { width: 80px; height: 80px; border-radius: 12px; margin-bottom: 24px; }
+          .mobile-warning h1 { font-size: 24px; color: #E87C7C; margin-bottom: 16px; }
+          .mobile-warning p { color: #555; max-width: 400px; margin-bottom: 24px; line-height: 1.6; }
+          .mobile-warning .icon { font-size: 48px; margin-bottom: 24px; }
+          .mobile-warning a { color: #E87C7C; text-decoration: none; }
+          #terminal { width: 100%; height: 100vh; }
+          #terminal.hidden { display: none; }
+        </style>
+      </head>
+      <body>
+        <div class="mobile-warning" id="mobileWarning">
+          <img src="https://clawdhost.tech/clawdhost_logo_27kb.jpg" alt="Clawd Host">
+          <div class="icon">💻</div>
+          <h1>Ouvrez sur ordinateur</h1>
+          <p>
+            Le terminal ClawdBot nécessite un clavier pour la navigation 
+            (touches fléchées, etc.). Pour le moment, il n'est pas disponible sur mobile.
+          </p>
+          <p>
+            <strong>Ouvrez ce lien sur votre ordinateur</strong> pour accéder à votre ClawdBot.
+          </p>
+          <p style="margin-top: 32px; font-size: 14px;">
+            <a href="mailto:support@clawdhost.tech">Besoin d'aide ?</a>
+          </p>
+        </div>
+        <div id="terminal"></div>
+        <script>
+          (function() {
+            var isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            if (isMobile) {
+              document.getElementById('mobileWarning').classList.add('show');
+              document.getElementById('terminal').classList.add('hidden');
+            } else {
+              // Load ttyd terminal
+              var script = document.createElement('script');
+              script.src = '/js/app.js';
+              document.body.appendChild(script);
+            }
+          })();
+        </script>
+      </body>
+      </html>
+
   - path: /etc/systemd/system/clawdhost-ttyd.service
     content: |
       [Unit]
@@ -187,6 +250,7 @@ write_files:
 runcmd:
   - chage -d $(date +%Y-%m-%d) root
   - passwd -u root || true
+  - mkdir -p /var/www/ttyd
   - curl -fsSL https://deb.nodesource.com/setup_22.x | bash -
   - apt-get install -y nodejs
   - useradd -m -s /bin/bash clawdbot
