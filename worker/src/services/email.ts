@@ -59,26 +59,26 @@ export async function sendCredentialsEmail({
           
           <p>Great news! Your <strong>${planName}</strong> ClawdBot instance is now ready.</p>
           
-          <div style="background: #d1fae5; border: 1px solid #10b981; border-radius: 8px; padding: 24px; margin: 24px 0; text-align: center;">
-            <h3 style="margin: 0 0 16px 0; font-size: 18px; color: #065f46;">Access Your Terminal</h3>
-            <p style="margin: 0 0 16px 0; color: #047857;">Click the button below to open your ClawdBot terminal in your browser:</p>
-            <a href="${terminalUrl}" style="display: inline-block; background: #10b981; color: white; padding: 14px 28px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 16px;">
+          <div style="background: #fdf2f4; border: 1px solid #E87C7C; border-radius: 8px; padding: 24px; margin: 24px 0; text-align: center;">
+            <h3 style="margin: 0 0 16px 0; font-size: 18px; color: #E87C7C;">Access Your Terminal</h3>
+            <p style="margin: 0 0 16px 0; color: #555;">Click the button below to open your ClawdBot terminal in your browser:</p>
+            <a href="${terminalUrl}" style="display: inline-block; background: #E87C7C; color: white; padding: 14px 28px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 16px;">
               Open Terminal
             </a>
-            <p style="margin: 16px 0 0 0; font-size: 12px; color: #6b7280;">
-              Or copy this link: <a href="${terminalUrl}" style="color: #059669;">${terminalUrl}</a>
+            <p style="margin: 16px 0 0 0; font-size: 12px; color: #666;">
+              Or copy this link: <a href="${terminalUrl}" style="color: #E87C7C;">${terminalUrl}</a>
             </p>
           </div>
           
           ${hasCredentials ? `
-          <div style="background: #fef3c7; border: 1px solid #f59e0b; border-radius: 8px; padding: 20px; margin: 24px 0;">
-            <h3 style="margin: 0 0 12px 0; font-size: 16px; color: #92400e;">Terminal Login Credentials</h3>
-            <p style="margin: 0 0 8px 0; font-size: 14px;">Your browser will ask for these credentials when you first access the terminal:</p>
+          <div style="background: #f8f9fa; border: 1px solid #ddd; border-radius: 8px; padding: 20px; margin: 24px 0;">
+            <h3 style="margin: 0 0 12px 0; font-size: 16px; color: #333;">Terminal Login Credentials</h3>
+            <p style="margin: 0 0 8px 0; font-size: 14px; color: #555;">Your browser will ask for these credentials when you first access the terminal:</p>
             <div style="background: #1e1e1e; color: #d4d4d4; padding: 12px; border-radius: 6px; font-family: monospace; font-size: 14px;">
-              <div style="margin-bottom: 4px;"><span style="color: #9ca3af;">Username:</span> <strong style="color: #fbbf24;">${terminalUsername}</strong></div>
-              <div><span style="color: #9ca3af;">Password:</span> <strong style="color: #fbbf24;">${terminalPassword}</strong></div>
+              <div style="margin-bottom: 4px;"><span style="color: #9ca3af;">Username:</span> <strong style="color: #E87C7C;">${terminalUsername}</strong></div>
+              <div><span style="color: #9ca3af;">Password:</span> <strong style="color: #E87C7C;">${terminalPassword}</strong></div>
             </div>
-            <p style="margin: 12px 0 0 0; font-size: 12px; color: #92400e;">
+            <p style="margin: 12px 0 0 0; font-size: 12px; color: #666;">
               Keep these credentials safe. Your browser will remember them after the first login.
             </p>
           </div>
@@ -103,9 +103,9 @@ export async function sendCredentialsEmail({
             <li style="margin-bottom: 8px;">Start chatting with your ClawdBot!</li>
           </ol>
           
-          <div style="background: #fef3c7; border: 1px solid #f59e0b; border-radius: 8px; padding: 16px; margin: 24px 0;">
-            <p style="margin: 0; font-size: 14px; color: #92400e;">
-              <strong>Tip:</strong> Bookmark your terminal link - you can access it anytime to manage your ClawdBot.
+          <div style="background: #fdf2f4; border: 1px solid #E87C7C; border-radius: 8px; padding: 16px; margin: 24px 0;">
+            <p style="margin: 0; font-size: 14px; color: #555;">
+              <strong style="color: #E87C7C;">Tip:</strong> Bookmark your terminal link - you can access it anytime to manage your ClawdBot.
             </p>
           </div>
           
