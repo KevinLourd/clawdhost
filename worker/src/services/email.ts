@@ -60,13 +60,12 @@ export async function sendCredentialsEmail({
           <p>Great news! Your <strong>${planName}</strong> ClawdBot instance is now ready.</p>
           
           <div style="background: #fdf2f4; border: 1px solid #E87C7C; border-radius: 8px; padding: 24px; margin: 24px 0; text-align: center;">
-            <h3 style="margin: 0 0 16px 0; font-size: 18px; color: #E87C7C;">Access Your Terminal</h3>
-            <p style="margin: 0 0 16px 0; color: #555;">Click the button below to open your ClawdBot terminal in your browser:</p>
+            <h3 style="margin: 0 0 16px 0; font-size: 18px; color: #E87C7C;">Your ClawdBot is ready</h3>
             <a href="${terminalUrl}" style="display: inline-block; background: #E87C7C; color: white; padding: 14px 28px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 16px;">
-              Open Terminal
+              Open on Desktop
             </a>
-            <p style="margin: 16px 0 0 0; font-size: 12px; color: #666;">
-              Or copy this link: <a href="${terminalUrl}" style="color: #E87C7C;">${terminalUrl}</a>
+            <p style="margin: 16px 0 0 0; font-size: 13px; color: #666;">
+              💻 Desktop only — the setup requires a keyboard to navigate.
             </p>
           </div>
           
