@@ -4,12 +4,62 @@ import { plans } from "@/lib/plans";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
-// Map plan IDs to Stripe price IDs (you'll need to create these in Stripe Dashboard)
-const stripePriceIds: Record<string, string> = {
-  linux: process.env.STRIPE_PRICE_LINUX || "",
-  "macos-m1": process.env.STRIPE_PRICE_MACOS_M1 || "",
-  "macos-m4": process.env.STRIPE_PRICE_MACOS_M4 || "",
-};
+async function getOrCreatePrice(plan: typeof plans[0]): Promise<string> {
+  const productId = `clawdbot_${plan.id}`;
+  
+  // Try to find existing product
+  const existingProducts = await stripe.products.search({
+    query: `metadata['plan_id']:'${plan.id}'`,
+  });
+
+  let product: Stripe.Product;
+
+  if (existingProducts.data.length > 0) {
+    product = existingProducts.data[0];
+  } else {
+    // Create new product
+    product = await stripe.products.create({
+      name: `ClawdBot Day - ${plan.name}`,
+      description: plan.description,
+      metadata: {
+        plan_id: plan.id,
+      },
+    });
+  }
+
+  // Try to find existing active price for this product
+  const existingPrices = await stripe.prices.list({
+    product: product.id,
+    active: true,
+    type: "recurring",
+  });
+
+  const matchingPrice = existingPrices.data.find(
+    (price) =>
+      price.unit_amount === plan.price * 100 &&
+      price.currency === plan.currency.toLowerCase() &&
+      price.recurring?.interval === plan.interval
+  );
+
+  if (matchingPrice) {
+    return matchingPrice.id;
+  }
+
+  // Create new price
+  const newPrice = await stripe.prices.create({
+    product: product.id,
+    unit_amount: plan.price * 100,
+    currency: plan.currency.toLowerCase(),
+    recurring: {
+      interval: plan.interval,
+    },
+    metadata: {
+      plan_id: plan.id,
+    },
+  });
+
+  return newPrice.id;
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -21,32 +71,27 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Invalid plan" }, { status: 400 });
     }
 
-    const priceId = stripePriceIds[planId];
-    
-    // If no Stripe price ID is configured, create a checkout with price_data
-    const lineItem: Stripe.Checkout.SessionCreateParams.LineItem = priceId
-      ? { price: priceId, quantity: 1 }
-      : {
-          price_data: {
-            currency: plan.currency.toLowerCase(),
-            product_data: {
-              name: `ClawdBot Day - ${plan.name}`,
-              description: plan.description,
-            },
-            unit_amount: plan.price * 100,
-            recurring: { interval: plan.interval },
-          },
-          quantity: 1,
-        };
+    // Get or create the Stripe price
+    const priceId = await getOrCreatePrice(plan);
 
     const session = await stripe.checkout.sessions.create({
       mode: "subscription",
       payment_method_types: ["card"],
-      line_items: [lineItem],
+      line_items: [
+        {
+          price: priceId,
+          quantity: 1,
+        },
+      ],
       success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}`,
       metadata: {
         planId: plan.id,
+      },
+      subscription_data: {
+        metadata: {
+          planId: plan.id,
+        },
       },
     });
 
