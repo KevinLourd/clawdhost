@@ -12,6 +12,14 @@ export default function Home() {
           background: 'linear-gradient(135deg, rgba(253, 230, 230, 0.4) 0%, rgba(230, 240, 255, 0.4) 50%, rgba(230, 250, 245, 0.3) 100%)',
         }}
       />
+      {/* Subtle dot grid pattern */}
+      <div 
+        className="absolute inset-0 -z-15 opacity-40"
+        style={{
+          backgroundImage: 'radial-gradient(circle, #E87C7C 1px, transparent 1px)',
+          backgroundSize: '24px 24px',
+        }}
+      />
       {/* Gradient orbs */}
       <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-[#E87C7C]/10 rounded-full blur-3xl -z-10" />
       <div className="absolute top-1/3 right-0 w-[500px] h-[500px] bg-[#A8D8EA]/20 rounded-full blur-3xl -z-10" />
