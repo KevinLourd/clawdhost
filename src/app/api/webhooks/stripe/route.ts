@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
-import { sendWelcomeEmail } from "@/lib/email";
+import { sendWelcomeEmail, sendProvisioningStartedEmail } from "@/lib/email";
 import { sendPurchaseEvent } from "@/lib/meta";
 import { triggerProvisioning } from "@/lib/provisioning";
 import { plans } from "@/lib/plans";
@@ -45,16 +45,28 @@ export async function POST(request: NextRequest) {
           const planName = plan?.name || planId;
           const planPrice = plan?.price || 0;
           
-          // Send welcome email immediately
+          // Send welcome email (value proposition)
           try {
             await sendWelcomeEmail({
               to: customerEmail,
               customerName: customerName || undefined,
               planName,
             });
-            console.log(`Welcome email sent to ${customerEmail} for plan ${planName}`);
+            console.log(`Welcome email sent to ${customerEmail}`);
           } catch (error) {
             console.error("Failed to send welcome email:", error);
+          }
+
+          // Send provisioning started email (progress update)
+          try {
+            await sendProvisioningStartedEmail({
+              to: customerEmail,
+              customerName: customerName || undefined,
+              planName,
+            });
+            console.log(`Provisioning started email sent to ${customerEmail}`);
+          } catch (error) {
+            console.error("Failed to send provisioning started email:", error);
           }
 
           // Send Meta Conversions API event
