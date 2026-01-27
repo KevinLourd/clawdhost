@@ -13,19 +13,19 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "ClawdBot Day - Your AI Assistant, Hosted 24/7",
+  title: "ClawdBot Hosting - Your AI Assistant, Hosted 24/7",
   description: "Get your own ClawdBot instance running 24/7 in the cloud. No setup required.",
   metadataBase: new URL("https://clawdbot.day"),
   openGraph: {
-    title: "ClawdBot Day - Your AI Assistant, Hosted 24/7",
+    title: "ClawdBot Hosting - Your AI Assistant, Hosted 24/7",
     description: "Get your own ClawdBot instance running 24/7 in the cloud. No setup required.",
     url: "https://clawdbot.day",
-    siteName: "ClawdBot Day",
+    siteName: "ClawdBot Hosting",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "ClawdBot Day - Your AI Assistant, Hosted 24/7",
+    title: "ClawdBot Hosting - Your AI Assistant, Hosted 24/7",
     description: "Get your own ClawdBot instance running 24/7 in the cloud. No setup required.",
   },
 };

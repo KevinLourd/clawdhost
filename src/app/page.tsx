@@ -9,7 +9,7 @@ export default function Home() {
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="text-2xl">🦞</span>
-            <span className="font-bold text-xl">ClawdBot Day</span>
+            <span className="font-bold text-xl">ClawdBot Hosting</span>
           </div>
           <nav className="flex items-center gap-6">
             <a 
@@ -141,7 +141,7 @@ export default function Home() {
           <div className="border rounded-lg p-6">
             <h3 className="font-semibold mb-2">Is this project open source?</h3>
             <p className="text-muted-foreground text-sm">
-              Yes! ClawdBot Day is fully open source. You can view the code, contribute, 
+              Yes! ClawdBot Hosting is fully open source. You can view the code, contribute, 
               or even self-host on{" "}
               <a 
                 href="https://github.com/KevinLourd/clawdbot" 
@@ -172,7 +172,7 @@ export default function Home() {
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-2">
               <span className="text-xl">🦞</span>
-              <span className="font-semibold">ClawdBot Day</span>
+              <span className="font-semibold">ClawdBot Hosting</span>
             </div>
             <div className="flex items-center gap-6 text-sm text-muted-foreground">
               <a 

@@ -2,7 +2,7 @@ import { Resend } from "resend";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-const FROM_EMAIL = "ClawdBot Day <noreply@clawdbot.day>";
+const FROM_EMAIL = "ClawdBot Hosting <noreply@clawdbot.day>";
 const SUPPORT_EMAIL = "support@clawdbot.day";
 const BCC_EMAILS = ["kevin@clawdbot.day", "kevin.lourd@gmail.com"];
 
@@ -19,7 +19,7 @@ export async function sendWelcomeEmail({ to, customerName, planName }: WelcomeEm
     from: FROM_EMAIL,
     to,
     bcc: BCC_EMAILS,
-    subject: "Welcome to ClawdBot Day - Your instance is being set up",
+    subject: "Welcome to ClawdBot Hosting - Your instance is being set up",
     html: `
       <!DOCTYPE html>
       <html>
@@ -30,12 +30,12 @@ export async function sendWelcomeEmail({ to, customerName, planName }: WelcomeEm
         <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
           <div style="text-align: center; margin-bottom: 30px;">
             <span style="font-size: 48px;">🦞</span>
-            <h1 style="margin: 10px 0 0 0; font-size: 24px;">ClawdBot Day</h1>
+            <h1 style="margin: 10px 0 0 0; font-size: 24px;">ClawdBot Hosting</h1>
           </div>
           
           <p>${greeting},</p>
           
-          <p>Thank you for subscribing to <strong>ClawdBot Day - ${planName}</strong>!</p>
+          <p>Thank you for subscribing to <strong>ClawdBot Hosting - ${planName}</strong>!</p>
           
           <div style="background: #f8f9fa; border-radius: 8px; padding: 20px; margin: 24px 0;">
             <h3 style="margin: 0 0 12px 0; font-size: 16px;">What happens next?</h3>
@@ -62,13 +62,13 @@ export async function sendWelcomeEmail({ to, customerName, planName }: WelcomeEm
           
           <p style="margin-top: 30px;">
             Cheers,<br>
-            The ClawdBot Day Team
+            The ClawdBot Hosting Team
           </p>
           
           <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
           
           <p style="font-size: 12px; color: #666;">
-            You received this email because you subscribed to ClawdBot Day.<br>
+            You received this email because you subscribed to ClawdBot Hosting.<br>
             <a href="https://clawdbot.day" style="color: #666;">clawdbot.day</a>
           </p>
         </body>
