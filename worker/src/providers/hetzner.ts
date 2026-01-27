@@ -181,7 +181,7 @@ runcmd:
   - echo 'clawdbot ALL=(ALL) NOPASSWD:ALL' > /etc/sudoers.d/clawdbot
   - chmod 440 /etc/sudoers.d/clawdbot
   - npm install -g clawdbot@latest
-  - apt-get install -y build-essential procps curl file git
+  - apt-get install -y build-essential procps curl file git unzip
   - chown -R clawdbot:clawdbot /home/clawdbot
   - |
     # Install Homebrew as clawdbot user (needs sudo for /home/linuxbrew)
