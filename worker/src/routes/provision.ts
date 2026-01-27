@@ -8,6 +8,13 @@ import { hetznerProvider } from "../providers/hetzner";
 import { scalewayProvider } from "../providers/scaleway";
 import { installClawdBot } from "../services/installer";
 import { sendCredentialsEmail, sendProvisioningErrorEmail } from "../services/email";
+import {
+  trackProvisioningStarted,
+  trackServerCreated,
+  trackInstallationComplete,
+  trackProvisioningComplete,
+  trackProvisioningFailed,
+} from "../services/analytics";
 
 const router = Router();
 
@@ -63,6 +70,11 @@ router.post("/", authMiddleware, async (req: Request, res: Response) => {
 
 async function processProvisioning(request: ProvisionRequest) {
   const { planId, customerEmail, customerName } = request;
+  const startTime = Date.now();
+  let serverId: string | undefined;
+
+  // Track start
+  trackProvisioningStarted({ planId, customerEmail });
 
   try {
     // Get the appropriate provider
@@ -79,7 +91,16 @@ async function processProvisioning(request: ProvisionRequest) {
       customerName,
     });
 
+    serverId = server.id;
     console.log(`[Provision] Server created: ${server.id} at ${server.ip}`);
+
+    // Track server created
+    trackServerCreated({
+      planId,
+      customerEmail,
+      serverId: server.id,
+      serverIp: server.ip,
+    });
 
     // Step 2: Wait for server to be ready
     const readyServer = await provider.waitForReady(server);
@@ -100,6 +121,15 @@ async function processProvisioning(request: ProvisionRequest) {
     console.log(`[Provision] ClawdBot installed on ${readyServer.ip}`);
     console.log(`[Provision] Terminal URL: ${installResult.tunnelUrl}`);
 
+    // Track installation complete
+    trackInstallationComplete({
+      planId,
+      customerEmail,
+      serverId: readyServer.id,
+      tunnelUrl: installResult.tunnelUrl,
+      durationMs: Date.now() - startTime,
+    });
+
     // Step 4: Send credentials email with terminal link
     const planNames: Record<string, string> = {
       linux: "Linux",
@@ -116,9 +146,27 @@ async function processProvisioning(request: ProvisionRequest) {
 
     console.log(`[Provision] Complete for ${customerEmail}`);
 
+    // Track complete
+    trackProvisioningComplete({
+      planId,
+      customerEmail,
+      serverId: readyServer.id,
+      tunnelUrl: installResult.tunnelUrl,
+      durationMs: Date.now() - startTime,
+    });
+
     // TODO: Save instance info to database for tracking
   } catch (error) {
     console.error(`[Provision] Failed for ${customerEmail}:`, error);
+
+    // Track failure
+    trackProvisioningFailed({
+      planId,
+      customerEmail,
+      serverId,
+      error: error instanceof Error ? error.message : "Unknown error",
+      durationMs: Date.now() - startTime,
+    });
 
     // Send error notification
     try {
