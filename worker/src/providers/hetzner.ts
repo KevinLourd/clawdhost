@@ -180,12 +180,9 @@ runcmd:
   - useradd -m -s /bin/bash clawdbot
   - echo 'clawdbot ALL=(ALL) NOPASSWD:ALL' > /etc/sudoers.d/clawdbot
   - chmod 440 /etc/sudoers.d/clawdbot
-  - chown clawdbot:clawdbot /home/clawdbot/start.sh
   - npm install -g clawdbot@latest
   - apt-get install -y build-essential procps curl file git
-  - su - clawdbot -c 'NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"'
-  - echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> /home/clawdbot/.bashrc
-  - chown clawdbot:clawdbot /home/clawdbot/.bashrc
+  - chown -R clawdbot:clawdbot /home/clawdbot
   - curl -L https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb -o /tmp/cloudflared.deb
   - dpkg -i /tmp/cloudflared.deb
   - systemctl stop ttyd 2>/dev/null || true
