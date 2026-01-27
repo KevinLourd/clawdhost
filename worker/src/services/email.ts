@@ -4,7 +4,13 @@
 
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+function getResendClient(): Resend {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) {
+    throw new Error("RESEND_API_KEY is not configured");
+  }
+  return new Resend(apiKey);
+}
 
 const FROM_EMAIL = "Clawd Host <noreply@clawdhost.tech>";
 const SUPPORT_EMAIL = "support@clawdhost.tech";
@@ -25,6 +31,7 @@ export async function sendCredentialsEmail({
 }: CredentialsEmailParams) {
   const greeting = customerName ? `Hi ${customerName}` : "Hi there";
 
+  const resend = getResendClient();
   const { data, error } = await resend.emails.send({
     from: FROM_EMAIL,
     to,
@@ -120,6 +127,7 @@ export async function sendProvisioningErrorEmail(
 ) {
   const greeting = customerName ? `Hi ${customerName}` : "Hi there";
 
+  const resend = getResendClient();
   await resend.emails.send({
     from: FROM_EMAIL,
     to,
