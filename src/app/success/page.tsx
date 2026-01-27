@@ -3,7 +3,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
 
 declare global {
   interface Window {
@@ -11,7 +11,7 @@ declare global {
   }
 }
 
-export default function SuccessPage() {
+function DataLayerTracker() {
   const searchParams = useSearchParams();
   const sessionId = searchParams.get("session_id");
 
@@ -24,7 +24,16 @@ export default function SuccessPage() {
       });
     }
   }, [sessionId]);
+
+  return null;
+}
+
+export default function SuccessPage() {
   return (
+    <>
+      <Suspense fallback={null}>
+        <DataLayerTracker />
+      </Suspense>
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20 flex items-center justify-center p-4">
       <Card className="max-w-lg w-full text-center">
         <CardHeader className="pb-4">
@@ -118,5 +127,6 @@ export default function SuccessPage() {
         </CardContent>
       </Card>
     </div>
+    </>
   );
 }
