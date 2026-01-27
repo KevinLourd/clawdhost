@@ -40,7 +40,7 @@ export default function Home() {
               What is ClawdBot?
             </a>
             <a 
-              href="https://github.com/KevinLourd/clawdbot" 
+              href="https://github.com/KevinLourd/clawdhost" 
               target="_blank" 
               rel="noopener noreferrer"
               className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
@@ -161,7 +161,7 @@ export default function Home() {
             <p className="text-muted-foreground text-sm">
               Yes! This hosting platform is fully open source. You can view the code on{" "}
               <a 
-                href="https://github.com/KevinLourd/clawdbot" 
+                href="https://github.com/KevinLourd/clawdhost" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="text-primary hover:underline"
@@ -199,7 +199,7 @@ export default function Home() {
             </div>
             <div className="flex items-center gap-6 text-sm text-muted-foreground">
               <a 
-                href="https://github.com/KevinLourd/clawdbot" 
+                href="https://github.com/KevinLourd/clawdhost" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="hover:text-foreground transition-colors"

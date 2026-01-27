@@ -91,12 +91,12 @@ export default function TermsOfService() {
               ClawdBot is open-source software. This hosting platform is also open-source and 
               available at{" "}
               <a 
-                href="https://github.com/KevinLourd/clawdbot" 
+                href="https://github.com/KevinLourd/clawdhost" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="text-primary hover:underline"
               >
-                github.com/KevinLourd/clawdbot
+                github.com/KevinLourd/clawdhost
               </a>
               . You are free to self-host if you prefer.
             </p>
