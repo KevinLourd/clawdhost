@@ -183,16 +183,16 @@ write_files:
         <div class="mobile-warning" id="mobileWarning">
           <img src="https://clawdhost.tech/clawdhost_logo_27kb.jpg" alt="Clawd Host">
           <div class="icon">💻</div>
-          <h1>Ouvrez sur ordinateur</h1>
+          <h1>Open on Desktop</h1>
           <p>
-            Le terminal ClawdBot nécessite un clavier pour la navigation 
-            (touches fléchées, etc.). Pour le moment, il n'est pas disponible sur mobile.
+            The ClawdBot terminal requires a keyboard for navigation 
+            (arrow keys, etc.). It is not available on mobile at this time.
           </p>
           <p>
-            <strong>Ouvrez ce lien sur votre ordinateur</strong> pour accéder à votre ClawdBot.
+            <strong>Open this link on your computer</strong> to access your ClawdBot.
           </p>
           <p style="margin-top: 32px; font-size: 14px;">
-            <a href="mailto:support@clawdhost.tech">Besoin d'aide ?</a>
+            <a href="mailto:support@clawdhost.tech">Need help?</a>
           </p>
         </div>
         <div id="terminal"></div>

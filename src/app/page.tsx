@@ -49,36 +49,36 @@ export default function Home() {
       <section className="container mx-auto px-4 py-16 md:py-24 text-center">
         <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 rounded-full px-4 py-1.5 mb-6">
           <span className="text-lg">🦞</span>
-          <span className="text-sm font-medium">Hébergement ClawdBot clé en main</span>
+          <span className="text-sm font-medium">Turnkey ClawdBot Hosting</span>
         </div>
         <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-6">
-          Votre ClawdBot,
+          Your ClawdBot,
           <br />
-          <span className="text-primary">prêt en 5 minutes</span>
+          <span className="text-primary">ready in 5 minutes</span>
         </h1>
         <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
-          Pas besoin de créer un compte AWS. Pas besoin d&apos;ouvrir un terminal.
+          No AWS account needed. No terminal required.
           <br className="hidden md:block" />
-          On héberge <a href="https://github.com/clawdbot/clawdbot" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">ClawdBot</a> pour vous, tout se gère depuis votre navigateur.
+          We host <a href="https://github.com/clawdbot/clawdbot" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">ClawdBot</a> for you — manage everything from your browser.
         </p>
         <div className="flex flex-wrap items-center justify-center gap-4 text-sm text-muted-foreground">
           <div className="flex items-center gap-1">
             <svg className="h-4 w-4 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
-            <span>Setup instantané</span>
+            <span>Instant setup</span>
           </div>
           <div className="flex items-center gap-1">
             <svg className="h-4 w-4 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
-            <span>100% web</span>
+            <span>100% web-based</span>
           </div>
           <div className="flex items-center gap-1">
             <svg className="h-4 w-4 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
-            <span>Disponible 24/7</span>
+            <span>Available 24/7</span>
           </div>
         </div>
       </section>
@@ -87,9 +87,9 @@ export default function Home() {
       <section className="relative py-16">
         <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-primary/10 to-primary/5 -z-10" />
         <div className="container mx-auto px-4">
-        <h2 className="text-3xl font-bold text-center mb-4">Choisissez votre formule</h2>
+        <h2 className="text-3xl font-bold text-center mb-4">Choose your plan</h2>
         <p className="text-muted-foreground text-center mb-12 max-w-xl mx-auto">
-          Tous les plans incluent ClawdBot prêt à l'emploi, accessible depuis votre navigateur.
+          All plans include ClawdBot ready to use, accessible from your browser.
         </p>
         
         <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
@@ -102,11 +102,11 @@ export default function Home() {
 
       {/* FAQ */}
       <section className="container mx-auto px-4 py-16">
-        <h2 className="text-3xl font-bold text-center mb-12">Questions fréquentes</h2>
+        <h2 className="text-3xl font-bold text-center mb-12">Frequently Asked Questions</h2>
         
         <div className="max-w-2xl mx-auto space-y-6">
           <div className="border rounded-lg p-6 bg-background/80 backdrop-blur-sm hover:border-primary/30 transition-colors">
-            <h3 className="font-semibold mb-2">C&apos;est quoi ClawdBot ?</h3>
+            <h3 className="font-semibold mb-2">What is ClawdBot?</h3>
             <p className="text-muted-foreground text-sm">
               <a 
                 href="https://github.com/clawdbot/clawdbot" 
@@ -116,42 +116,41 @@ export default function Home() {
               >
                 ClawdBot
               </a>
-              {" "}est un assistant IA personnel open-source. Il peut gérer vos emails, 
-              naviguer sur le web, automatiser des tâches — le tout via WhatsApp, Telegram 
-              ou Discord.
+              {" "}is an open-source personal AI assistant. It can manage your emails, 
+              browse the web, automate tasks — all via WhatsApp, Telegram, or Discord.
             </p>
           </div>
           
           <div className="border rounded-lg p-6 bg-background/80 backdrop-blur-sm hover:border-primary/30 transition-colors">
-            <h3 className="font-semibold mb-2">Pourquoi utiliser Clawd Host ?</h3>
+            <h3 className="font-semibold mb-2">Why use Clawd Host?</h3>
             <p className="text-muted-foreground text-sm">
-              Pour être vraiment utile, ClawdBot doit tourner 24h/24. Avec Clawd Host, 
-              vous avez votre assistant toujours disponible — pas besoin de laisser votre 
-              ordinateur allumé ou de gérer quoi que ce soit.
+              To be truly useful, ClawdBot needs to run 24/7. With Clawd Host, 
+              your assistant is always available — no need to keep your computer 
+              running or manage anything yourself.
             </p>
           </div>
           
           <div className="border rounded-lg p-6 bg-background/80 backdrop-blur-sm hover:border-primary/30 transition-colors">
-            <h3 className="font-semibold mb-2">Pourquoi choisir un plan Apple ?</h3>
+            <h3 className="font-semibold mb-2">Why choose an Apple plan?</h3>
             <p className="text-muted-foreground text-sm">
-              Les plans Apple donnent accès à iMessage et vos fichiers iCloud. 
-              Si vous utilisez des appareils Apple, votre ClawdBot aura accès 
-              à tout votre écosystème.
+              Apple plans give you access to iMessage and your iCloud files. 
+              If you use Apple devices, your ClawdBot will have access to 
+              your entire ecosystem.
             </p>
           </div>
           
           <div className="border rounded-lg p-6 bg-background/80 backdrop-blur-sm hover:border-primary/30 transition-colors">
-            <h3 className="font-semibold mb-2">Comment ça marche ?</h3>
+            <h3 className="font-semibold mb-2">How does it work?</h3>
             <p className="text-muted-foreground text-sm">
-              Après le paiement, on prépare tout automatiquement. En quelques minutes, 
-              vous recevez un email avec un lien pour accéder à votre ClawdBot.
+              After payment, we set everything up automatically. In a few minutes, 
+              you receive an email with a link to access your ClawdBot.
             </p>
           </div>
 
           <div className="border rounded-lg p-6 bg-background/80 backdrop-blur-sm hover:border-primary/30 transition-colors">
-            <h3 className="font-semibold mb-2">C&apos;est open source ?</h3>
+            <h3 className="font-semibold mb-2">Is it open source?</h3>
             <p className="text-muted-foreground text-sm">
-              Oui ! Notre plateforme est 100% open source sur{" "}
+              Yes! Our platform is 100% open source on{" "}
               <a 
                 href="https://github.com/KevinLourd/clawdhost" 
                 target="_blank" 
@@ -160,14 +159,14 @@ export default function Home() {
               >
                 GitHub
               </a>
-              . On héberge le projet{" "}
+              . We host the original{" "}
               <a 
                 href="https://github.com/clawdbot/clawdbot" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="text-primary hover:underline"
               >
-                ClawdBot original
+                ClawdBot project
               </a>
               .
             </p>
