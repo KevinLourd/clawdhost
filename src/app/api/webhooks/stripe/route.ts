@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
               email: customerEmail,
               eventId: session.id, // Use Stripe session ID for deduplication
               value: planPrice,
-              currency: "EUR",
+              currency: "USD",
             });
           } catch (error) {
             console.error("Failed to send Meta purchase event:", error);

@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "ClawdBot Hosting - Your AI Assistant, Hosted 24/7",
-  description: "Get your own ClawdBot instance running 24/7 in the cloud. No setup required. Linux from €29/mo, macOS from €149/mo.",
+  description: "Get your own ClawdBot instance running 24/7 in the cloud. No setup required. Linux from $29/mo, macOS from $149/mo.",
   metadataBase: new URL("https://clawdbot.day"),
   keywords: ["ClawdBot", "AI assistant", "cloud hosting", "macOS VPS", "Linux VPS", "WhatsApp bot", "Telegram bot", "iCloud sync"],
   authors: [{ name: "ClawdBot Hosting" }],
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "ClawdBot Hosting - Your AI Assistant, Hosted 24/7",
-    description: "Get your own ClawdBot instance running 24/7 in the cloud. No setup required. Linux from €29/mo, macOS from €149/mo.",
+    description: "Get your own ClawdBot instance running 24/7 in the cloud. No setup required. Linux from $29/mo, macOS from $149/mo.",
     url: "https://clawdbot.day",
     siteName: "ClawdBot Hosting",
     type: "website",
@@ -95,7 +95,7 @@ export default function RootLayout({
                   offers: {
                     "@type": "Offer",
                     price: "29",
-                    priceCurrency: "EUR",
+                    priceCurrency: "USD",
                     priceValidUntil: "2026-12-31",
                     availability: "https://schema.org/InStock",
                     url: "https://clawdbot.day",
@@ -109,7 +109,7 @@ export default function RootLayout({
                   offers: {
                     "@type": "Offer",
                     price: "149",
-                    priceCurrency: "EUR",
+                    priceCurrency: "USD",
                     priceValidUntil: "2026-12-31",
                     availability: "https://schema.org/InStock",
                     url: "https://clawdbot.day",
@@ -123,7 +123,7 @@ export default function RootLayout({
                   offers: {
                     "@type": "Offer",
                     price: "249",
-                    priceCurrency: "EUR",
+                    priceCurrency: "USD",
                     priceValidUntil: "2026-12-31",
                     availability: "https://schema.org/InStock",
                     url: "https://clawdbot.day",

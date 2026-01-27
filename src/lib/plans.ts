@@ -16,7 +16,7 @@ export const plans: Plan[] = [
     name: "Linux",
     description: "ClawdBot on a fast Linux VPS. Perfect for automation tasks.",
     price: 29,
-    currency: "EUR",
+    currency: "USD",
     interval: "month",
     features: [
       "8 vCPU, 16GB RAM",
@@ -34,7 +34,7 @@ export const plans: Plan[] = [
     name: "macOS M1",
     description: "Full macOS experience with iCloud and iMessage support.",
     price: 149,
-    currency: "EUR",
+    currency: "USD",
     interval: "month",
     features: [
       "Apple M1 chip",
@@ -53,7 +53,7 @@ export const plans: Plan[] = [
     name: "macOS M4",
     description: "Latest Apple Silicon for demanding workloads.",
     price: 249,
-    currency: "EUR",
+    currency: "USD",
     interval: "month",
     features: [
       "Apple M4 chip (10-core)",
