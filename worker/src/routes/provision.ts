@@ -8,6 +8,7 @@ import { hetznerProvider } from "../providers/hetzner";
 import { scalewayProvider } from "../providers/scaleway";
 import { installClawdBot } from "../services/installer";
 import { sendCredentialsEmail, sendProvisioningErrorEmail } from "../services/email";
+import { createTunnel, deleteTunnel } from "../services/cloudflare";
 import {
   trackProvisioningStarted,
   trackServerCreated,
@@ -72,6 +73,7 @@ async function processProvisioning(request: ProvisionRequest) {
   const { planId, customerEmail, customerName } = request;
   const startTime = Date.now();
   let serverId: string | undefined;
+  let tunnelId: string | undefined;
 
   // Track start
   trackProvisioningStarted({ planId, customerEmail });
@@ -83,12 +85,36 @@ async function processProvisioning(request: ProvisionRequest) {
 
     console.log(`[Provision] Using provider: ${provider.name}`);
 
-    // Step 1: Create server
+    // Step 1: Create Cloudflare tunnel (if configured)
+    let tunnelToken: string | undefined;
+    let tunnelHostname: string | undefined;
+    
+    const hasCloudflareConfig = process.env.CLOUDFLARE_API_TOKEN && 
+                                 process.env.CLOUDFLARE_ACCOUNT_ID && 
+                                 process.env.CLOUDFLARE_ZONE_ID;
+
+    if (hasCloudflareConfig) {
+      const serverName = `${planId}-${Date.now()}`;
+      console.log(`[Provision] Creating Cloudflare tunnel for ${serverName}...`);
+      
+      const tunnel = await createTunnel(serverName);
+      tunnelId = tunnel.tunnelId;
+      tunnelToken = tunnel.tunnelToken;
+      tunnelHostname = tunnel.hostname;
+      
+      console.log(`[Provision] Tunnel created: ${tunnelHostname}`);
+    } else {
+      console.log(`[Provision] Cloudflare not configured, using direct IP access`);
+    }
+
+    // Step 2: Create server with tunnel token
     const server = await provider.createServer({
       name: `clawdhost-${planId}-${Date.now()}`,
       planId,
       customerEmail,
       customerName,
+      tunnelToken,
+      tunnelHostname,
     });
 
     serverId = server.id;
@@ -102,35 +128,36 @@ async function processProvisioning(request: ProvisionRequest) {
       serverIp: server.ip,
     });
 
-    // Step 2: Wait for server to be ready
+    // Step 3: Wait for server to be ready
     const readyServer = await provider.waitForReady(server);
 
     console.log(`[Provision] Server ready: ${readyServer.ip}`);
 
-    // Step 3: Install ClawdBot + ttyd + Cloudflare Tunnel
+    // Step 4: Wait for ClawdBot installation to complete
     const installResult = await installClawdBot(readyServer, customerEmail, customerName);
 
     if (!installResult.success) {
       throw new Error(`Installation failed: ${installResult.error}`);
     }
 
-    if (!installResult.tunnelUrl) {
-      throw new Error("Installation succeeded but no tunnel URL was generated");
-    }
+    // Use Cloudflare tunnel URL if available, otherwise fall back to IP
+    const terminalUrl = tunnelHostname 
+      ? `https://${tunnelHostname}`
+      : `http://${readyServer.ip}:7681`;
 
     console.log(`[Provision] ClawdBot installed on ${readyServer.ip}`);
-    console.log(`[Provision] Terminal URL: ${installResult.tunnelUrl}`);
+    console.log(`[Provision] Terminal URL: ${terminalUrl}`);
 
     // Track installation complete
     trackInstallationComplete({
       planId,
       customerEmail,
       serverId: readyServer.id,
-      tunnelUrl: installResult.tunnelUrl,
+      tunnelUrl: terminalUrl,
       durationMs: Date.now() - startTime,
     });
 
-    // Step 4: Send credentials email with terminal link
+    // Step 5: Send credentials email with terminal link
     const planNames: Record<string, string> = {
       linux: "Linux",
       "macos-m1": "macOS M1",
@@ -140,7 +167,7 @@ async function processProvisioning(request: ProvisionRequest) {
     await sendCredentialsEmail({
       to: customerEmail,
       customerName,
-      terminalUrl: installResult.tunnelUrl,
+      terminalUrl: terminalUrl,
       planName: planNames[planId] || planId,
     });
 
@@ -151,13 +178,23 @@ async function processProvisioning(request: ProvisionRequest) {
       planId,
       customerEmail,
       serverId: readyServer.id,
-      tunnelUrl: installResult.tunnelUrl,
+      tunnelUrl: terminalUrl,
       durationMs: Date.now() - startTime,
     });
 
     // TODO: Save instance info to database for tracking
   } catch (error) {
     console.error(`[Provision] Failed for ${customerEmail}:`, error);
+
+    // Cleanup tunnel if it was created
+    if (tunnelId) {
+      try {
+        await deleteTunnel(tunnelId);
+        console.log(`[Provision] Cleaned up tunnel ${tunnelId}`);
+      } catch (cleanupError) {
+        console.error("[Provision] Failed to cleanup tunnel:", cleanupError);
+      }
+    }
 
     // Track failure
     trackProvisioningFailed({

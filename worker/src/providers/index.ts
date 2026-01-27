@@ -21,6 +21,8 @@ export interface ProvisionOptions {
   planId: string;
   customerEmail: string;
   customerName?: string;
+  tunnelToken?: string;
+  tunnelHostname?: string;
 }
 
 export interface Provider {

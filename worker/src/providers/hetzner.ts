@@ -56,7 +56,7 @@ export class HetznerProvider implements Provider {
     console.log(`[Hetzner] Creating server: ${serverName}`);
 
     // Cloud-init script to install everything at boot
-    const cloudInit = this.generateCloudInit(serverName);
+    const cloudInit = this.generateCloudInit(serverName, options.tunnelToken);
 
     const response = await hetznerFetch<HetznerServerResponse>("/servers", {
       method: "POST",
@@ -86,7 +86,36 @@ export class HetznerProvider implements Provider {
     };
   }
 
-  private generateCloudInit(serverName: string): string {
+  private generateCloudInit(serverName: string, tunnelToken?: string): string {
+    // Use named tunnel if token provided, otherwise use direct IP access
+    const cloudflaredService = tunnelToken
+      ? `[Unit]
+Description=Cloudflare Tunnel for ttyd
+After=network.target clawdhost-ttyd.service
+Requires=clawdhost-ttyd.service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/cloudflared tunnel run --token ${tunnelToken}
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target`
+      : `[Unit]
+Description=Cloudflare Quick Tunnel for ttyd
+After=network.target clawdhost-ttyd.service
+Requires=clawdhost-ttyd.service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/cloudflared tunnel --url http://localhost:7681 --logfile /var/log/cloudflared.log
+Restart=always
+RestartSec=60
+
+[Install]
+WantedBy=multi-user.target`;
+
     return `#cloud-config
 package_update: true
 package_upgrade: false
@@ -142,21 +171,9 @@ runcmd:
   
   # Create cloudflared tunnel service
   - |
-    cat > /etc/systemd/system/cloudflared-tunnel.service << 'EOF'
-    [Unit]
-    Description=Cloudflare Tunnel for ttyd
-    After=network.target clawdhost-ttyd.service
-    Requires=clawdhost-ttyd.service
-    
-    [Service]
-    Type=simple
-    ExecStart=/usr/bin/cloudflared tunnel --url http://localhost:7681 --logfile /var/log/cloudflared.log
-    Restart=always
-    RestartSec=5
-    
-    [Install]
-    WantedBy=multi-user.target
-    EOF
+    cat > /etc/systemd/system/cloudflared-tunnel.service << 'EOFCF'
+${cloudflaredService}
+EOFCF
   
   # Enable and start services
   - systemctl daemon-reload

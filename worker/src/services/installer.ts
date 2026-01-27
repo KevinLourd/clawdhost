@@ -111,55 +111,18 @@ export async function installClawdBot(
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
     console.log(`[Installer] Checking if ttyd is ready, attempt ${attempt}/${maxAttempts}`);
     
-    // First, check if ttyd is responding on port 7681
+    // Check if ttyd is responding on port 7681
     const ttydReady = await checkTtydReady(server.ip);
     
     if (ttydReady) {
       console.log("[Installer] ttyd is responding! Cloud-init completed.");
       
-      // Now SSH to get the tunnel URL
+      // Save customer info via SSH
       let conn: Client | null = null;
       
       try {
-        // Wait a bit for cloudflared to establish tunnel
-        await new Promise((r) => setTimeout(r, 10000));
-        
         conn = await connect(server);
         
-        // Get tunnel URL
-        let tunnelUrl: string | undefined;
-
-        // Try from saved file first
-        const urlFileCheck = await executeCommand(conn, "cat /root/tunnel_url.txt 2>/dev/null");
-        if (urlFileCheck.stdout.trim() && urlFileCheck.stdout.includes("trycloudflare.com")) {
-          tunnelUrl = urlFileCheck.stdout.trim();
-        }
-
-        // If not found, try from cloudflared log
-        if (!tunnelUrl) {
-          for (let i = 0; i < 10; i++) {
-            const logCheck = await executeCommand(
-              conn,
-              "grep -oE 'https://[a-z0-9-]+\\.trycloudflare\\.com' /var/log/cloudflared.log 2>/dev/null | tail -1"
-            );
-            if (logCheck.stdout.trim()) {
-              tunnelUrl = logCheck.stdout.trim();
-              break;
-            }
-            console.log(`[Installer] Waiting for tunnel URL... ${i + 1}/10`);
-            await new Promise((r) => setTimeout(r, 5000));
-          }
-        }
-
-        if (!tunnelUrl) {
-          const logContent = await executeCommand(conn, "cat /var/log/cloudflared.log 2>/dev/null | tail -30");
-          console.log(`[Installer] cloudflared log:\n${logContent.stdout}`);
-          conn.end();
-          throw new Error("Tunnel URL not found");
-        }
-
-        console.log(`[Installer] Got tunnel URL: ${tunnelUrl}`);
-
         // Save customer info
         await executeCommand(conn, `echo "${customerEmail}" > /home/clawdbot/.customer_email`);
         if (customerName) {
@@ -168,15 +131,17 @@ export async function installClawdBot(
         await executeCommand(conn, "chown -R clawdbot:clawdbot /home/clawdbot/.customer_* 2>/dev/null || true");
 
         conn.end();
-        return { success: true, tunnelUrl };
+        console.log(`[Installer] Customer info saved`);
         
       } catch (error) {
         const errMsg = error instanceof Error ? error.message : "Unknown error";
-        console.log(`[Installer] SSH failed after ttyd ready: ${errMsg}`);
+        console.log(`[Installer] SSH for customer info failed: ${errMsg}`);
         if (conn) conn.end();
-        
-        // ttyd is ready but SSH failed - still a partial success, continue trying
+        // Not critical, continue anyway
       }
+
+      // Success - tunnel URL is handled by the provisioning route
+      return { success: true };
     } else {
       console.log(`[Installer] ttyd not ready yet on port 7681`);
     }
