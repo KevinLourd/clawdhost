@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { sendWelcomeEmail } from "@/lib/email";
+import { sendPurchaseEvent } from "@/lib/meta";
 import { plans } from "@/lib/plans";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
@@ -35,6 +36,7 @@ export async function POST(request: NextRequest) {
         if (customerEmail && planId) {
           const plan = plans.find((p) => p.id === planId);
           const planName = plan?.name || planId;
+          const planPrice = plan?.price || 0;
           
           try {
             await sendWelcomeEmail({
@@ -45,7 +47,18 @@ export async function POST(request: NextRequest) {
             console.log(`Welcome email sent to ${customerEmail} for plan ${planName}`);
           } catch (error) {
             console.error("Failed to send welcome email:", error);
-            // Don't fail the webhook, just log the error
+          }
+
+          // Send Meta Conversions API event
+          try {
+            await sendPurchaseEvent({
+              email: customerEmail,
+              eventId: session.id, // Use Stripe session ID for deduplication
+              value: planPrice,
+              currency: "EUR",
+            });
+          } catch (error) {
+            console.error("Failed to send Meta purchase event:", error);
           }
         }
       }

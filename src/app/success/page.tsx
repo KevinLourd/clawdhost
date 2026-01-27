@@ -1,7 +1,29 @@
+"use client";
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { useEffect } from "react";
+
+declare global {
+  interface Window {
+    dataLayer: Record<string, unknown>[];
+  }
+}
 
 export default function SuccessPage() {
+  const searchParams = useSearchParams();
+  const sessionId = searchParams.get("session_id");
+
+  useEffect(() => {
+    if (sessionId && typeof window !== "undefined") {
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({
+        event: "purchase",
+        transactionId: sessionId,
+      });
+    }
+  }, [sessionId]);
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20 flex items-center justify-center p-4">
       <Card className="max-w-lg w-full text-center">
