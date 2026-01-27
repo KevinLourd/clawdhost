@@ -61,6 +61,78 @@ export default function RootLayout({
             })(window,document,'script','dataLayer','GTM-MFBQ79QV');
           `}
         </Script>
+        {/* JSON-LD Structured Data */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@graph": [
+                {
+                  "@type": "Organization",
+                  "@id": "https://clawdbot.day/#organization",
+                  name: "ClawdBot Hosting",
+                  url: "https://clawdbot.day",
+                  logo: "https://clawdbot.day/icon",
+                  contactPoint: {
+                    "@type": "ContactPoint",
+                    email: "support@clawdbot.day",
+                    contactType: "customer service",
+                  },
+                },
+                {
+                  "@type": "WebSite",
+                  "@id": "https://clawdbot.day/#website",
+                  url: "https://clawdbot.day",
+                  name: "ClawdBot Hosting",
+                  publisher: { "@id": "https://clawdbot.day/#organization" },
+                },
+                {
+                  "@type": "Product",
+                  name: "ClawdBot Linux Hosting",
+                  description: "ClawdBot AI assistant hosted on Linux VPS. 24/7 availability, WhatsApp & Telegram integration, web browsing, file management.",
+                  brand: { "@id": "https://clawdbot.day/#organization" },
+                  offers: {
+                    "@type": "Offer",
+                    price: "29",
+                    priceCurrency: "EUR",
+                    priceValidUntil: "2026-12-31",
+                    availability: "https://schema.org/InStock",
+                    url: "https://clawdbot.day",
+                  },
+                },
+                {
+                  "@type": "Product",
+                  name: "ClawdBot macOS M1 Hosting",
+                  description: "ClawdBot AI assistant hosted on macOS M1. iCloud sync, iMessage integration, desktop mirroring, 24/7 availability.",
+                  brand: { "@id": "https://clawdbot.day/#organization" },
+                  offers: {
+                    "@type": "Offer",
+                    price: "149",
+                    priceCurrency: "EUR",
+                    priceValidUntil: "2026-12-31",
+                    availability: "https://schema.org/InStock",
+                    url: "https://clawdbot.day",
+                  },
+                },
+                {
+                  "@type": "Product",
+                  name: "ClawdBot macOS M4 Hosting",
+                  description: "ClawdBot AI assistant hosted on macOS M4. Premium performance, iCloud sync, iMessage integration, desktop mirroring, 24/7 availability.",
+                  brand: { "@id": "https://clawdbot.day/#organization" },
+                  offers: {
+                    "@type": "Offer",
+                    price: "249",
+                    priceCurrency: "EUR",
+                    priceValidUntil: "2026-12-31",
+                    availability: "https://schema.org/InStock",
+                    url: "https://clawdbot.day",
+                  },
+                },
+              ],
+            }),
+          }}
+        />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
