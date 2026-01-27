@@ -55,7 +55,7 @@ export function PricingCard({ plan }: PricingCardProps) {
       
       <CardContent className="flex-1">
         <div className="text-center mb-6">
-          <span className="text-4xl font-bold">€{plan.price}</span>
+          <span className="text-4xl font-bold">${plan.price}</span>
           <span className="text-muted-foreground">/month</span>
         </div>
         
