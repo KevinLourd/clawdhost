@@ -20,7 +20,7 @@ export async function sendPurchaseEvent({
   eventId,
   value,
   currency,
-  eventSourceUrl = "https://clawdbot.day/success",
+  eventSourceUrl = "https://clawdhost.tech/success",
 }: PurchaseEventParams) {
   if (!PIXEL_ID || !ACCESS_TOKEN) {
     console.warn("Meta Conversions API not configured (missing PIXEL_ID or ACCESS_TOKEN)");

@@ -2,6 +2,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
+import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect } from "react";
 
@@ -53,7 +54,7 @@ export default function SuccessPage() {
             </svg>
           </div>
           <CardTitle className="text-2xl">Payment Successful!</CardTitle>
-          <CardDescription>Thank you for your order</CardDescription>
+          <CardDescription>Thank you for choosing Clawd Host</CardDescription>
         </CardHeader>
         
         <CardContent className="space-y-6">
@@ -111,17 +112,24 @@ export default function SuccessPage() {
             <p className="text-sm text-muted-foreground mb-4">
               Questions? Contact us at{" "}
               <a 
-                href="mailto:support@clawdbot.day" 
+                href="mailto:support@clawdhost.tech" 
                 className="text-primary hover:underline"
               >
-                support@clawdbot.day
+                support@clawdhost.tech
               </a>
             </p>
             <Link 
               href="/"
-              className="text-sm text-primary hover:underline"
+              className="inline-flex items-center gap-2 text-sm text-primary hover:underline"
             >
-              ← Back to homepage
+              <Image 
+                src="/clawdhost_logo_27kb.jpg" 
+                alt="Clawd Host" 
+                width={20} 
+                height={20}
+                className="rounded"
+              />
+              Back to Clawd Host
             </Link>
           </div>
         </CardContent>

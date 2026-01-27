@@ -17,7 +17,7 @@ async function getOrCreatePrice(plan: typeof plans[0]): Promise<string> {
   } else {
     // Create new product
     product = await stripe.products.create({
-      name: `ClawdBot Hosting - ${plan.name}`,
+      name: `Clawd Host - ${plan.name}`,
       description: plan.description,
       metadata: {
         plan_id: plan.id,

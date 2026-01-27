@@ -1,15 +1,26 @@
+import Image from "next/image";
+
 export default function PrivacyPolicy() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
       <div className="container mx-auto px-4 py-16 max-w-3xl">
-        <h1 className="text-4xl font-bold mb-8">Privacy Policy</h1>
+        <div className="flex items-center gap-3 mb-8">
+          <Image 
+            src="/clawdhost_logo_27kb.jpg" 
+            alt="Clawd Host Logo" 
+            width={40} 
+            height={40}
+            className="rounded-lg"
+          />
+          <h1 className="text-4xl font-bold">Privacy Policy</h1>
+        </div>
         <p className="text-muted-foreground mb-8">Last updated: January 27, 2026</p>
 
         <div className="prose prose-neutral dark:prose-invert max-w-none space-y-6">
           <section>
             <h2 className="text-2xl font-semibold mb-4">1. Information We Collect</h2>
             <p className="text-muted-foreground">
-              When you subscribe to ClawdBot Hosting, we collect:
+              When you subscribe to Clawd Host, we collect:
             </p>
             <ul className="list-disc pl-6 text-muted-foreground space-y-2 mt-2">
               <li>Email address (required for account creation and communication)</li>
@@ -81,8 +92,8 @@ export default function PrivacyPolicy() {
             <h2 className="text-2xl font-semibold mb-4">7. Contact</h2>
             <p className="text-muted-foreground">
               For privacy-related questions, contact us at{" "}
-              <a href="mailto:support@clawdbot.day" className="text-primary hover:underline">
-                support@clawdbot.day
+              <a href="mailto:support@clawdhost.tech" className="text-primary hover:underline">
+                support@clawdhost.tech
               </a>
             </p>
           </section>
@@ -90,7 +101,7 @@ export default function PrivacyPolicy() {
 
         <div className="mt-12 pt-8 border-t">
           <a href="/" className="text-primary hover:underline">
-            ← Back to home
+            ← Back to Clawd Host
           </a>
         </div>
       </div>

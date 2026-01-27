@@ -1,15 +1,26 @@
+import Image from "next/image";
+
 export default function TermsOfService() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
       <div className="container mx-auto px-4 py-16 max-w-3xl">
-        <h1 className="text-4xl font-bold mb-8">Terms of Service</h1>
+        <div className="flex items-center gap-3 mb-8">
+          <Image 
+            src="/clawdhost_logo_27kb.jpg" 
+            alt="Clawd Host Logo" 
+            width={40} 
+            height={40}
+            className="rounded-lg"
+          />
+          <h1 className="text-4xl font-bold">Terms of Service</h1>
+        </div>
         <p className="text-muted-foreground mb-8">Last updated: January 27, 2026</p>
 
         <div className="prose prose-neutral dark:prose-invert max-w-none space-y-6">
           <section>
             <h2 className="text-2xl font-semibold mb-4">1. Service Description</h2>
             <p className="text-muted-foreground">
-              ClawdBot Hosting provides managed hosting for ClawdBot, an open-source AI assistant. 
+              Clawd Host provides managed hosting for ClawdBot, an open-source AI assistant. 
               We provision and maintain dedicated server instances running ClawdBot on your behalf.
             </p>
           </section>
@@ -18,7 +29,7 @@ export default function TermsOfService() {
             <h2 className="text-2xl font-semibold mb-4">2. Subscription and Billing</h2>
             <ul className="list-disc pl-6 text-muted-foreground space-y-2">
               <li>Subscriptions are billed monthly in advance</li>
-              <li>Prices are listed in EUR and include all applicable taxes</li>
+              <li>Prices are listed in USD and include all applicable taxes</li>
               <li>You can cancel your subscription at any time from your Stripe customer portal</li>
               <li>Refunds are provided on a case-by-case basis within the first 7 days</li>
             </ul>
@@ -27,7 +38,7 @@ export default function TermsOfService() {
           <section>
             <h2 className="text-2xl font-semibold mb-4">3. Acceptable Use</h2>
             <p className="text-muted-foreground">
-              You agree not to use ClawdBot Hosting for:
+              You agree not to use Clawd Host for:
             </p>
             <ul className="list-disc pl-6 text-muted-foreground space-y-2 mt-2">
               <li>Any illegal activities</li>
@@ -68,7 +79,7 @@ export default function TermsOfService() {
           <section>
             <h2 className="text-2xl font-semibold mb-4">7. Limitation of Liability</h2>
             <p className="text-muted-foreground">
-              ClawdBot Hosting is provided &quot;as is&quot; without warranties of any kind. 
+              Clawd Host is provided &quot;as is&quot; without warranties of any kind. 
               We are not liable for any damages arising from the use of our service, 
               including data loss, business interruption, or actions taken by ClawdBot on your behalf.
             </p>
@@ -77,7 +88,7 @@ export default function TermsOfService() {
           <section>
             <h2 className="text-2xl font-semibold mb-4">8. Open Source</h2>
             <p className="text-muted-foreground">
-              ClawdBot is open-source software. Our hosting service is also open-source and 
+              ClawdBot is open-source software. This hosting platform is also open-source and 
               available at{" "}
               <a 
                 href="https://github.com/KevinLourd/clawdbot" 
@@ -103,8 +114,8 @@ export default function TermsOfService() {
             <h2 className="text-2xl font-semibold mb-4">10. Contact</h2>
             <p className="text-muted-foreground">
               For questions about these terms, contact us at{" "}
-              <a href="mailto:support@clawdbot.day" className="text-primary hover:underline">
-                support@clawdbot.day
+              <a href="mailto:support@clawdhost.tech" className="text-primary hover:underline">
+                support@clawdhost.tech
               </a>
             </p>
           </section>
@@ -112,7 +123,7 @@ export default function TermsOfService() {
 
         <div className="mt-12 pt-8 border-t">
           <a href="/" className="text-primary hover:underline">
-            ← Back to home
+            ← Back to Clawd Host
           </a>
         </div>
       </div>
