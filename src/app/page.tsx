@@ -3,17 +3,22 @@ import { plans } from "@/lib/plans";
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-background relative">
-      {/* Subtle dot grid pattern */}
+    <div className="min-h-screen bg-background relative overflow-hidden">
+      {/* Background grid pattern */}
       <div 
-        className="absolute inset-0 -z-10"
+        className="absolute inset-0 -z-20"
         style={{
-          backgroundImage: `radial-gradient(circle at 1px 1px, rgb(0 0 0 / 0.05) 1px, transparent 0)`,
-          backgroundSize: '24px 24px',
+          backgroundImage: `
+            linear-gradient(to right, rgb(0 0 0 / 0.03) 1px, transparent 1px),
+            linear-gradient(to bottom, rgb(0 0 0 / 0.03) 1px, transparent 1px)
+          `,
+          backgroundSize: '40px 40px',
         }}
       />
-      {/* Gradient overlay */}
-      <div className="absolute inset-0 -z-10 bg-gradient-to-b from-transparent via-transparent to-muted/30" />
+      {/* Gradient orbs */}
+      <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-primary/5 rounded-full blur-3xl -z-10" />
+      <div className="absolute top-1/3 right-0 w-[500px] h-[500px] bg-blue-500/5 rounded-full blur-3xl -z-10" />
+      <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-green-500/5 rounded-full blur-3xl -z-10" />
       {/* Header */}
       <header className="border-b bg-background/80 backdrop-blur-sm sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
@@ -86,7 +91,9 @@ export default function Home() {
       </section>
 
       {/* Pricing */}
-      <section className="container mx-auto px-4 py-16">
+      <section className="relative py-16">
+        <div className="absolute inset-0 bg-gradient-to-b from-muted/30 via-muted/50 to-muted/30 -z-10" />
+        <div className="container mx-auto px-4">
         <h2 className="text-3xl font-bold text-center mb-4">Choose Your Plan</h2>
         <p className="text-muted-foreground text-center mb-12 max-w-xl mx-auto">
           All plans include a fully configured ClawdBot instance with Cloudflare Tunnel for secure remote access.
@@ -97,6 +104,7 @@ export default function Home() {
             <PricingCard key={plan.id} plan={plan} />
           ))}
         </div>
+        </div>
       </section>
 
       {/* FAQ */}
@@ -104,7 +112,7 @@ export default function Home() {
         <h2 className="text-3xl font-bold text-center mb-12">Frequently Asked Questions</h2>
         
         <div className="max-w-2xl mx-auto space-y-6">
-          <div className="border rounded-lg p-6">
+          <div className="border rounded-lg p-6 bg-background/50 backdrop-blur-sm hover:border-primary/30 transition-colors">
             <h3 className="font-semibold mb-2">What is ClawdBot?</h3>
             <p className="text-muted-foreground text-sm">
               ClawdBot is an{" "}
@@ -122,7 +130,7 @@ export default function Home() {
             </p>
           </div>
           
-          <div className="border rounded-lg p-6">
+          <div className="border rounded-lg p-6 bg-background/50 backdrop-blur-sm hover:border-primary/30 transition-colors">
             <h3 className="font-semibold mb-2">Why do I need a hosted version?</h3>
             <p className="text-muted-foreground text-sm">
               ClawdBot needs to run 24/7 to be truly useful. With our hosted version, 
@@ -131,7 +139,7 @@ export default function Home() {
             </p>
           </div>
           
-          <div className="border rounded-lg p-6">
+          <div className="border rounded-lg p-6 bg-background/50 backdrop-blur-sm hover:border-primary/30 transition-colors">
             <h3 className="font-semibold mb-2">Why choose macOS over Linux?</h3>
             <p className="text-muted-foreground text-sm">
               macOS plans support iCloud Desktop sync (your files are always available) 
@@ -140,7 +148,7 @@ export default function Home() {
             </p>
           </div>
           
-          <div className="border rounded-lg p-6">
+          <div className="border rounded-lg p-6 bg-background/50 backdrop-blur-sm hover:border-primary/30 transition-colors">
             <h3 className="font-semibold mb-2">How long does setup take?</h3>
             <p className="text-muted-foreground text-sm">
               After payment, we provision your instance and configure ClawdBot. 
@@ -148,7 +156,7 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="border rounded-lg p-6">
+          <div className="border rounded-lg p-6 bg-background/50 backdrop-blur-sm hover:border-primary/30 transition-colors">
             <h3 className="font-semibold mb-2">Is this project open source?</h3>
             <p className="text-muted-foreground text-sm">
               Yes! ClawdBot Hosting is fully open source. You can view the code, contribute, 
