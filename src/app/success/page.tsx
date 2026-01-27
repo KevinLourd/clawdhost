@@ -78,7 +78,13 @@ export default function SuccessPage() {
 
           <div className="pt-4">
             <p className="text-sm text-muted-foreground mb-4">
-              Questions? Reply to the confirmation email or contact us.
+              Questions? Contact us at{" "}
+              <a 
+                href="mailto:support@clawdbot.day" 
+                className="text-primary hover:underline"
+              >
+                support@clawdbot.day
+              </a>
             </p>
             <Link 
               href="/"
