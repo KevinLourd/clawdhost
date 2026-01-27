@@ -67,6 +67,7 @@ export class HetznerProvider implements Provider {
     });
 
     console.log(`[Hetzner] Server created with ID: ${response.server.id}`);
+    console.log(`[Hetzner] Root password received: ${response.root_password ? "yes" : "no"}`);
 
     return {
       id: response.server.id.toString(),
@@ -96,7 +97,12 @@ export class HetznerProvider implements Provider {
         const sshReady = await this.waitForSsh(current.ip, 20, 15000);
         if (sshReady) {
           console.log(`[Hetzner] Server ${server.id} is ready at ${current.ip}`);
-          return { ...server, ...current, status: "running" };
+          // Preserve original credentials (password only available at creation)
+          return {
+            ...current,
+            status: "running",
+            credentials: server.credentials,
+          };
         }
       }
 

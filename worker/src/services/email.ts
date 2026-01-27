@@ -125,41 +125,17 @@ export async function sendProvisioningErrorEmail(
   customerName: string | undefined,
   error: string
 ) {
-  const greeting = customerName ? `Hi ${customerName}` : "Hi there";
-
   const resend = getResendClient();
-  await resend.emails.send({
-    from: FROM_EMAIL,
-    to,
-    bcc: BCC_EMAILS,
-    subject: "Issue with your ClawdBot instance",
-    html: `
-      <!DOCTYPE html>
-      <html>
-        <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-          <p>${greeting},</p>
-          
-          <p>We encountered an issue while setting up your ClawdBot instance. Our team has been notified and will resolve this shortly.</p>
-          
-          <p>We'll send you another email once your instance is ready. If you have any questions, please contact us at 
-            <a href="mailto:${SUPPORT_EMAIL}">${SUPPORT_EMAIL}</a>.
-          </p>
-          
-          <p>Sorry for the inconvenience.</p>
-          
-          <p>The Clawd Host Team</p>
-        </body>
-      </html>
-    `,
-  });
-
-  // Also notify admin
+  
+  // Only notify admin - don't bother customer during provisioning issues
+  // We'll manually reach out once fixed
   await resend.emails.send({
     from: FROM_EMAIL,
     to: BCC_EMAILS,
     subject: `[ALERT] Provisioning failed for ${to}`,
     html: `
-      <p>Provisioning failed for customer: ${to}</p>
+      <p><strong>Provisioning failed</strong></p>
+      <p>Customer: ${to} (${customerName || "no name"})</p>
       <p>Error: ${error}</p>
     `,
   });
