@@ -49,35 +49,36 @@ export default function Home() {
       <section className="container mx-auto px-4 py-16 md:py-24 text-center">
         <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 rounded-full px-4 py-1.5 mb-6">
           <span className="text-lg">🦞</span>
-          <span className="text-sm font-medium">The easiest way to host ClawdBot</span>
+          <span className="text-sm font-medium">Hébergement ClawdBot clé en main</span>
         </div>
         <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-6">
-          Your ClawdBot Instance,
+          Votre ClawdBot,
           <br />
-          <span className="text-primary">Running 24/7</span>
+          <span className="text-primary">prêt en 5 minutes</span>
         </h1>
         <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
-          Skip the VPS setup. We host <a href="https://github.com/clawdbot/clawdbot" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">ClawdBot</a> for you on dedicated Linux or macOS servers. 
-          Pre-configured, always online, fully managed.
+          Pas besoin de créer un compte AWS. Pas besoin d&apos;ouvrir un terminal.
+          <br className="hidden md:block" />
+          On héberge <a href="https://github.com/clawdbot/clawdbot" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">ClawdBot</a> pour vous, tout se gère depuis votre navigateur.
         </p>
-        <div className="flex items-center justify-center gap-4 text-sm text-muted-foreground">
+        <div className="flex flex-wrap items-center justify-center gap-4 text-sm text-muted-foreground">
           <div className="flex items-center gap-1">
             <svg className="h-4 w-4 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
-            <span>No setup required</span>
+            <span>Setup instantané</span>
           </div>
           <div className="flex items-center gap-1">
             <svg className="h-4 w-4 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
-            <span>24/7 availability</span>
+            <span>100% web</span>
           </div>
           <div className="flex items-center gap-1">
             <svg className="h-4 w-4 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
-            <span>Fully managed</span>
+            <span>Disponible 24/7</span>
           </div>
         </div>
       </section>
@@ -86,9 +87,9 @@ export default function Home() {
       <section className="relative py-16">
         <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-primary/10 to-primary/5 -z-10" />
         <div className="container mx-auto px-4">
-        <h2 className="text-3xl font-bold text-center mb-4">Choose Your Plan</h2>
+        <h2 className="text-3xl font-bold text-center mb-4">Choisissez votre formule</h2>
         <p className="text-muted-foreground text-center mb-12 max-w-xl mx-auto">
-          All plans include a fully configured ClawdBot instance with Cloudflare Tunnel for secure remote access.
+          Tous les plans incluent ClawdBot prêt à l'emploi, accessible depuis votre navigateur.
         </p>
         
         <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
@@ -101,11 +102,11 @@ export default function Home() {
 
       {/* FAQ */}
       <section className="container mx-auto px-4 py-16">
-        <h2 className="text-3xl font-bold text-center mb-12">Frequently Asked Questions</h2>
+        <h2 className="text-3xl font-bold text-center mb-12">Questions fréquentes</h2>
         
         <div className="max-w-2xl mx-auto space-y-6">
           <div className="border rounded-lg p-6 bg-background/80 backdrop-blur-sm hover:border-primary/30 transition-colors">
-            <h3 className="font-semibold mb-2">What is ClawdBot?</h3>
+            <h3 className="font-semibold mb-2">C&apos;est quoi ClawdBot ?</h3>
             <p className="text-muted-foreground text-sm">
               <a 
                 href="https://github.com/clawdbot/clawdbot" 
@@ -115,58 +116,58 @@ export default function Home() {
               >
                 ClawdBot
               </a>
-              {" "}is an open-source personal AI assistant created by @steipete that runs on your computer. 
-              It can manage your emails, calendar, browse the web, control apps, and more — 
-              all through WhatsApp, Telegram, or Discord.
+              {" "}est un assistant IA personnel open-source. Il peut gérer vos emails, 
+              naviguer sur le web, automatiser des tâches — le tout via WhatsApp, Telegram 
+              ou Discord.
             </p>
           </div>
           
           <div className="border rounded-lg p-6 bg-background/80 backdrop-blur-sm hover:border-primary/30 transition-colors">
-            <h3 className="font-semibold mb-2">Why use Clawd Host instead of self-hosting?</h3>
+            <h3 className="font-semibold mb-2">Pourquoi utiliser Clawd Host ?</h3>
             <p className="text-muted-foreground text-sm">
-              ClawdBot needs to run 24/7 to be truly useful. With Clawd Host, 
-              you get a dedicated machine in the cloud that never sleeps — no need to 
-              leave your computer on, configure servers, or manage updates.
+              Pour être vraiment utile, ClawdBot doit tourner 24h/24. Avec Clawd Host, 
+              vous avez votre assistant toujours disponible — pas besoin de laisser votre 
+              ordinateur allumé ou de gérer quoi que ce soit.
             </p>
           </div>
           
           <div className="border rounded-lg p-6 bg-background/80 backdrop-blur-sm hover:border-primary/30 transition-colors">
-            <h3 className="font-semibold mb-2">Why choose macOS over Linux?</h3>
+            <h3 className="font-semibold mb-2">Pourquoi choisir un plan Apple ?</h3>
             <p className="text-muted-foreground text-sm">
-              macOS plans support iCloud Desktop sync (your files are always available) 
-              and iMessage integration. If you use Apple devices, the macOS plan gives 
-              ClawdBot access to your entire ecosystem.
+              Les plans Apple donnent accès à iMessage et vos fichiers iCloud. 
+              Si vous utilisez des appareils Apple, votre ClawdBot aura accès 
+              à tout votre écosystème.
             </p>
           </div>
           
           <div className="border rounded-lg p-6 bg-background/80 backdrop-blur-sm hover:border-primary/30 transition-colors">
-            <h3 className="font-semibold mb-2">How does it work?</h3>
+            <h3 className="font-semibold mb-2">Comment ça marche ?</h3>
             <p className="text-muted-foreground text-sm">
-              After payment, we provision your dedicated instance and configure ClawdBot. 
-              You will receive an email with your access details once your instance is ready.
+              Après le paiement, on prépare tout automatiquement. En quelques minutes, 
+              vous recevez un email avec un lien pour accéder à votre ClawdBot.
             </p>
           </div>
 
           <div className="border rounded-lg p-6 bg-background/80 backdrop-blur-sm hover:border-primary/30 transition-colors">
-            <h3 className="font-semibold mb-2">Is Clawd Host open source?</h3>
+            <h3 className="font-semibold mb-2">C&apos;est open source ?</h3>
             <p className="text-muted-foreground text-sm">
-              Yes! This hosting platform is fully open source. You can view the code on{" "}
+              Oui ! Notre plateforme est 100% open source sur{" "}
               <a 
                 href="https://github.com/KevinLourd/clawdhost" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="text-primary hover:underline"
               >
-                our GitHub repository
+                GitHub
               </a>
-              . We host the original{" "}
+              . On héberge le projet{" "}
               <a 
                 href="https://github.com/clawdbot/clawdbot" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="text-primary hover:underline"
               >
-                ClawdBot open-source project
+                ClawdBot original
               </a>
               .
             </p>
