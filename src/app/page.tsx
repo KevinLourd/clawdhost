@@ -197,6 +197,18 @@ export default function Home() {
               >
                 Support
               </a>
+              <a 
+                href="/privacy" 
+                className="hover:text-foreground transition-colors"
+              >
+                Privacy
+              </a>
+              <a 
+                href="/terms" 
+                className="hover:text-foreground transition-colors"
+              >
+                Terms
+              </a>
             </div>
             <p className="text-sm text-muted-foreground">
               Powered by{" "}
