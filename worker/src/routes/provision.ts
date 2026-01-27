@@ -85,6 +85,10 @@ async function processProvisioning(request: ProvisionRequest) {
 
     console.log(`[Provision] Using provider: ${provider.name}`);
 
+    // Generate server name ONCE to use for both tunnel and server
+    const timestamp = Date.now();
+    const serverName = `${planId}-${timestamp}`;
+
     // Step 1: Create Cloudflare tunnel (if configured)
     let tunnelToken: string | undefined;
     let tunnelHostname: string | undefined;
@@ -94,7 +98,6 @@ async function processProvisioning(request: ProvisionRequest) {
                                  process.env.CLOUDFLARE_ZONE_ID;
 
     if (hasCloudflareConfig) {
-      const serverName = `${planId}-${Date.now()}`;
       console.log(`[Provision] Creating Cloudflare tunnel for ${serverName}...`);
       
       const tunnel = await createTunnel(serverName);
@@ -103,13 +106,14 @@ async function processProvisioning(request: ProvisionRequest) {
       tunnelHostname = tunnel.hostname;
       
       console.log(`[Provision] Tunnel created: ${tunnelHostname}`);
+      console.log(`[Provision] Tunnel token received: ${tunnelToken ? 'yes' : 'no'}`);
     } else {
       console.log(`[Provision] Cloudflare not configured, using direct IP access`);
     }
 
     // Step 2: Create server with tunnel token
     const server = await provider.createServer({
-      name: `clawdhost-${planId}-${Date.now()}`,
+      name: `clawdhost-${serverName}`,
       planId,
       customerEmail,
       customerName,

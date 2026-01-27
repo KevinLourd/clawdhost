@@ -51,9 +51,11 @@ export class HetznerProvider implements Provider {
   name = "hetzner";
 
   async createServer(options: ProvisionOptions): Promise<ServerInfo> {
-    const serverName = `clawdhost-${options.planId}-${Date.now()}`;
+    // Use provided name or generate one
+    const serverName = options.name;
 
     console.log(`[Hetzner] Creating server: ${serverName}`);
+    console.log(`[Hetzner] Tunnel token provided: ${options.tunnelToken ? 'yes' : 'no'}`);
 
     // Cloud-init script to install everything at boot
     const cloudInit = this.generateCloudInit(serverName, options.tunnelToken);

@@ -13,7 +13,7 @@ interface WelcomeEmailParams {
 }
 
 /**
- * Email 1: Welcome - Value proposition reminder
+ * Email 1: Welcome - Mission & Value proposition
  * Sent immediately after purchase
  */
 export async function sendWelcomeEmail({ to, customerName, planName }: WelcomeEmailParams) {
@@ -39,38 +39,38 @@ export async function sendWelcomeEmail({ to, customerName, planName }: WelcomeEm
           
           <p>${greeting},</p>
           
-          <p>Thank you for choosing <strong>Clawd Host</strong> for your AI assistant hosting!</p>
+          <p>Thank you for joining <strong>Clawd Host</strong>!</p>
           
           <div style="background: linear-gradient(135deg, #fce7f3 0%, #ddd6fe 100%); border-radius: 12px; padding: 24px; margin: 24px 0;">
-            <h3 style="margin: 0 0 16px 0; font-size: 18px; color: #7c3aed;">What you're getting with ${planName}:</h3>
-            <ul style="margin: 0; padding-left: 20px; color: #4c1d95;">
-              <li style="margin-bottom: 10px;"><strong>ClawdBot pre-installed</strong> - Your AI assistant ready to connect</li>
-              <li style="margin-bottom: 10px;"><strong>Multi-channel messaging</strong> - WhatsApp, Telegram, Discord & more</li>
-              <li style="margin-bottom: 10px;"><strong>24/7 availability</strong> - Your bot runs continuously</li>
-              <li style="margin-bottom: 10px;"><strong>Full control</strong> - Dedicated instance, no sharing</li>
-              <li style="margin-bottom: 10px;"><strong>Web terminal</strong> - Manage from your browser, no SSH needed</li>
-            </ul>
+            <h3 style="margin: 0 0 16px 0; font-size: 18px; color: #7c3aed;">Your AI, always on, always yours</h3>
+            <p style="margin: 0; color: #4c1d95; font-size: 15px;">
+              We believe everyone should have access to AI assistants that work the way they want, 
+              where they want. That's why we built Clawd Host — to give you a personal AI that 
+              lives in your favorite messaging apps, available 24/7, without the complexity.
+            </p>
           </div>
           
-          <p>You'll be able to connect Claude, GPT, or other AI providers and chat through your favorite messaging apps.</p>
+          <p>With your <strong>${planName}</strong> plan, you'll be chatting with your AI on WhatsApp, Telegram, Discord, or wherever you prefer — just like texting a friend.</p>
           
-          <p style="margin-top: 24px;">
-            Learn more about ClawdBot:
-          </p>
-          <ul style="padding-left: 20px;">
-            <li><a href="https://github.com/anthropics/clawdbot" style="color: #E87C7C;">ClawdBot on GitHub</a> (Open Source)</li>
-            <li><a href="https://docs.clawd.bot" style="color: #E87C7C;">Documentation</a></li>
-          </ul>
+          <p>No apps to install. No accounts to manage. Just your AI, always ready.</p>
+          
+          <div style="background: #f8f9fa; border-radius: 8px; padding: 16px; margin: 24px 0;">
+            <p style="margin: 0; font-size: 14px; color: #555;">
+              <strong>Manage your subscription:</strong><br>
+              <a href="https://billing.stripe.com/p/login/4gw9Ev8MO47y2Ry4gg" style="color: #E87C7C;">Access your billing portal</a> to update payment methods, view invoices, or modify your plan.
+            </p>
+          </div>
           
           <p style="margin-top: 30px;">
-            We're thrilled to have you!<br>
-            The Clawd Host Team
+            We're excited to have you on board!<br>
+            <strong>The Clawd Host Team</strong>
           </p>
           
           <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
           
-          <p style="font-size: 12px; color: #666;">
-            <a href="https://clawdhost.tech" style="color: #666;">clawdhost.tech</a>
+          <p style="font-size: 12px; color: #666; text-align: center;">
+            <a href="https://clawdhost.tech" style="color: #666;">clawdhost.tech</a> · 
+            <a href="mailto:${SUPPORT_EMAIL}" style="color: #666;">Contact support</a>
           </p>
         </body>
       </html>
