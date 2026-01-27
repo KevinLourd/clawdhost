@@ -117,11 +117,15 @@ runcmd:
   - curl -L https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb -o /tmp/cloudflared.deb
   - dpkg -i /tmp/cloudflared.deb
   
-  # Create ttyd systemd service
+  # Stop default ttyd if running and override service
+  - systemctl stop ttyd 2>/dev/null || true
+  - systemctl disable ttyd 2>/dev/null || true
+  
+  # Create our ttyd systemd service (listening on all interfaces)
   - |
-    cat > /etc/systemd/system/ttyd.service << 'EOF'
+    cat > /etc/systemd/system/clawdhost-ttyd.service << 'EOF'
     [Unit]
-    Description=ttyd Web Terminal
+    Description=ClawdHost Web Terminal
     After=network.target
     
     [Service]
@@ -141,8 +145,8 @@ runcmd:
     cat > /etc/systemd/system/cloudflared-tunnel.service << 'EOF'
     [Unit]
     Description=Cloudflare Tunnel for ttyd
-    After=network.target ttyd.service
-    Requires=ttyd.service
+    After=network.target clawdhost-ttyd.service
+    Requires=clawdhost-ttyd.service
     
     [Service]
     Type=simple
@@ -156,8 +160,8 @@ runcmd:
   
   # Enable and start services
   - systemctl daemon-reload
-  - systemctl enable ttyd.service
-  - systemctl start ttyd.service
+  - systemctl enable clawdhost-ttyd.service
+  - systemctl start clawdhost-ttyd.service
   - sleep 3
   - systemctl enable cloudflared-tunnel.service
   - systemctl start cloudflared-tunnel.service
