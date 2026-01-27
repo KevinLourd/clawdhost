@@ -98,9 +98,8 @@ export class HetznerProvider implements Provider {
     const cloudflaredRestartSec = tunnelToken ? "10" : "60";
     
     // ttyd command with optional basic auth - runs startup script instead of bash
-    // -I uses custom index.html with mobile detection
     const ttydAuth = terminalPassword ? `-c clawdbot:${terminalPassword}` : '';
-    const ttydCommand = `/usr/bin/ttyd -p 7681 -W -I /var/www/ttyd/index.html ${ttydAuth} /home/clawdbot/start.sh`;
+    const ttydCommand = `/usr/bin/ttyd -p 7681 -W ${ttydAuth} /home/clawdbot/start.sh`;
 
     return `#cloud-config
 package_update: true
@@ -140,66 +139,6 @@ write_files:
       # Drop to regular shell
       exec bash
 
-  - path: /var/www/ttyd/index.html
-    permissions: '0644'
-    content: |
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>ClawdBot Terminal</title>
-        <link rel="stylesheet" href="css/xterm.css">
-        <link rel="stylesheet" href="css/app.css">
-        <style>
-          .mobile-warning {
-            display: none;
-            min-height: 100vh;
-            background: linear-gradient(135deg, #fdf2f4 0%, #f8f9fa 100%);
-            padding: 40px 20px;
-            text-align: center;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-          }
-          .mobile-warning.show { display: flex; flex-direction: column; align-items: center; justify-content: center; }
-          .mobile-warning img { width: 80px; height: 80px; border-radius: 12px; margin-bottom: 24px; }
-          .mobile-warning h1 { font-size: 24px; color: #E87C7C; margin-bottom: 16px; }
-          .mobile-warning p { color: #555; max-width: 400px; margin-bottom: 24px; line-height: 1.6; }
-          .mobile-warning .icon { font-size: 48px; margin-bottom: 24px; }
-          .mobile-warning a { color: #E87C7C; text-decoration: none; }
-        </style>
-        <script>
-          (function() {
-            var isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-            if (isMobile) {
-              document.addEventListener('DOMContentLoaded', function() {
-                document.getElementById('mobileWarning').classList.add('show');
-                document.getElementById('terminal').style.display = 'none';
-              });
-            }
-          })();
-        </script>
-      </head>
-      <body>
-        <div class="mobile-warning" id="mobileWarning">
-          <img src="https://clawdhost.tech/clawdhost_logo_27kb.jpg" alt="Clawd Host">
-          <div class="icon">💻</div>
-          <h1>Open on Desktop</h1>
-          <p>
-            The ClawdBot terminal requires a keyboard for navigation 
-            (arrow keys, etc.). It is not available on mobile at this time.
-          </p>
-          <p>
-            <strong>Open this link on your computer</strong> to access your ClawdBot.
-          </p>
-          <p style="margin-top: 32px; font-size: 14px;">
-            <a href="mailto:support@clawdhost.tech">Need help?</a>
-          </p>
-        </div>
-        <div id="terminal"></div>
-        <script src="js/app.js"></script>
-      </body>
-      </html>
-
   - path: /etc/systemd/system/clawdhost-ttyd.service
     content: |
       [Unit]
@@ -236,7 +175,6 @@ write_files:
 runcmd:
   - chage -d $(date +%Y-%m-%d) root
   - passwd -u root || true
-  - mkdir -p /var/www/ttyd
   - curl -fsSL https://deb.nodesource.com/setup_22.x | bash -
   - apt-get install -y nodejs
   - useradd -m -s /bin/bash clawdbot
