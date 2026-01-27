@@ -1,6 +1,6 @@
 /**
- * ClawdBot installation service via SSH
- * Installs ClawdBot + ttyd + Cloudflare Tunnel for web terminal access
+ * ClawdBot installation checker
+ * Cloud-init handles the actual installation, this just waits and retrieves the tunnel URL
  */
 
 import { Client } from "ssh2";
@@ -15,11 +15,11 @@ export interface InstallResult {
 function executeCommand(
   conn: Client,
   command: string,
-  timeoutMs = 120000
+  timeoutMs = 60000
 ): Promise<{ stdout: string; stderr: string; code: number }> {
   return new Promise((resolve, reject) => {
     const timeout = setTimeout(() => {
-      reject(new Error(`Command timed out: ${command.slice(0, 50)}...`));
+      reject(new Error(`Command timed out after ${timeoutMs / 1000}s`));
     }, timeoutMs);
 
     conn.exec(command, (err, stream) => {
@@ -76,167 +76,111 @@ export async function installClawdBot(
   customerEmail: string,
   customerName?: string
 ): Promise<InstallResult> {
-  let conn: Client | null = null;
+  console.log(`[Installer] Waiting for cloud-init to complete on ${server.ip}...`);
 
-  try {
-    console.log(`[Installer] Connecting to ${server.ip}...`);
-    conn = await connect(server);
+  // Wait for cloud-init to complete (up to 10 minutes)
+  const maxAttempts = 40;
+  const intervalMs = 15000;
 
-    // Step 1: Update system
-    console.log("[Installer] Updating system packages...");
-    await executeCommand(conn, "apt-get update -y");
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    let conn: Client | null = null;
 
-    // Step 2: Install dependencies
-    console.log("[Installer] Installing dependencies...");
-    await executeCommand(
-      conn,
-      "apt-get install -y curl git build-essential jq"
-    );
+    try {
+      console.log(`[Installer] Checking cloud-init status, attempt ${attempt}/${maxAttempts}`);
+      conn = await connect(server);
 
-    // Step 3: Install Node.js 22
-    console.log("[Installer] Installing Node.js 22...");
-    await executeCommand(
-      conn,
-      "curl -fsSL https://deb.nodesource.com/setup_22.x | bash -"
-    );
-    await executeCommand(conn, "apt-get install -y nodejs");
+      // Check if cloud-init is done (the ready marker file exists)
+      const readyCheck = await executeCommand(conn, "test -f /root/.clawdhost-ready && echo 'ready'");
 
-    // Step 4: Create clawdbot user
-    console.log("[Installer] Creating clawdbot user...");
-    await executeCommand(
-      conn,
-      "id clawdbot || useradd -m -s /bin/bash clawdbot"
-    );
+      if (readyCheck.stdout.trim() === "ready") {
+        console.log("[Installer] Cloud-init completed! Retrieving tunnel URL...");
 
-    // Step 5: Install ClawdBot globally
-    console.log("[Installer] Installing ClawdBot...");
-    await executeCommand(conn, "npm install -g clawdbot@latest", 300000);
+        // Get tunnel URL - try multiple sources
+        let tunnelUrl: string | undefined;
 
-    // Step 6: Install ttyd (web terminal)
-    console.log("[Installer] Installing ttyd...");
-    await executeCommand(conn, "apt-get install -y ttyd");
+        // First, check the saved file
+        const urlFileCheck = await executeCommand(conn, "cat /root/tunnel_url.txt 2>/dev/null");
+        if (urlFileCheck.stdout.trim() && urlFileCheck.stdout.includes("trycloudflare.com")) {
+          tunnelUrl = urlFileCheck.stdout.trim();
+        }
 
-    // Step 7: Install cloudflared
-    console.log("[Installer] Installing cloudflared...");
-    await executeCommand(
-      conn,
-      `curl -L https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb -o /tmp/cloudflared.deb && dpkg -i /tmp/cloudflared.deb`
-    );
+        // If not found, try from cloudflared log
+        if (!tunnelUrl) {
+          const logCheck = await executeCommand(
+            conn,
+            "grep -oE 'https://[a-z0-9-]+\\.trycloudflare\\.com' /var/log/cloudflared.log 2>/dev/null | tail -1"
+          );
+          if (logCheck.stdout.trim()) {
+            tunnelUrl = logCheck.stdout.trim();
+          }
+        }
 
-    // Step 8: Create ttyd systemd service (runs as clawdbot user)
-    console.log("[Installer] Setting up ttyd service...");
-    const ttydService = `[Unit]
-Description=ttyd Web Terminal
-After=network.target
+        // If still not found, wait a bit more and retry
+        if (!tunnelUrl) {
+          console.log("[Installer] Tunnel URL not ready yet, waiting for cloudflared...");
+          await new Promise((r) => setTimeout(r, 15000));
 
-[Service]
-Type=simple
-User=clawdbot
-ExecStart=/usr/bin/ttyd -W -p 7681 /bin/bash -c "cd ~ && exec bash -l"
-Restart=always
-RestartSec=3
+          const retryLog = await executeCommand(
+            conn,
+            "grep -oE 'https://[a-z0-9-]+\\.trycloudflare\\.com' /var/log/cloudflared.log 2>/dev/null | tail -1"
+          );
+          if (retryLog.stdout.trim()) {
+            tunnelUrl = retryLog.stdout.trim();
+          }
+        }
 
-[Install]
-WantedBy=multi-user.target`;
+        if (!tunnelUrl) {
+          // Debug: show service statuses
+          const ttydStatus = await executeCommand(conn, "systemctl is-active ttyd 2>/dev/null");
+          const cfStatus = await executeCommand(conn, "systemctl is-active cloudflared-tunnel 2>/dev/null");
+          const logContent = await executeCommand(conn, "cat /var/log/cloudflared.log 2>/dev/null | tail -30");
 
-    await executeCommand(
-      conn,
-      `cat > /etc/systemd/system/ttyd.service << 'EOFSERVICE'
-${ttydService}
-EOFSERVICE`
-    );
+          console.log(`[Installer] ttyd status: ${ttydStatus.stdout.trim()}`);
+          console.log(`[Installer] cloudflared status: ${cfStatus.stdout.trim()}`);
+          console.log(`[Installer] cloudflared log:\n${logContent.stdout}`);
 
-    await executeCommand(conn, "systemctl daemon-reload");
-    await executeCommand(conn, "systemctl enable ttyd");
-    await executeCommand(conn, "systemctl start ttyd");
+          conn.end();
+          throw new Error("Tunnel URL not found after cloud-init completed");
+        }
 
-    // Step 9: Create cloudflared tunnel service
-    console.log("[Installer] Setting up Cloudflare Tunnel...");
-    const tunnelService = `[Unit]
-Description=Cloudflare Tunnel for ttyd
-After=network.target ttyd.service
-Requires=ttyd.service
+        console.log(`[Installer] Got tunnel URL: ${tunnelUrl}`);
 
-[Service]
-Type=simple
-ExecStart=/usr/bin/cloudflared tunnel --url http://localhost:7681 --logfile /var/log/cloudflared.log
-Restart=always
-RestartSec=5
+        // Save customer info
+        await executeCommand(conn, `echo "${customerEmail}" > /home/clawdbot/.customer_email`);
+        if (customerName) {
+          await executeCommand(conn, `echo "${customerName}" > /home/clawdbot/.customer_name`);
+        }
+        await executeCommand(conn, "chown -R clawdbot:clawdbot /home/clawdbot/.customer_* 2>/dev/null || true");
 
-[Install]
-WantedBy=multi-user.target`;
+        conn.end();
 
-    await executeCommand(
-      conn,
-      `cat > /etc/systemd/system/cloudflared-tunnel.service << 'EOFSERVICE'
-${tunnelService}
-EOFSERVICE`
-    );
-
-    await executeCommand(conn, "systemctl daemon-reload");
-    await executeCommand(conn, "systemctl enable cloudflared-tunnel");
-    await executeCommand(conn, "systemctl start cloudflared-tunnel");
-
-    // Step 10: Wait for tunnel URL to appear in logs
-    console.log("[Installer] Waiting for tunnel URL...");
-    await new Promise((r) => setTimeout(r, 5000)); // Wait for tunnel to start
-
-    let tunnelUrl: string | undefined;
-    for (let i = 0; i < 12; i++) {
-      const logResult = await executeCommand(
-        conn,
-        "grep -o 'https://[a-z0-9-]*\\.trycloudflare\\.com' /var/log/cloudflared.log | tail -1"
-      );
-
-      if (logResult.stdout.trim()) {
-        tunnelUrl = logResult.stdout.trim();
-        console.log(`[Installer] Tunnel URL: ${tunnelUrl}`);
-        break;
+        return { success: true, tunnelUrl };
       }
 
-      console.log(`[Installer] Waiting for tunnel... attempt ${i + 1}/12`);
-      await new Promise((r) => setTimeout(r, 5000));
-    }
+      // Show cloud-init progress
+      const cloudInitStatus = await executeCommand(conn, "cloud-init status 2>/dev/null || echo 'checking'");
+      console.log(`[Installer] Cloud-init status: ${cloudInitStatus.stdout.trim()}`);
 
-    if (!tunnelUrl) {
-      throw new Error("Failed to get Cloudflare Tunnel URL");
-    }
-
-    // Step 11: Save customer info and tunnel URL
-    console.log("[Installer] Saving customer info...");
-    await executeCommand(
-      conn,
-      `echo "${customerEmail}" > /home/clawdbot/.customer_email`
-    );
-    await executeCommand(
-      conn,
-      `echo "${tunnelUrl}" > /home/clawdbot/.tunnel_url`
-    );
-    if (customerName) {
-      await executeCommand(
-        conn,
-        `echo "${customerName}" > /home/clawdbot/.customer_name`
-      );
-    }
-    await executeCommand(
-      conn,
-      "chown clawdbot:clawdbot /home/clawdbot/.customer_* /home/clawdbot/.tunnel_url"
-    );
-
-    console.log("[Installer] Installation complete!");
-    conn.end();
-
-    return { success: true, tunnelUrl };
-  } catch (error) {
-    console.error("[Installer] Error:", error);
-
-    if (conn) {
       conn.end();
+    } catch (error) {
+      // Connection failed - might be password change required or server not ready
+      const errMsg = error instanceof Error ? error.message : "Unknown error";
+      console.log(`[Installer] Connection attempt ${attempt} failed: ${errMsg}`);
+
+      if (conn) {
+        try {
+          conn.end();
+        } catch {
+          // Ignore
+        }
+      }
     }
 
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Unknown error",
-    };
+    await new Promise((r) => setTimeout(r, intervalMs));
   }
+
+  return {
+    success: false,
+    error: `Cloud-init did not complete after ${(maxAttempts * intervalMs) / 60000} minutes`,
+  };
 }
