@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { sendWelcomeEmail, sendProvisioningStartedEmail } from "@/lib/email";
 import { sendPurchaseEvent } from "@/lib/meta";
-import { triggerProvisioning } from "@/lib/provisioning";
+import { triggerProvisioning, triggerDeprovisioning } from "@/lib/provisioning";
 import { plans } from "@/lib/plans";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
@@ -101,11 +101,45 @@ export async function POST(request: NextRequest) {
 
     case "customer.subscription.deleted": {
       const subscription = event.data.object as Stripe.Subscription;
-      // TODO: Handle subscription cancellation (deprovision instance)
-      // 1. Find server by subscription ID in database
-      // 2. Delete server on Hetzner/Scaleway
-      // 3. Notify customer
-      console.log(`Subscription ${subscription.id} was cancelled - TODO: deprovision instance`);
+      
+      console.log(`Subscription ${subscription.id} was cancelled`);
+      
+      // Get instance metadata from subscription
+      const metadata = subscription.metadata;
+      
+      if (metadata?.serverId && metadata?.provider) {
+        // Get customer email for logging
+        let customerEmail = "unknown";
+        if (subscription.customer) {
+          try {
+            const customerId = typeof subscription.customer === "string" 
+              ? subscription.customer 
+              : subscription.customer.id;
+            const customer = await stripe.customers.retrieve(customerId);
+            if (customer && !customer.deleted && "email" in customer) {
+              customerEmail = customer.email || "unknown";
+            }
+          } catch {
+            // Ignore customer fetch errors
+          }
+        }
+        
+        // Trigger deprovisioning
+        try {
+          await triggerDeprovisioning({
+            serverId: metadata.serverId,
+            tunnelId: metadata.tunnelId || undefined,
+            provider: metadata.provider,
+            customerEmail,
+            reason: "subscription_cancelled",
+          });
+          console.log(`Deprovisioning triggered for server ${metadata.serverId}`);
+        } catch (error) {
+          console.error("Failed to trigger deprovisioning:", error);
+        }
+      } else {
+        console.log(`No instance metadata found for subscription ${subscription.id}`);
+      }
       break;
     }
 

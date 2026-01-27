@@ -57,7 +57,7 @@ export async function sendWelcomeEmail({ to, customerName, planName }: WelcomeEm
           <div style="background: #f8f9fa; border-radius: 8px; padding: 16px; margin: 24px 0;">
             <p style="margin: 0; font-size: 14px; color: #555;">
               <strong>Manage your subscription:</strong><br>
-              <a href="https://billing.stripe.com/p/login/4gw9Ev8MO47y2Ry4gg" style="color: #E87C7C;">Access your billing portal</a> to update payment methods, view invoices, or modify your plan.
+              <a href="https://billing.stripe.com/p/login/9B68wR0sO9k54MY6BXd7q00" style="color: #E87C7C;">Access your billing portal</a> to update payment methods, view invoices, or modify your plan.
             </p>
           </div>
           

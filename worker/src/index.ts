@@ -9,6 +9,7 @@
 
 import express from "express";
 import provisionRouter from "./routes/provision";
+import deprovisionRouter from "./routes/deprovision";
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -24,6 +25,7 @@ app.use((req, _res, next) => {
 
 // Routes
 app.use("/provision", provisionRouter);
+app.use("/deprovision", deprovisionRouter);
 
 // Root health check
 app.get("/", (_req, res) => {
@@ -48,7 +50,7 @@ app.listen(PORT, () => {
   `);
 
   // Check required env vars
-  const required = ["HETZNER_API_TOKEN", "RESEND_API_KEY", "WORKER_SECRET"];
+  const required = ["HETZNER_API_TOKEN", "RESEND_API_KEY", "WORKER_SECRET", "STRIPE_SECRET_KEY"];
   const missing = required.filter((key) => !process.env[key]);
 
   if (missing.length > 0) {

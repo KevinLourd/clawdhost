@@ -75,13 +75,13 @@ export async function createTunnel(serverName: string): Promise<TunnelConfig> {
 
   console.log(`[Cloudflare] Tunnel created: ${tunnel.id}`);
 
-  // Step 2: Get tunnel token
-  const tokenResponse = await cfFetch<{ token: string }>(
+  // Step 2: Get tunnel token (API returns the token string directly)
+  const tunnelToken = await cfFetch<string>(
     `/accounts/${accountId}/cfd_tunnel/${tunnel.id}/token`,
     { method: "GET" }
   );
 
-  console.log(`[Cloudflare] Got tunnel token`);
+  console.log(`[Cloudflare] Got tunnel token: ${tunnelToken ? 'yes' : 'no'}`);
 
   // Step 3: Configure tunnel ingress (route hostname to localhost:7681)
   await cfFetch(`/accounts/${accountId}/cfd_tunnel/${tunnel.id}/configurations`, {
@@ -119,7 +119,7 @@ export async function createTunnel(serverName: string): Promise<TunnelConfig> {
 
   return {
     tunnelId: tunnel.id,
-    tunnelToken: tokenResponse.token,
+    tunnelToken: tunnelToken,
     hostname,
   };
 }

@@ -48,3 +48,47 @@ export async function triggerProvisioning(request: ProvisionRequest): Promise<bo
     return false;
   }
 }
+
+interface DeprovisionRequest {
+  serverId: string;
+  tunnelId?: string;
+  provider: string;
+  customerEmail: string;
+  reason?: string;
+}
+
+/**
+ * Trigger deprovisioning via the Railway worker
+ * Deletes server and tunnel when subscription is cancelled
+ */
+export async function triggerDeprovisioning(request: DeprovisionRequest): Promise<boolean> {
+  if (!WORKER_URL || !WORKER_SECRET) {
+    console.error("[Deprovisioning] WORKER_URL or WORKER_SECRET not configured");
+    return false;
+  }
+
+  try {
+    console.log(`[Deprovisioning] Triggering for server ${request.serverId}`);
+
+    const response = await fetch(`${WORKER_URL}/deprovision`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${WORKER_SECRET}`,
+      },
+      body: JSON.stringify(request),
+    });
+
+    if (!response.ok) {
+      const error = await response.text();
+      console.error(`[Deprovisioning] Worker returned error: ${response.status} - ${error}`);
+      return false;
+    }
+
+    console.log(`[Deprovisioning] Successfully triggered for server ${request.serverId}`);
+    return true;
+  } catch (error) {
+    console.error("[Deprovisioning] Failed to call worker:", error);
+    return false;
+  }
+}

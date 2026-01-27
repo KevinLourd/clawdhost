@@ -9,6 +9,7 @@ import { scalewayProvider } from "../providers/scaleway";
 import { installClawdBot } from "../services/installer";
 import { sendCredentialsEmail, sendProvisioningErrorEmail } from "../services/email";
 import { createTunnel, deleteTunnel } from "../services/cloudflare";
+import { saveInstanceToSubscription } from "../services/stripe";
 import {
   trackProvisioningStarted,
   trackServerCreated,
@@ -186,7 +187,23 @@ async function processProvisioning(request: ProvisionRequest) {
       durationMs: Date.now() - startTime,
     });
 
-    // TODO: Save instance info to database for tracking
+    // Save instance info to Stripe subscription metadata
+    if (request.stripeSubscriptionId) {
+      try {
+        await saveInstanceToSubscription(request.stripeSubscriptionId, {
+          serverId: readyServer.id,
+          tunnelId: tunnelId,
+          serverIp: readyServer.ip,
+          provider: provider.name,
+          terminalUrl: terminalUrl,
+          provisionedAt: new Date().toISOString(),
+        });
+        console.log(`[Provision] Saved instance metadata to Stripe subscription`);
+      } catch (error) {
+        console.error(`[Provision] Failed to save metadata to Stripe:`, error);
+        // Don't fail provisioning if metadata save fails
+      }
+    }
   } catch (error) {
     console.error(`[Provision] Failed for ${customerEmail}:`, error);
 
