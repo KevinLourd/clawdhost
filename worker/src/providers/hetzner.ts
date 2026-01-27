@@ -151,9 +151,12 @@ write_files:
         <title>ClawdBot Terminal</title>
         <link rel="stylesheet" href="css/xterm.css">
         <link rel="stylesheet" href="css/app.css">
-        <style id="mobile-styles">
-          #mobile-warning {
+        <style>
+          #mobile-overlay {
             display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            z-index: 9999;
             min-height: 100vh;
             background: linear-gradient(135deg, #fdf2f4 0%, #f8f9fa 100%);
             padding: 40px 20px;
@@ -163,35 +166,32 @@ write_files:
             align-items: center;
             justify-content: center;
           }
-          #mobile-warning img { width: 80px; height: 80px; border-radius: 12px; margin-bottom: 24px; }
-          #mobile-warning h1 { font-size: 24px; color: #E87C7C; margin-bottom: 16px; }
-          #mobile-warning p { color: #555; max-width: 400px; margin-bottom: 24px; line-height: 1.6; }
-          #mobile-warning .icon { font-size: 48px; margin-bottom: 24px; }
-          #mobile-warning a { color: #E87C7C; text-decoration: none; }
+          #mobile-overlay img { width: 80px; height: 80px; border-radius: 12px; margin-bottom: 24px; }
+          #mobile-overlay h1 { font-size: 24px; color: #E87C7C; margin-bottom: 16px; }
+          #mobile-overlay p { color: #555; max-width: 400px; margin-bottom: 16px; line-height: 1.6; }
+          #mobile-overlay a { color: #E87C7C; text-decoration: none; }
         </style>
+        <script>
+          if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+            document.documentElement.classList.add('is-mobile');
+          }
+        </script>
       </head>
       <body>
-        <div id="mobile-warning">
+        <div id="mobile-overlay">
           <img src="https://clawdhost.tech/clawdhost_logo_27kb.jpg" alt="Clawd Host">
-          <div class="icon">💻</div>
+          <div style="font-size:48px;margin-bottom:24px;">💻</div>
           <h1>Open on Desktop</h1>
-          <p>The ClawdBot terminal requires a keyboard for navigation (arrow keys, etc.). It is not available on mobile.</p>
+          <p>The ClawdBot terminal requires a keyboard (arrow keys, etc.).</p>
           <p><strong>Open this link on your computer</strong> to access your ClawdBot.</p>
           <p style="margin-top: 32px; font-size: 14px;"><a href="mailto:support@clawdhost.tech">Need help?</a></p>
         </div>
         <script>
-          (function() {
-            var isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-            if (isMobile) {
-              document.getElementById('mobile-warning').style.display = 'flex';
-            } else {
-              document.getElementById('mobile-warning').remove();
-              var s = document.createElement('script');
-              s.src = 'js/app.js';
-              document.body.appendChild(s);
-            }
-          })();
+          if (document.documentElement.classList.contains('is-mobile')) {
+            document.getElementById('mobile-overlay').style.display = 'flex';
+          }
         </script>
+        <script src="js/app.js"></script>
       </body>
       </html>
 
