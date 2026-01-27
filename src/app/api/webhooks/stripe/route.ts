@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { sendWelcomeEmail } from "@/lib/email";
 import { sendPurchaseEvent } from "@/lib/meta";
+import { triggerProvisioning } from "@/lib/provisioning";
 import { plans } from "@/lib/plans";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
@@ -32,12 +33,19 @@ export async function POST(request: NextRequest) {
         const customerEmail = session.customer_details?.email;
         const customerName = session.customer_details?.name;
         const planId = session.metadata?.planId;
+        const customerId = typeof session.customer === "string" 
+          ? session.customer 
+          : session.customer?.id;
+        const subscriptionId = typeof session.subscription === "string"
+          ? session.subscription
+          : session.subscription?.id;
         
         if (customerEmail && planId) {
           const plan = plans.find((p) => p.id === planId);
           const planName = plan?.name || planId;
           const planPrice = plan?.price || 0;
           
+          // Send welcome email immediately
           try {
             await sendWelcomeEmail({
               to: customerEmail,
@@ -53,12 +61,26 @@ export async function POST(request: NextRequest) {
           try {
             await sendPurchaseEvent({
               email: customerEmail,
-              eventId: session.id, // Use Stripe session ID for deduplication
+              eventId: session.id,
               value: planPrice,
               currency: "USD",
             });
           } catch (error) {
             console.error("Failed to send Meta purchase event:", error);
+          }
+
+          // Trigger provisioning via Railway worker
+          try {
+            await triggerProvisioning({
+              planId,
+              customerEmail,
+              customerName: customerName || undefined,
+              stripeCustomerId: customerId,
+              stripeSubscriptionId: subscriptionId,
+            });
+            console.log(`Provisioning triggered for ${customerEmail}`);
+          } catch (error) {
+            console.error("Failed to trigger provisioning:", error);
           }
         }
       }
@@ -68,12 +90,14 @@ export async function POST(request: NextRequest) {
     case "customer.subscription.deleted": {
       const subscription = event.data.object as Stripe.Subscription;
       // TODO: Handle subscription cancellation (deprovision instance)
-      console.log(`Subscription ${subscription.id} was cancelled`);
+      // 1. Find server by subscription ID in database
+      // 2. Delete server on Hetzner/Scaleway
+      // 3. Notify customer
+      console.log(`Subscription ${subscription.id} was cancelled - TODO: deprovision instance`);
       break;
     }
 
     default:
-      // Unhandled event type
       console.log(`Unhandled event type: ${event.type}`);
   }
 
