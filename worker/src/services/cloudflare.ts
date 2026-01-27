@@ -55,7 +55,9 @@ async function cfFetch<T>(
 export async function createTunnel(serverName: string): Promise<TunnelConfig> {
   const { accountId, zoneId } = getConfig();
   const tunnelName = `clawdhost-${serverName}`;
-  const hostname = `${serverName}.terminal.clawdhost.tech`;
+  // Use first-level subdomain to be covered by Universal SSL
+  // (sub-subdomains like xxx.terminal.clawdhost.tech are NOT covered)
+  const hostname = `terminal-${serverName}.clawdhost.tech`;
 
   console.log(`[Cloudflare] Creating tunnel: ${tunnelName}`);
 
@@ -108,7 +110,7 @@ export async function createTunnel(serverName: string): Promise<TunnelConfig> {
     method: "POST",
     body: JSON.stringify({
       type: "CNAME",
-      name: `${serverName}.terminal`,
+      name: `terminal-${serverName}`,
       content: `${tunnel.id}.cfargotunnel.com`,
       proxied: true,
       ttl: 1, // Auto
