@@ -98,9 +98,18 @@ export class HetznerProvider implements Provider {
     const cloudflaredRestartSec = tunnelToken ? "10" : "60";
     
     // ttyd command with optional basic auth - runs startup script instead of bash
+    // Mobile-friendly options from xterm.js ITerminalOptions
+    const ttydOptions = [
+      '-t fontSize=16',
+      '-t lineHeight=1.2',
+      '-t cursorBlink=true',
+      '-t cursorStyle=bar',
+      '-t disableResizeOverlay=true',
+      '-t titleFixed=ClawdBot',
+    ].join(' ');
     const ttydCommand = terminalPassword
-      ? `/usr/bin/ttyd -p 7681 -W -c clawdbot:${terminalPassword} /home/clawdbot/start.sh`
-      : `/usr/bin/ttyd -p 7681 -W /home/clawdbot/start.sh`;
+      ? `/usr/bin/ttyd -p 7681 -W ${ttydOptions} -c clawdbot:${terminalPassword} /home/clawdbot/start.sh`
+      : `/usr/bin/ttyd -p 7681 -W ${ttydOptions} /home/clawdbot/start.sh`;
 
     return `#cloud-config
 package_update: true
