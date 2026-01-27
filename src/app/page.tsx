@@ -61,7 +61,7 @@ export default function Home() {
           <span className="text-sm font-medium">The easiest way to host ClawdBot</span>
         </div>
         <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-6">
-          Your <a href="https://clawd.bot" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">ClawdBot</a> Instance,
+          Your ClawdBot Instance,
           <br />
           <span className="text-primary">Running 24/7</span>
         </h1>
