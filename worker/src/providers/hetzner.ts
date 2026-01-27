@@ -59,7 +59,7 @@ export class HetznerProvider implements Provider {
       method: "POST",
       body: JSON.stringify({
         name: serverName,
-        server_type: "cx43", // 8 vCPU, 16GB RAM (Gen3)
+        server_type: "cpx31", // 4 vCPU, 8GB RAM (AMD)
         image: "ubuntu-24.04",
         location: "fsn1", // Falkenstein, Germany
         start_after_create: true,
