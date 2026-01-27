@@ -46,8 +46,8 @@ export async function sendWelcomeEmail({ to, customerName, planName }: WelcomeEm
             </ol>
           </div>
           
-          <div style="background: #fff3cd; border: 1px solid #ffc107; border-radius: 8px; padding: 16px; margin: 24px 0;">
-            <p style="margin: 0; font-size: 14px;">
+          <div style="background: #d1fae5; border: 1px solid #10b981; border-radius: 8px; padding: 16px; margin: 24px 0;">
+            <p style="margin: 0; font-size: 14px; color: #065f46;">
               <strong>⏱️ Estimated time:</strong> 2-3 hours
             </p>
           </div>
