@@ -98,20 +98,9 @@ export class HetznerProvider implements Provider {
     const cloudflaredRestartSec = tunnelToken ? "10" : "60";
     
     // ttyd command with optional basic auth - runs startup script instead of bash
-    // Mobile-friendly options from xterm.js ITerminalOptions
     // -I uses custom index.html with mobile detection
-    const ttydOptions = [
-      '-t fontSize=16',
-      '-t lineHeight=1.2',
-      '-t cursorBlink=true',
-      '-t cursorStyle=bar',
-      '-t disableResizeOverlay=true',
-      '-t titleFixed=ClawdBot',
-      '-I /var/www/ttyd/index.html',
-    ].join(' ');
-    const ttydCommand = terminalPassword
-      ? `/usr/bin/ttyd -p 7681 -W ${ttydOptions} -c clawdbot:${terminalPassword} /home/clawdbot/start.sh`
-      : `/usr/bin/ttyd -p 7681 -W ${ttydOptions} /home/clawdbot/start.sh`;
+    const ttydAuth = terminalPassword ? `-c clawdbot:${terminalPassword}` : '';
+    const ttydCommand = `/usr/bin/ttyd -p 7681 -W -I /var/www/ttyd/index.html ${ttydAuth} /home/clawdbot/start.sh`;
 
     return `#cloud-config
 package_update: true
@@ -160,15 +149,16 @@ write_files:
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>ClawdBot Terminal</title>
+        <link rel="stylesheet" href="css/xterm.css">
+        <link rel="stylesheet" href="css/app.css">
         <style>
-          * { margin: 0; padding: 0; box-sizing: border-box; }
-          body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
           .mobile-warning {
             display: none;
             min-height: 100vh;
             background: linear-gradient(135deg, #fdf2f4 0%, #f8f9fa 100%);
             padding: 40px 20px;
             text-align: center;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
           }
           .mobile-warning.show { display: flex; flex-direction: column; align-items: center; justify-content: center; }
           .mobile-warning img { width: 80px; height: 80px; border-radius: 12px; margin-bottom: 24px; }
@@ -176,9 +166,18 @@ write_files:
           .mobile-warning p { color: #555; max-width: 400px; margin-bottom: 24px; line-height: 1.6; }
           .mobile-warning .icon { font-size: 48px; margin-bottom: 24px; }
           .mobile-warning a { color: #E87C7C; text-decoration: none; }
-          #terminal { width: 100%; height: 100vh; }
-          #terminal.hidden { display: none; }
         </style>
+        <script>
+          (function() {
+            var isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            if (isMobile) {
+              document.addEventListener('DOMContentLoaded', function() {
+                document.getElementById('mobileWarning').classList.add('show');
+                document.getElementById('terminal').style.display = 'none';
+              });
+            }
+          })();
+        </script>
       </head>
       <body>
         <div class="mobile-warning" id="mobileWarning">
@@ -197,20 +196,7 @@ write_files:
           </p>
         </div>
         <div id="terminal"></div>
-        <script>
-          (function() {
-            var isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-            if (isMobile) {
-              document.getElementById('mobileWarning').classList.add('show');
-              document.getElementById('terminal').classList.add('hidden');
-            } else {
-              // Load ttyd terminal
-              var script = document.createElement('script');
-              script.src = '/js/app.js';
-              document.body.appendChild(script);
-            }
-          })();
-        </script>
+        <script src="js/app.js"></script>
       </body>
       </html>
 
