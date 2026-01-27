@@ -71,6 +71,32 @@ function connect(server: ServerInfo): Promise<Client> {
   });
 }
 
+async function checkTtydReady(ip: string): Promise<boolean> {
+  const net = await import("net");
+  
+  return new Promise((resolve) => {
+    const socket = new net.Socket();
+    socket.setTimeout(5000);
+
+    socket.on("connect", () => {
+      socket.destroy();
+      resolve(true);
+    });
+
+    socket.on("error", () => {
+      socket.destroy();
+      resolve(false);
+    });
+
+    socket.on("timeout", () => {
+      socket.destroy();
+      resolve(false);
+    });
+
+    socket.connect(7681, ip);
+  });
+}
+
 export async function installClawdBot(
   server: ServerInfo,
   customerEmail: string,
@@ -78,27 +104,32 @@ export async function installClawdBot(
 ): Promise<InstallResult> {
   console.log(`[Installer] Waiting for cloud-init to complete on ${server.ip}...`);
 
-  // Wait for cloud-init to complete (up to 10 minutes)
+  // Wait for ttyd to be ready (indicates cloud-init completed) - up to 10 minutes
   const maxAttempts = 40;
   const intervalMs = 15000;
 
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-    let conn: Client | null = null;
-
-    try {
-      console.log(`[Installer] Checking cloud-init status, attempt ${attempt}/${maxAttempts}`);
-      conn = await connect(server);
-
-      // Check if cloud-init is done (the ready marker file exists)
-      const readyCheck = await executeCommand(conn, "test -f /root/.clawdhost-ready && echo 'ready'");
-
-      if (readyCheck.stdout.trim() === "ready") {
-        console.log("[Installer] Cloud-init completed! Retrieving tunnel URL...");
-
-        // Get tunnel URL - try multiple sources
+    console.log(`[Installer] Checking if ttyd is ready, attempt ${attempt}/${maxAttempts}`);
+    
+    // First, check if ttyd is responding on port 7681
+    const ttydReady = await checkTtydReady(server.ip);
+    
+    if (ttydReady) {
+      console.log("[Installer] ttyd is responding! Cloud-init completed.");
+      
+      // Now SSH to get the tunnel URL
+      let conn: Client | null = null;
+      
+      try {
+        // Wait a bit for cloudflared to establish tunnel
+        await new Promise((r) => setTimeout(r, 10000));
+        
+        conn = await connect(server);
+        
+        // Get tunnel URL
         let tunnelUrl: string | undefined;
 
-        // First, check the saved file
+        // Try from saved file first
         const urlFileCheck = await executeCommand(conn, "cat /root/tunnel_url.txt 2>/dev/null");
         if (urlFileCheck.stdout.trim() && urlFileCheck.stdout.includes("trycloudflare.com")) {
           tunnelUrl = urlFileCheck.stdout.trim();
@@ -106,41 +137,25 @@ export async function installClawdBot(
 
         // If not found, try from cloudflared log
         if (!tunnelUrl) {
-          const logCheck = await executeCommand(
-            conn,
-            "grep -oE 'https://[a-z0-9-]+\\.trycloudflare\\.com' /var/log/cloudflared.log 2>/dev/null | tail -1"
-          );
-          if (logCheck.stdout.trim()) {
-            tunnelUrl = logCheck.stdout.trim();
-          }
-        }
-
-        // If still not found, wait a bit more and retry
-        if (!tunnelUrl) {
-          console.log("[Installer] Tunnel URL not ready yet, waiting for cloudflared...");
-          await new Promise((r) => setTimeout(r, 15000));
-
-          const retryLog = await executeCommand(
-            conn,
-            "grep -oE 'https://[a-z0-9-]+\\.trycloudflare\\.com' /var/log/cloudflared.log 2>/dev/null | tail -1"
-          );
-          if (retryLog.stdout.trim()) {
-            tunnelUrl = retryLog.stdout.trim();
+          for (let i = 0; i < 10; i++) {
+            const logCheck = await executeCommand(
+              conn,
+              "grep -oE 'https://[a-z0-9-]+\\.trycloudflare\\.com' /var/log/cloudflared.log 2>/dev/null | tail -1"
+            );
+            if (logCheck.stdout.trim()) {
+              tunnelUrl = logCheck.stdout.trim();
+              break;
+            }
+            console.log(`[Installer] Waiting for tunnel URL... ${i + 1}/10`);
+            await new Promise((r) => setTimeout(r, 5000));
           }
         }
 
         if (!tunnelUrl) {
-          // Debug: show service statuses
-          const ttydStatus = await executeCommand(conn, "systemctl is-active ttyd 2>/dev/null");
-          const cfStatus = await executeCommand(conn, "systemctl is-active cloudflared-tunnel 2>/dev/null");
           const logContent = await executeCommand(conn, "cat /var/log/cloudflared.log 2>/dev/null | tail -30");
-
-          console.log(`[Installer] ttyd status: ${ttydStatus.stdout.trim()}`);
-          console.log(`[Installer] cloudflared status: ${cfStatus.stdout.trim()}`);
           console.log(`[Installer] cloudflared log:\n${logContent.stdout}`);
-
           conn.end();
-          throw new Error("Tunnel URL not found after cloud-init completed");
+          throw new Error("Tunnel URL not found");
         }
 
         console.log(`[Installer] Got tunnel URL: ${tunnelUrl}`);
@@ -153,27 +168,17 @@ export async function installClawdBot(
         await executeCommand(conn, "chown -R clawdbot:clawdbot /home/clawdbot/.customer_* 2>/dev/null || true");
 
         conn.end();
-
         return { success: true, tunnelUrl };
+        
+      } catch (error) {
+        const errMsg = error instanceof Error ? error.message : "Unknown error";
+        console.log(`[Installer] SSH failed after ttyd ready: ${errMsg}`);
+        if (conn) conn.end();
+        
+        // ttyd is ready but SSH failed - still a partial success, continue trying
       }
-
-      // Show cloud-init progress
-      const cloudInitStatus = await executeCommand(conn, "cloud-init status 2>/dev/null || echo 'checking'");
-      console.log(`[Installer] Cloud-init status: ${cloudInitStatus.stdout.trim()}`);
-
-      conn.end();
-    } catch (error) {
-      // Connection failed - might be password change required or server not ready
-      const errMsg = error instanceof Error ? error.message : "Unknown error";
-      console.log(`[Installer] Connection attempt ${attempt} failed: ${errMsg}`);
-
-      if (conn) {
-        try {
-          conn.end();
-        } catch {
-          // Ignore
-        }
-      }
+    } else {
+      console.log(`[Installer] ttyd not ready yet on port 7681`);
     }
 
     await new Promise((r) => setTimeout(r, intervalMs));

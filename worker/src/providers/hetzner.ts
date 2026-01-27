@@ -99,6 +99,10 @@ packages:
   - ttyd
 
 runcmd:
+  # Disable password expiry requirement (Hetzner forces change on first login)
+  - chage -d $(date +%Y-%m-%d) root
+  - passwd -u root || true
+  
   # Install Node.js 22
   - curl -fsSL https://deb.nodesource.com/setup_22.x | bash -
   - apt-get install -y nodejs
