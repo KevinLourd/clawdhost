@@ -15,19 +15,31 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "ClawdBot Hosting - Your AI Assistant, Hosted 24/7",
-  description: "Get your own ClawdBot instance running 24/7 in the cloud. No setup required.",
+  description: "Get your own ClawdBot instance running 24/7 in the cloud. No setup required. Linux from €29/mo, macOS from €149/mo.",
   metadataBase: new URL("https://clawdbot.day"),
+  keywords: ["ClawdBot", "AI assistant", "cloud hosting", "macOS VPS", "Linux VPS", "WhatsApp bot", "Telegram bot", "iCloud sync"],
+  authors: [{ name: "ClawdBot Hosting" }],
+  creator: "ClawdBot Hosting",
+  publisher: "ClawdBot Hosting",
+  robots: {
+    index: true,
+    follow: true,
+  },
   openGraph: {
     title: "ClawdBot Hosting - Your AI Assistant, Hosted 24/7",
-    description: "Get your own ClawdBot instance running 24/7 in the cloud. No setup required.",
+    description: "Get your own ClawdBot instance running 24/7 in the cloud. No setup required. Linux from €29/mo, macOS from €149/mo.",
     url: "https://clawdbot.day",
     siteName: "ClawdBot Hosting",
     type: "website",
+    locale: "en_US",
   },
   twitter: {
-    card: "summary_large_image",
+    card: "summary",
     title: "ClawdBot Hosting - Your AI Assistant, Hosted 24/7",
     description: "Get your own ClawdBot instance running 24/7 in the cloud. No setup required.",
+  },
+  alternates: {
+    canonical: "https://clawdbot.day",
   },
 };
 
