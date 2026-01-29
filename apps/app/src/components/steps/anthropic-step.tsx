@@ -7,34 +7,55 @@ import { useOnboardingStore } from "@/store/onboarding";
 import { KeyRound, ExternalLink } from "lucide-react";
 
 export function AnthropicStep() {
-  const { anthropicKey, setAnthropicKey, setStep } = useOnboardingStore();
-  const [key, setKey] = useState(anthropicKey);
+  const { setStep } = useOnboardingStore();
+  const [key, setKey] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleContinue = () => {
+  const handleContinue = async () => {
     if (!key.startsWith("sk-ant-")) {
       setError("Invalid API key format. It should start with sk-ant-");
       return;
     }
-    setAnthropicKey(key);
-    setStep("telegram");
+
+    setLoading(true);
+    setError("");
+
+    try {
+      const response = await fetch("/api/onboarding/anthropic", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ anthropicKey: key }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || "Failed to save API key");
+      }
+
+      setStep("telegram");
+    } catch (err) {
+      setError((err as Error).message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="space-y-6">
       <div className="text-center space-y-2">
-        <div className="mx-auto w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center">
-          <KeyRound className="w-6 h-6 text-orange-600" />
+        <div className="mx-auto w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+          <KeyRound className="w-6 h-6 text-primary" />
         </div>
-        <h2 className="text-2xl font-semibold text-slate-900">Anthropic API Key</h2>
-        <p className="text-slate-600">
+        <h2 className="text-2xl font-semibold text-foreground">Anthropic API Key</h2>
+        <p className="text-muted-foreground">
           Your MoltBot will use Claude to power conversations.
         </p>
       </div>
 
       <div className="space-y-4">
         <div>
-          <label htmlFor="api-key" className="block text-sm font-medium text-slate-700 mb-1">
+          <label htmlFor="api-key" className="block text-sm font-medium text-foreground mb-1">
             API Key
           </label>
           <Input
@@ -62,8 +83,8 @@ export function AnthropicStep() {
         </a>
       </div>
 
-      <Button onClick={handleContinue} size="lg" className="w-full" disabled={!key}>
-        Continue
+      <Button onClick={handleContinue} size="lg" className="w-full" disabled={!key || loading}>
+        {loading ? "Saving..." : "Continue"}
       </Button>
     </div>
   );

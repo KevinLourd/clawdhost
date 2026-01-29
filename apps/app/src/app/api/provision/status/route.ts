@@ -1,48 +1,67 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
-import { provisioningStatus } from "../route";
 import { getInstanceById } from "@/lib/db";
 
 export async function GET(request: NextRequest) {
-  const { userId } = await auth();
-  
-  if (!userId) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
-  const { searchParams } = new URL(request.url);
-  const id = searchParams.get("id");
-
-  if (!id) {
-    return NextResponse.json({ error: "Missing id parameter" }, { status: 400 });
-  }
-
-  // Check in-memory status first
-  const memoryStatus = provisioningStatus.get(id);
-  
-  if (memoryStatus) {
-    // Get instance from DB for additional info
-    const instance = await getInstanceById(id);
+  try {
+    const { userId: clerkUserId } = await auth();
     
+    if (!clerkUserId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { searchParams } = new URL(request.url);
+    const instanceId = searchParams.get("id");
+
+    if (!instanceId) {
+      return NextResponse.json({ error: "Missing instance ID" }, { status: 400 });
+    }
+
+    const instance = await getInstanceById(instanceId);
+
+    if (!instance) {
+      return NextResponse.json({ error: "Instance not found" }, { status: 404 });
+    }
+
+    // Map instance status to provisioning status
+    let status: "pending" | "running" | "complete" | "error";
+    let currentStep = "create";
+
+    switch (instance.status) {
+      case "pending":
+        status = "pending";
+        break;
+      case "provisioning":
+        status = "running";
+        currentStep = "create";
+        break;
+      case "configuring":
+        status = "running";
+        currentStep = "install";
+        break;
+      case "ready":
+        status = "complete";
+        currentStep = "complete";
+        break;
+      case "error":
+        status = "error";
+        break;
+      default:
+        status = "pending";
+    }
+
     return NextResponse.json({
-      ...memoryStatus,
-      instanceUrl: instance?.tunnel_url,
-      terminalUrl: instance?.terminal_url,
+      status,
+      currentStep,
+      message: instance.error_message,
+      terminalUrl: instance.terminal_url,
+      instanceUrl: instance.tunnel_url,
     });
+  } catch (error) {
+    console.error("Provision status error:", error);
+    return NextResponse.json(
+      { error: "Failed to get provisioning status" },
+      { status: 500 }
+    );
   }
-
-  // Fallback to DB
-  const instance = await getInstanceById(id);
-  
-  if (!instance) {
-    return NextResponse.json({ error: "Instance not found" }, { status: 404 });
-  }
-
-  return NextResponse.json({
-    status: instance.status,
-    currentStep: instance.status === "ready" ? "complete" : instance.status,
-    instanceUrl: instance.tunnel_url,
-    terminalUrl: instance.terminal_url,
-    message: instance.error_message,
-  });
 }

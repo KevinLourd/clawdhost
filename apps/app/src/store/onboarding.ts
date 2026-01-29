@@ -4,43 +4,41 @@ export type OnboardingStep = "anthropic" | "telegram" | "provisioning" | "comple
 
 interface OnboardingState {
   step: OnboardingStep;
-  anthropicKey: string;
-  telegramBotToken: string;
+  instanceId: string | null;
   provisioningStatus: "idle" | "pending" | "running" | "complete" | "error";
   provisioningMessage: string;
-  instanceUrl: string | null;
   terminalUrl: string | null;
   error: string | null;
+  isLoading: boolean;
 
   setStep: (step: OnboardingStep) => void;
-  setAnthropicKey: (key: string) => void;
-  setTelegramBotToken: (token: string) => void;
+  setInstanceId: (id: string) => void;
   setProvisioningStatus: (status: OnboardingState["provisioningStatus"], message?: string) => void;
-  setInstanceUrls: (instanceUrl: string, terminalUrl: string) => void;
+  setTerminalUrl: (url: string) => void;
   setError: (error: string | null) => void;
+  setLoading: (loading: boolean) => void;
   reset: () => void;
 }
 
 const initialState = {
   step: "anthropic" as OnboardingStep,
-  anthropicKey: "",
-  telegramBotToken: "",
+  instanceId: null as string | null,
   provisioningStatus: "idle" as const,
   provisioningMessage: "",
-  instanceUrl: null,
-  terminalUrl: null,
-  error: null,
+  terminalUrl: null as string | null,
+  error: null as string | null,
+  isLoading: true,
 };
 
 export const useOnboardingStore = create<OnboardingState>((set) => ({
   ...initialState,
 
   setStep: (step) => set({ step }),
-  setAnthropicKey: (anthropicKey) => set({ anthropicKey }),
-  setTelegramBotToken: (telegramBotToken) => set({ telegramBotToken }),
+  setInstanceId: (instanceId) => set({ instanceId }),
   setProvisioningStatus: (provisioningStatus, provisioningMessage = "") =>
     set({ provisioningStatus, provisioningMessage }),
-  setInstanceUrls: (instanceUrl, terminalUrl) => set({ instanceUrl, terminalUrl }),
+  setTerminalUrl: (terminalUrl) => set({ terminalUrl }),
   setError: (error) => set({ error }),
+  setLoading: (isLoading) => set({ isLoading }),
   reset: () => set(initialState),
 }));

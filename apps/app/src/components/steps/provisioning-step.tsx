@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useOnboardingStore } from "@/store/onboarding";
 import { Loader2, CheckCircle2, XCircle, Server } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -14,19 +14,24 @@ const STEPS = [
 
 export function ProvisioningStep() {
   const {
-    anthropicKey,
-    telegramBotToken,
+    instanceId,
     provisioningStatus,
     provisioningMessage,
     setProvisioningStatus,
-    setInstanceUrls,
+    setTerminalUrl,
     setStep,
     setError,
   } = useOnboardingStore();
 
+  const hasStarted = useRef(false);
+
   useEffect(() => {
-    if (provisioningStatus === "idle") {
+    if (provisioningStatus === "idle" && !hasStarted.current) {
+      hasStarted.current = true;
       startProvisioning();
+    } else if (provisioningStatus === "running" && instanceId) {
+      // Resume polling if already running
+      pollStatus(instanceId);
     }
   }, []);
 
@@ -37,10 +42,6 @@ export function ProvisioningStep() {
       const response = await fetch("/api/provision", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          anthropicKey,
-          telegramBotToken,
-        }),
       });
 
       if (!response.ok) {
@@ -48,7 +49,6 @@ export function ProvisioningStep() {
         throw new Error(data.error || "Provisioning failed");
       }
 
-      // Poll for status
       const { provisioningId } = await response.json();
       pollStatus(provisioningId);
     } catch (err) {
@@ -57,15 +57,17 @@ export function ProvisioningStep() {
     }
   };
 
-  const pollStatus = async (provisioningId: string) => {
+  const pollStatus = async (id: string) => {
     const poll = async () => {
       try {
-        const response = await fetch(`/api/provision/status?id=${provisioningId}`);
+        const response = await fetch(`/api/provision/status?id=${id}`);
         const data = await response.json();
 
         if (data.status === "complete") {
           setProvisioningStatus("complete");
-          setInstanceUrls(data.instanceUrl, data.terminalUrl);
+          if (data.terminalUrl) {
+            setTerminalUrl(data.terminalUrl);
+          }
           setStep("complete");
           return;
         }
@@ -91,11 +93,11 @@ export function ProvisioningStep() {
   return (
     <div className="space-y-6">
       <div className="text-center space-y-2">
-        <div className="mx-auto w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
-          <Server className="w-6 h-6 text-green-600" />
+        <div className="mx-auto w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+          <Server className="w-6 h-6 text-primary" />
         </div>
-        <h2 className="text-2xl font-semibold text-slate-900">Setting up your instance</h2>
-        <p className="text-slate-600">
+        <h2 className="text-2xl font-semibold text-foreground">Setting up your instance</h2>
+        <p className="text-muted-foreground">
           This usually takes 2-3 minutes. You can stay on this page.
         </p>
       </div>
@@ -110,18 +112,18 @@ export function ProvisioningStep() {
             <div
               key={step.id}
               className={`flex items-center gap-3 p-3 rounded-lg transition-colors ${
-                isCurrent ? "bg-green-50 border border-green-200" : "bg-slate-50"
+                isCurrent ? "bg-primary/10 border border-primary/20" : "bg-muted"
               }`}
             >
-              {isComplete && <CheckCircle2 className="w-5 h-5 text-green-600" />}
-              {isCurrent && <Loader2 className="w-5 h-5 text-green-600 animate-spin" />}
+              {isComplete && <CheckCircle2 className="w-5 h-5 text-primary" />}
+              {isCurrent && <Loader2 className="w-5 h-5 text-primary animate-spin" />}
               {isError && <XCircle className="w-5 h-5 text-red-600" />}
               {!isComplete && !isCurrent && !isError && (
-                <div className="w-5 h-5 rounded-full border-2 border-slate-300" />
+                <div className="w-5 h-5 rounded-full border-2 border-muted-foreground/30" />
               )}
               <span
                 className={`text-sm ${
-                  isComplete || isCurrent ? "text-slate-900 font-medium" : "text-slate-500"
+                  isComplete || isCurrent ? "text-foreground font-medium" : "text-muted-foreground"
                 }`}
               >
                 {step.label}

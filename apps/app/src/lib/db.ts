@@ -161,3 +161,83 @@ export async function markInstanceReady(instanceId: string): Promise<void> {
     WHERE id = ${instanceId}
   `;
 }
+
+// Onboarding: get or create draft instance for user
+export async function getOrCreateDraftInstance(userId: string, planId: string = "free"): Promise<Instance> {
+  const sql = getDb();
+  
+  // Check for existing pending instance
+  const existing = await sql`
+    SELECT * FROM instances 
+    WHERE user_id = ${userId} AND status = 'pending'
+    ORDER BY created_at DESC 
+    LIMIT 1
+  `;
+  
+  if (existing.length > 0) {
+    return existing[0] as Instance;
+  }
+  
+  // Create new draft instance
+  const created = await sql`
+    INSERT INTO instances (user_id, plan_id, status, moltbot_config)
+    VALUES (${userId}, ${planId}, 'pending', '{}')
+    RETURNING *
+  `;
+  
+  return created[0] as Instance;
+}
+
+// Onboarding: update anthropic key in config
+export async function setAnthropicKey(instanceId: string, anthropicKey: string): Promise<void> {
+  const sql = getDb();
+  
+  await sql`
+    UPDATE instances 
+    SET moltbot_config = COALESCE(moltbot_config, '{}'::jsonb) || jsonb_build_object('auth', jsonb_build_object('anthropicKey', ${anthropicKey})),
+        config_updated_at = NOW()
+    WHERE id = ${instanceId}
+  `;
+}
+
+// Onboarding: update telegram token in config
+export async function setTelegramToken(instanceId: string, telegramBotToken: string): Promise<void> {
+  const sql = getDb();
+  
+  await sql`
+    UPDATE instances 
+    SET moltbot_config = COALESCE(moltbot_config, '{}'::jsonb) || jsonb_build_object('channels', jsonb_build_object('telegram', jsonb_build_object('botToken', ${telegramBotToken}, 'dmPolicy', 'allowlist'))),
+        config_updated_at = NOW()
+    WHERE id = ${instanceId}
+  `;
+}
+
+// Get onboarding step based on config
+export function getOnboardingStep(instance: Instance): "anthropic" | "telegram" | "provisioning" | "complete" {
+  const config = instance.moltbot_config as Record<string, unknown> | null;
+  
+  if (instance.status === "ready") {
+    return "complete";
+  }
+  
+  if (instance.status === "provisioning" || instance.status === "configuring") {
+    return "provisioning";
+  }
+  
+  if (!config) {
+    return "anthropic";
+  }
+  
+  const auth = config.auth as Record<string, unknown> | undefined;
+  const channels = config.channels as Record<string, unknown> | undefined;
+  
+  if (!auth?.anthropicKey) {
+    return "anthropic";
+  }
+  
+  if (!channels?.telegram) {
+    return "telegram";
+  }
+  
+  return "provisioning";
+}

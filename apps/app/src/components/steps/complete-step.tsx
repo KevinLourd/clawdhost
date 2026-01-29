@@ -1,14 +1,10 @@
 "use client";
 
 import { useOnboardingStore } from "@/store/onboarding";
-import { Button } from "@/components/ui/button";
 import { CheckCircle2, ExternalLink, MessageCircle, Terminal } from "lucide-react";
 
 export function CompleteStep() {
-  const { instanceUrl, terminalUrl, telegramBotToken } = useOnboardingStore();
-
-  // Extract bot username from token for Telegram link (first part before :)
-  const botId = telegramBotToken.split(":")[0];
+  const { terminalUrl } = useOnboardingStore();
 
   return (
     <div className="space-y-6">
@@ -16,40 +12,34 @@ export function CompleteStep() {
         <div className="mx-auto w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
           <CheckCircle2 className="w-6 h-6 text-green-600" />
         </div>
-        <h2 className="text-2xl font-semibold text-slate-900">You&apos;re all set!</h2>
-        <p className="text-slate-600">
-          Your MoltBot instance is ready. Start chatting with your AI assistant.
+        <h2 className="text-2xl font-semibold text-foreground">You&apos;re all set!</h2>
+        <p className="text-muted-foreground">
+          Your MoltBot instance is ready. Check your email for access details.
         </p>
       </div>
 
       <div className="space-y-3">
-        <a
-          href={`https://t.me/`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center gap-3 p-4 rounded-lg bg-blue-50 border border-blue-200 hover:bg-blue-100 transition-colors"
-        >
-          <MessageCircle className="w-5 h-5 text-blue-600" />
+        <div className="flex items-center gap-3 p-4 rounded-lg bg-primary/5 border border-primary/20">
+          <MessageCircle className="w-5 h-5 text-primary" />
           <div className="flex-1">
-            <p className="font-medium text-slate-900">Open Telegram Bot</p>
-            <p className="text-sm text-slate-600">Start chatting with your assistant</p>
+            <p className="font-medium text-foreground">Open your Telegram bot</p>
+            <p className="text-sm text-muted-foreground">Start chatting with your AI assistant</p>
           </div>
-          <ExternalLink className="w-4 h-4 text-slate-400" />
-        </a>
+        </div>
 
         {terminalUrl && (
           <a
             href={terminalUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-3 p-4 rounded-lg bg-slate-50 border border-slate-200 hover:bg-slate-100 transition-colors"
+            className="flex items-center gap-3 p-4 rounded-lg bg-muted border border-border hover:bg-accent transition-colors"
           >
-            <Terminal className="w-5 h-5 text-slate-600" />
+            <Terminal className="w-5 h-5 text-muted-foreground" />
             <div className="flex-1">
-              <p className="font-medium text-slate-900">Web Terminal</p>
-              <p className="text-sm text-slate-600">Advanced configuration and logs</p>
+              <p className="font-medium text-foreground">Web Terminal</p>
+              <p className="text-sm text-muted-foreground">Advanced configuration and logs</p>
             </div>
-            <ExternalLink className="w-4 h-4 text-slate-400" />
+            <ExternalLink className="w-4 h-4 text-muted-foreground" />
           </a>
         )}
       </div>
@@ -64,7 +54,7 @@ export function CompleteStep() {
         </ul>
       </div>
 
-      <div className="text-center text-sm text-slate-500">
+      <div className="text-center text-sm text-muted-foreground">
         <p>Need help? Check out the <a href="https://docs.clawd.bot" className="text-primary hover:underline">MoltBot documentation</a></p>
       </div>
     </div>

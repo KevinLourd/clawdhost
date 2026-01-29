@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { useUser } from "@clerk/nextjs";
 import { useOnboardingStore } from "@/store/onboarding";
 import {
@@ -19,9 +20,34 @@ const STEP_LABELS = {
 
 export default function SetupPage() {
   const { user, isLoaded } = useUser();
-  const { step } = useOnboardingStore();
+  const { step, isLoading, setStep, setInstanceId, setTerminalUrl, setLoading } = useOnboardingStore();
 
-  if (!isLoaded) {
+  // Fetch onboarding status on mount
+  useEffect(() => {
+    async function fetchStatus() {
+      try {
+        const response = await fetch("/api/onboarding/status");
+        if (response.ok) {
+          const data = await response.json();
+          setStep(data.step);
+          setInstanceId(data.instanceId);
+          if (data.terminalUrl) {
+            setTerminalUrl(data.terminalUrl);
+          }
+        }
+      } catch (error) {
+        console.error("Failed to fetch onboarding status:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    if (isLoaded) {
+      fetchStatus();
+    }
+  }, [isLoaded, setStep, setInstanceId, setTerminalUrl, setLoading]);
+
+  if (!isLoaded || isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
