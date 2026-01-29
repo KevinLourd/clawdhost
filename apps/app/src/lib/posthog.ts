@@ -1,14 +1,14 @@
 import posthog from "posthog-js";
 
-const POSTHOG_KEY = process.env.NEXT_PUBLIC_POSTHOG_KEY;
+const POSTHOG_API_KEY = process.env.NEXT_PUBLIC_POSTHOG_API_KEY;
 const POSTHOG_HOST = process.env.NEXT_PUBLIC_POSTHOG_HOST || "https://eu.i.posthog.com";
 
 export function initPostHog() {
   if (typeof window === "undefined") return;
-  if (!POSTHOG_KEY) return; // Skip if no key configured
+  if (!POSTHOG_API_KEY) return; // Skip if no key configured
   if (posthog.__loaded) return; // Prevent double init
   
-  posthog.init(POSTHOG_KEY, {
+  posthog.init(POSTHOG_API_KEY, {
     api_host: POSTHOG_HOST,
     
     // User identification
