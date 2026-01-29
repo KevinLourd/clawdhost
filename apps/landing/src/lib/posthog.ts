@@ -40,9 +40,6 @@ export function initPostHog() {
     mask_all_text: false,
     mask_all_element_attributes: false,
     
-    // Scroll depth tracking
-    scroll_depth: true,
-    
     // Debug in development
     debug: process.env.NODE_ENV === "development",
   });
