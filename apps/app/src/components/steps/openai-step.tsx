@@ -121,15 +121,20 @@ export function OpenAIStep() {
         </a>
       </div>
 
-      {key ? (
-        <Button onClick={handleContinue} size="lg" className="w-full" disabled={loading}>
-          {loading ? "Saving..." : "Continue"}
+      <div className="flex gap-3">
+        <Button variant="outline" onClick={() => setStep("gemini")} size="lg" className="flex-1">
+          Previous
         </Button>
-      ) : (
-        <Button variant="outline" onClick={handleSkip} size="lg" className="w-full">
-          Skip
-        </Button>
-      )}
+        {key ? (
+          <Button onClick={handleContinue} size="lg" className="flex-1" disabled={loading}>
+            {loading ? "Saving..." : "Continue"}
+          </Button>
+        ) : (
+          <Button variant="outline" onClick={handleSkip} size="lg" className="flex-1">
+            Skip
+          </Button>
+        )}
+      </div>
     </div>
   );
 }
