@@ -120,6 +120,10 @@ async function sendCallback(
   }
 
   try {
+    console.log(`[Provision] Sending callback to: ${request.callbackUrl}`);
+    console.log(`[Provision] Callback secret first 10 chars: ${request.callbackSecret?.substring(0, 10)}`);
+    console.log(`[Provision] Callback secret last 5 chars: ${request.callbackSecret?.slice(-5)}`);
+    
     const response = await fetch(request.callbackUrl, {
       method: "POST",
       headers: {
@@ -134,7 +138,8 @@ async function sendCallback(
     });
 
     if (!response.ok) {
-      console.error(`[Provision] Callback failed: ${response.status}`);
+      const responseText = await response.text().catch(() => "");
+      console.error(`[Provision] Callback failed: ${response.status} - ${responseText}`);
     } else {
       console.log(`[Provision] Callback sent: ${status}`);
     }
