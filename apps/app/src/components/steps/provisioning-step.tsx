@@ -7,8 +7,8 @@ import { Button } from "@/components/ui/button";
 
 const STEPS = [
   { id: "create", label: "Preparing your assistant" },
-  { id: "configure", label: "Setting up your preferences" },
-  { id: "install", label: "Adding superpowers" },
+  { id: "configure", label: "Connecting to Telegram" },
+  { id: "install", label: "Adding skills" },
   { id: "start", label: "Waking up your bot" },
 ];
 

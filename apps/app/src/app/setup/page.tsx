@@ -133,7 +133,7 @@ export default function SetupPage() {
       {/* Footer */}
       <footer className="border-t bg-background/80">
         <div className="max-w-2xl mx-auto px-4 py-4 text-center text-sm text-muted-foreground">
-          Powered by <a href="https://molt.bot" className="text-primary hover:underline">MoltBot</a>
+          Need help? <a href="mailto:support@clawdhost.tech" className="text-primary hover:underline">Contact support</a>
         </div>
       </footer>
     </div>
