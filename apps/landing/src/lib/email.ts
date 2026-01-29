@@ -11,6 +11,76 @@ const FROM_EMAIL = "Clawd Host <noreply@clawdhost.tech>";
 const SUPPORT_EMAIL = "support@clawdhost.tech";
 const BCC_EMAILS = ["kevin@clawdhost.tech", "kevin.lourd@gmail.com"];
 
+interface WaitlistEmailParams {
+  to: string;
+  planName: string;
+}
+
+/**
+ * Waitlist confirmation email
+ */
+export async function sendWaitlistEmail({ to, planName }: WaitlistEmailParams) {
+  const resend = getResend();
+
+  const { data, error } = await resend.emails.send({
+    from: FROM_EMAIL,
+    to,
+    bcc: BCC_EMAILS,
+    subject: `You're on the ${planName} waitlist!`,
+    html: `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        </head>
+        <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <div style="text-align: center; margin-bottom: 30px;">
+            <img src="https://clawdhost.tech/clawdhost_logo_27kb.jpg" alt="Clawd Host" style="width: 80px; height: 80px; border-radius: 12px;">
+            <h1 style="margin: 16px 0 0 0; font-size: 24px; color: #E87C7C;">You're on the list!</h1>
+          </div>
+          
+          <p>Thanks for your interest in Clawd Host!</p>
+          
+          <div style="background: linear-gradient(135deg, #fce7f3 0%, #ddd6fe 100%); border-radius: 12px; padding: 24px; margin: 24px 0; text-align: center;">
+            <h3 style="margin: 0 0 8px 0; font-size: 18px; color: #7c3aed;">${planName} Plan</h3>
+            <p style="margin: 0; color: #4c1d95; font-size: 15px;">
+              We'll notify you as soon as this plan is available.
+            </p>
+          </div>
+          
+          <p>In the meantime, you can start with our <strong>Free</strong> plan — it includes everything you need to get started with your personal AI assistant.</p>
+          
+          <div style="text-align: center; margin: 24px 0;">
+            <a href="https://app.clawdhost.tech" style="display: inline-block; background: #E87C7C; color: white; text-decoration: none; padding: 12px 24px; border-radius: 8px; font-weight: 600;">
+              Get Started Free
+            </a>
+          </div>
+          
+          <p style="margin-top: 30px;">
+            See you soon!<br>
+            <strong>The Clawd Host Team</strong>
+          </p>
+          
+          <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
+          
+          <p style="font-size: 12px; color: #666; text-align: center;">
+            <a href="https://clawdhost.tech" style="color: #666;">clawdhost.tech</a> · 
+            <a href="mailto:${SUPPORT_EMAIL}" style="color: #666;">Contact support</a>
+          </p>
+        </body>
+      </html>
+    `,
+  });
+
+  if (error) {
+    console.error("Failed to send waitlist email:", error);
+    throw error;
+  }
+
+  return data;
+}
+
 interface WelcomeEmailParams {
   to: string;
   customerName?: string;
