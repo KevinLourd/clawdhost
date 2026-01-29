@@ -35,8 +35,9 @@ export function ProvisioningStep() {
       return;
     }
     
-    // Only start new provisioning if idle and never started
-    if (provisioningStatus === "idle" && !hasStarted.current && !instanceId) {
+    // Start provisioning if idle and never started
+    // (instanceId may already exist from pending instance - that's fine)
+    if (provisioningStatus === "idle" && !hasStarted.current) {
       hasStarted.current = true;
       startProvisioning();
     }

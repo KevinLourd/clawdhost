@@ -77,6 +77,7 @@ export function TelegramUserStep() {
           <Input
             id="telegram-username"
             type="text"
+            name="tg_user_noautofill"
             placeholder="@your_username"
             value={telegramUsername}
             onChange={(e) => {
@@ -84,6 +85,9 @@ export function TelegramUserStep() {
               setError("");
             }}
             autoComplete="off"
+            data-1p-ignore
+            data-lpignore="true"
+            data-form-type="other"
           />
           {error && <p className="text-sm text-red-600 mt-1">{error}</p>}
         </div>
