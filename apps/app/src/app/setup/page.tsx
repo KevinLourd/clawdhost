@@ -20,7 +20,7 @@ const STEP_LABELS = {
 
 export default function SetupPage() {
   const { user, isLoaded } = useUser();
-  const { step, isLoading, setStep, setInstanceId, setTerminalUrl, setLoading } = useOnboardingStore();
+  const { step, isLoading, setStep, setInstanceId, setTerminalUrl, setTelegramBotUsername, setLoading } = useOnboardingStore();
 
   // Fetch onboarding status on mount
   useEffect(() => {
@@ -34,6 +34,9 @@ export default function SetupPage() {
           if (data.terminalUrl) {
             setTerminalUrl(data.terminalUrl);
           }
+          if (data.telegramBotUsername) {
+            setTelegramBotUsername(data.telegramBotUsername);
+          }
         }
       } catch (error) {
         console.error("Failed to fetch onboarding status:", error);
@@ -45,7 +48,7 @@ export default function SetupPage() {
     if (isLoaded) {
       fetchStatus();
     }
-  }, [isLoaded, setStep, setInstanceId, setTerminalUrl, setLoading]);
+  }, [isLoaded, setStep, setInstanceId, setTerminalUrl, setTelegramBotUsername, setLoading]);
 
   if (!isLoaded || isLoading) {
     return (

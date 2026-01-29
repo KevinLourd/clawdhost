@@ -8,6 +8,7 @@ interface OnboardingState {
   provisioningStatus: "idle" | "pending" | "running" | "complete" | "error";
   provisioningMessage: string;
   terminalUrl: string | null;
+  telegramBotUsername: string | null;
   error: string | null;
   isLoading: boolean;
 
@@ -15,6 +16,7 @@ interface OnboardingState {
   setInstanceId: (id: string) => void;
   setProvisioningStatus: (status: OnboardingState["provisioningStatus"], message?: string) => void;
   setTerminalUrl: (url: string) => void;
+  setTelegramBotUsername: (username: string) => void;
   setError: (error: string | null) => void;
   setLoading: (loading: boolean) => void;
   reset: () => void;
@@ -26,6 +28,7 @@ const initialState = {
   provisioningStatus: "idle" as const,
   provisioningMessage: "",
   terminalUrl: null as string | null,
+  telegramBotUsername: null as string | null,
   error: null as string | null,
   isLoading: true,
 };
@@ -38,6 +41,7 @@ export const useOnboardingStore = create<OnboardingState>((set) => ({
   setProvisioningStatus: (provisioningStatus, provisioningMessage = "") =>
     set({ provisioningStatus, provisioningMessage }),
   setTerminalUrl: (terminalUrl) => set({ terminalUrl }),
+  setTelegramBotUsername: (telegramBotUsername) => set({ telegramBotUsername }),
   setError: (error) => set({ error }),
   setLoading: (isLoading) => set({ isLoading }),
   reset: () => set(initialState),

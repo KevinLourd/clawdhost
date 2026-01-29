@@ -4,7 +4,11 @@ import { useOnboardingStore } from "@/store/onboarding";
 import { CheckCircle2, ExternalLink, MessageCircle, Terminal } from "lucide-react";
 
 export function CompleteStep() {
-  const { terminalUrl } = useOnboardingStore();
+  const { terminalUrl, telegramBotUsername } = useOnboardingStore();
+
+  const telegramLink = telegramBotUsername 
+    ? `https://t.me/${telegramBotUsername}` 
+    : null;
 
   return (
     <div className="space-y-6">
@@ -14,18 +18,34 @@ export function CompleteStep() {
         </div>
         <h2 className="text-2xl font-semibold text-foreground">You&apos;re all set!</h2>
         <p className="text-muted-foreground">
-          Your MoltBot instance is ready. Check your email for access details.
+          Your MoltBot is live. Start chatting now.
         </p>
       </div>
 
       <div className="space-y-3">
-        <div className="flex items-center gap-3 p-4 rounded-lg bg-primary/5 border border-primary/20">
-          <MessageCircle className="w-5 h-5 text-primary" />
-          <div className="flex-1">
-            <p className="font-medium text-foreground">Open your Telegram bot</p>
-            <p className="text-sm text-muted-foreground">Start chatting with your AI assistant</p>
+        {telegramLink ? (
+          <a
+            href={telegramLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-3 p-4 rounded-lg bg-primary/5 border border-primary/20 hover:bg-primary/10 transition-colors"
+          >
+            <MessageCircle className="w-5 h-5 text-primary" />
+            <div className="flex-1">
+              <p className="font-medium text-foreground">Open @{telegramBotUsername}</p>
+              <p className="text-sm text-muted-foreground">Start chatting with your AI assistant</p>
+            </div>
+            <ExternalLink className="w-4 h-4 text-muted-foreground" />
+          </a>
+        ) : (
+          <div className="flex items-center gap-3 p-4 rounded-lg bg-primary/5 border border-primary/20">
+            <MessageCircle className="w-5 h-5 text-primary" />
+            <div className="flex-1">
+              <p className="font-medium text-foreground">Open your Telegram bot</p>
+              <p className="text-sm text-muted-foreground">Start chatting with your AI assistant</p>
+            </div>
           </div>
-        </div>
+        )}
 
         {terminalUrl && (
           <a

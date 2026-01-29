@@ -200,13 +200,13 @@ export async function setAnthropicKey(instanceId: string, anthropicKey: string):
   `;
 }
 
-// Onboarding: update telegram token in config
-export async function setTelegramToken(instanceId: string, telegramBotToken: string): Promise<void> {
+// Onboarding: update telegram config (token + username)
+export async function setTelegramConfig(instanceId: string, botToken: string, botUsername: string): Promise<void> {
   const sql = getDb();
   
   await sql`
     UPDATE instances 
-    SET moltbot_config = COALESCE(moltbot_config, '{}'::jsonb) || jsonb_build_object('channels', jsonb_build_object('telegram', jsonb_build_object('botToken', ${telegramBotToken}, 'dmPolicy', 'allowlist'))),
+    SET moltbot_config = COALESCE(moltbot_config, '{}'::jsonb) || jsonb_build_object('channels', jsonb_build_object('telegram', jsonb_build_object('botToken', ${botToken}, 'botUsername', ${botUsername}, 'dmPolicy', 'allowlist'))),
         config_updated_at = NOW()
     WHERE id = ${instanceId}
   `;

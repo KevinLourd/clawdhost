@@ -22,13 +22,15 @@ export async function GET() {
     const config = instance.moltbot_config as Record<string, unknown> | null;
     const auth_config = config?.auth as Record<string, unknown> | undefined;
     const channels = config?.channels as Record<string, unknown> | undefined;
+    const telegram = channels?.telegram as Record<string, unknown> | undefined;
 
     return NextResponse.json({
       step,
       instanceId: instance.id,
       status: instance.status,
       hasAnthropicKey: !!auth_config?.anthropicKey,
-      hasTelegramToken: !!(channels?.telegram as Record<string, unknown>)?.botToken,
+      hasTelegramToken: !!telegram?.botToken,
+      telegramBotUsername: telegram?.botUsername || null,
       terminalUrl: instance.terminal_url,
     });
   } catch (error) {
