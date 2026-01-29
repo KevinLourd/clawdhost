@@ -144,34 +144,36 @@ export async function installClawdBot(
         }
         await executeCommand(conn, "chown -R clawdbot:clawdbot /home/clawdbot/.customer_* 2>/dev/null || true");
         
-        // Write MoltBot config if provided
+        // Write ClawdBot config if provided
         if (moltbotConfig && (moltbotConfig.auth?.anthropicKey || moltbotConfig.channels?.telegram)) {
-          console.log("[Installer] Writing MoltBot config...");
+          console.log("[Installer] Writing ClawdBot config...");
           
-          // Create the config directory
-          await executeCommand(conn, "mkdir -p /home/clawdbot/.clawdbot");
+          // Create the config directory and required subdirs
+          await executeCommand(conn, "mkdir -p /home/clawdbot/.clawdbot/agents/main/sessions /home/clawdbot/.clawdbot/credentials /home/clawdbot/clawd");
           
-          // Build the moltbot.json config
+          // Build the clawdbot.json config
           const config = {
+            gateway: {
+              mode: "local",
+            },
             agents: {
               defaults: {
                 workspace: "~/clawd",
-                model: "claude-sonnet-4-20250514",
               },
             },
             ...(moltbotConfig.channels?.telegram && {
               channels: {
                 telegram: {
                   botToken: moltbotConfig.channels.telegram.botToken,
-                  dmPolicy: moltbotConfig.channels.telegram.dmPolicy || "allowlist",
+                  enabled: true,
                 },
               },
             }),
           };
           
-          // Write config file
+          // Write config file (must be clawdbot.json, not moltbot.json)
           const configJson = JSON.stringify(config, null, 2).replace(/"/g, '\\"');
-          await executeCommand(conn, `echo "${configJson}" > /home/clawdbot/.clawdbot/moltbot.json`);
+          await executeCommand(conn, `echo "${configJson}" > /home/clawdbot/.clawdbot/clawdbot.json`);
           
           // Write Anthropic key to separate file (more secure)
           if (moltbotConfig.auth?.anthropicKey) {
@@ -179,15 +181,41 @@ export async function installClawdBot(
           }
           
           // Set permissions
-          await executeCommand(conn, "chown -R clawdbot:clawdbot /home/clawdbot/.clawdbot");
-          await executeCommand(conn, "chmod 600 /home/clawdbot/.clawdbot/.env 2>/dev/null || true");
+          await executeCommand(conn, "chown -R clawdbot:clawdbot /home/clawdbot/.clawdbot /home/clawdbot/clawd");
+          await executeCommand(conn, "chmod 700 /home/clawdbot/.clawdbot");
+          await executeCommand(conn, "chmod 600 /home/clawdbot/.clawdbot/.env /home/clawdbot/.clawdbot/clawdbot.json 2>/dev/null || true");
           
-          console.log("[Installer] MoltBot config written");
+          console.log("[Installer] ClawdBot config written");
           
-          // Start MoltBot daemon as clawdbot user
-          console.log("[Installer] Starting MoltBot daemon...");
-          await executeCommand(conn, "su - clawdbot -c 'moltbot gateway --daemon' || true", 30000);
-          console.log("[Installer] MoltBot daemon started");
+          // Create systemd service for gateway (systemctl --user doesn't work on headless servers)
+          console.log("[Installer] Creating ClawdBot gateway systemd service...");
+          const serviceContent = `[Unit]
+Description=ClawdBot Gateway
+After=network.target
+
+[Service]
+Type=simple
+User=clawdbot
+Group=clawdbot
+WorkingDirectory=/home/clawdbot
+EnvironmentFile=/home/clawdbot/.clawdbot/.env
+ExecStart=/usr/bin/clawdbot gateway run --allow-unconfigured
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target`;
+          
+          await executeCommand(conn, `cat > /etc/systemd/system/clawdbot-gateway.service << 'SERVICEEOF'
+${serviceContent}
+SERVICEEOF`);
+          
+          // Enable and start the service
+          await executeCommand(conn, "systemctl daemon-reload");
+          await executeCommand(conn, "systemctl enable clawdbot-gateway");
+          await executeCommand(conn, "systemctl start clawdbot-gateway");
+          
+          console.log("[Installer] ClawdBot gateway service started");
         }
 
         conn.end();
