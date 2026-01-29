@@ -55,16 +55,25 @@ export interface Provider {
  * Get the appropriate provider for a plan
  */
 export function getProviderForPlan(planId: string): "hetzner" | "scaleway" {
-  switch (planId) {
+  console.log(`[Provider] getProviderForPlan called with: "${planId}" (type: ${typeof planId})`);
+  
+  // Normalize the planId
+  const normalizedPlanId = planId?.trim()?.toLowerCase();
+  console.log(`[Provider] Normalized planId: "${normalizedPlanId}"`);
+  
+  switch (normalizedPlanId) {
     case "free":
     case "pro":
     case "linux":
+      console.log(`[Provider] Matched Linux plan, using Hetzner`);
       return "hetzner";
     case "apple":
     case "macos-m1":
     case "macos-m4":
+      console.log(`[Provider] Matched Apple plan, using Scaleway`);
       return "scaleway";
     default:
+      console.error(`[Provider] Unknown plan: "${planId}" (normalized: "${normalizedPlanId}")`);
       throw new Error(`Unknown plan: ${planId}`);
   }
 }
