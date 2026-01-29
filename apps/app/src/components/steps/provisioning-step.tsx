@@ -17,6 +17,7 @@ export function ProvisioningStep() {
     instanceId,
     provisioningStatus,
     provisioningMessage,
+    telegramBotUsername,
     setProvisioningStatus,
     setTerminalUrl,
     setStep,
@@ -96,7 +97,9 @@ export function ProvisioningStep() {
         <div className="mx-auto w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
           <Sparkles className="w-6 h-6 text-primary" />
         </div>
-        <h2 className="text-2xl font-semibold text-foreground">Creating your AI assistant</h2>
+        <h2 className="text-2xl font-semibold text-foreground">
+          {telegramBotUsername ? `Creating @${telegramBotUsername}` : "Creating your AI assistant"}
+        </h2>
         <p className="text-muted-foreground">
           Almost there! This takes about 2 minutes.
         </p>

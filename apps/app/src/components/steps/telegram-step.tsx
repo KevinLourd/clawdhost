@@ -7,7 +7,7 @@ import { useOnboardingStore } from "@/store/onboarding";
 import { MessageCircle, ExternalLink, ArrowLeft, CheckCircle2 } from "lucide-react";
 
 export function TelegramStep() {
-  const { setStep } = useOnboardingStore();
+  const { setStep, setTelegramBotUsername } = useOnboardingStore();
   const [token, setToken] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -74,6 +74,8 @@ export function TelegramStep() {
         throw new Error(data.error || "Failed to save bot token");
       }
 
+      // Save bot username to store for later steps
+      setTelegramBotUsername(botName);
       setStep("provisioning");
     } catch (err) {
       setError((err as Error).message);
