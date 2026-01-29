@@ -15,7 +15,7 @@ export function GeminiStep() {
   const handleContinue = async () => {
     // Skip if empty (optional key)
     if (!key) {
-      setStep("telegram");
+      setStep("openai");
       return;
     }
 
@@ -34,7 +34,7 @@ export function GeminiStep() {
         throw new Error(data.error || "Failed to save API key");
       }
 
-      setStep("telegram");
+      setStep("openai");
     } catch (err) {
       setError((err as Error).message);
     } finally {

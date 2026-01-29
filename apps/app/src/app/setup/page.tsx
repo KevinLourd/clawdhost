@@ -18,8 +18,8 @@ import { LogOut } from "lucide-react";
 
 const STEP_LABELS = {
   anthropic: "Claude",
-  openai: "OpenAI",
   gemini: "Gemini",
+  openai: "OpenAI",
   telegram: "Bot",
   "telegram-user": "Access",
   provisioning: "Setup",

@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { trackEvent } from "@/lib/posthog";
 
-export type OnboardingStep = "welcome" | "anthropic" | "openai" | "gemini" | "telegram" | "telegram-user" | "provisioning" | "complete";
+export type OnboardingStep = "welcome" | "anthropic" | "gemini" | "openai" | "telegram" | "telegram-user" | "provisioning" | "complete";
 
 interface OnboardingState {
   step: OnboardingStep;

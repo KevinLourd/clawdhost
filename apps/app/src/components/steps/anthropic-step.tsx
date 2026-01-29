@@ -48,7 +48,7 @@ export function AnthropicStep() {
       }
       // Don't fail if early provisioning fails - user can still continue
 
-      setStep("openai");
+      setStep("gemini");
     } catch (err) {
       setError((err as Error).message);
     } finally {

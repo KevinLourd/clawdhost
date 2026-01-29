@@ -15,7 +15,7 @@ export function OpenAIStep() {
   const handleContinue = async () => {
     // Skip if empty (optional key)
     if (!key) {
-      setStep("gemini");
+      setStep("telegram");
       return;
     }
 
@@ -39,7 +39,7 @@ export function OpenAIStep() {
         throw new Error(data.error || "Failed to save API key");
       }
 
-      setStep("gemini");
+      setStep("telegram");
     } catch (err) {
       setError((err as Error).message);
     } finally {
@@ -73,7 +73,7 @@ export function OpenAIStep() {
           </div>
           <div className="flex items-center gap-2 text-foreground">
             <Image className="w-4 h-4 text-primary" />
-            <span>Image understanding (GPT-4o)</span>
+            <span>Image understanding (GPT-5.2)</span>
           </div>
           <div className="flex items-center gap-2 text-foreground">
             <RefreshCw className="w-4 h-4 text-primary" />

@@ -321,7 +321,7 @@ export async function setTelegramOwner(
 }
 
 // Get onboarding step based on config
-export function getOnboardingStep(instance: Instance): "welcome" | "anthropic" | "openai" | "gemini" | "telegram" | "telegram-user" | "provisioning" | "complete" {
+export function getOnboardingStep(instance: Instance): "welcome" | "anthropic" | "gemini" | "openai" | "telegram" | "telegram-user" | "provisioning" | "complete" {
   const config = instance.moltbot_config as Record<string, unknown> | null;
   
   if (instance.status === "ready") {
@@ -349,14 +349,14 @@ export function getOnboardingStep(instance: Instance): "welcome" | "anthropic" |
     return "anthropic";
   }
   
-  // OpenAI step (optional) - check if user has passed this step
-  if (!config._openaiConfigured) {
-    return "openai";
-  }
-  
   // Gemini step (optional) - check if user has passed this step
   if (!config._geminiConfigured) {
     return "gemini";
+  }
+  
+  // OpenAI step (optional) - check if user has passed this step
+  if (!config._openaiConfigured) {
+    return "openai";
   }
   
   if (!telegram?.botToken) {
