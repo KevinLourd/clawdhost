@@ -28,7 +28,6 @@ export const plans: Plan[] = [
       "Free forever",
     ],
     badge: "Start Here",
-    comingSoon: true,
   },
   {
     id: "pro",

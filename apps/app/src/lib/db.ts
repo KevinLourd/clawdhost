@@ -298,3 +298,41 @@ export async function acceptDisclaimer(instanceId: string): Promise<void> {
     WHERE id = ${instanceId}
   `;
 }
+
+// Update provisioning progress (stored in moltbot_config._provisioning)
+export async function updateProvisioningProgress(
+  instanceId: string,
+  step: string,
+  progress: number
+): Promise<void> {
+  const sql = getDb();
+  
+  const provisioningData = JSON.stringify({
+    _provisioning: {
+      currentStep: step,
+      progress,
+      updatedAt: new Date().toISOString(),
+    }
+  });
+  
+  await sql`
+    UPDATE instances 
+    SET moltbot_config = COALESCE(moltbot_config, '{}'::jsonb) || ${provisioningData}::jsonb
+    WHERE id = ${instanceId}
+  `;
+}
+
+// Get provisioning progress from moltbot_config
+export function getProvisioningProgress(instance: Instance): { step: string; progress: number } | null {
+  const config = instance.moltbot_config as Record<string, unknown> | null;
+  const provisioning = config?._provisioning as { currentStep?: string; progress?: number } | undefined;
+  
+  if (!provisioning?.currentStep) {
+    return null;
+  }
+  
+  return {
+    step: provisioning.currentStep,
+    progress: provisioning.progress || 0,
+  };
+}

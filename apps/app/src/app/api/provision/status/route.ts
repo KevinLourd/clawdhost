@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
-import { getInstanceById } from "@/lib/db";
+import { getInstanceById, getProvisioningProgress } from "@/lib/db";
 
 export async function GET(request: NextRequest) {
   try {
@@ -25,23 +25,29 @@ export async function GET(request: NextRequest) {
 
     // Map instance status to provisioning status
     let status: "pending" | "running" | "complete" | "error";
-    let currentStep = "create";
+    let currentStep = "infrastructure";
+    let progress = 0;
+
+    // Get real-time provisioning progress from moltbot_config
+    const provisioningProgress = getProvisioningProgress(instance);
 
     switch (instance.status) {
       case "pending":
         status = "pending";
         break;
       case "provisioning":
-        status = "running";
-        currentStep = "create";
-        break;
       case "configuring":
         status = "running";
-        currentStep = "install";
+        // Use real progress from callbacks if available
+        if (provisioningProgress) {
+          currentStep = provisioningProgress.step;
+          progress = provisioningProgress.progress;
+        }
         break;
       case "ready":
         status = "complete";
         currentStep = "complete";
+        progress = 100;
         break;
       case "error":
         status = "error";
@@ -53,6 +59,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       status,
       currentStep,
+      progress,
       message: instance.error_message,
       terminalUrl: instance.terminal_url,
       instanceUrl: instance.tunnel_url,

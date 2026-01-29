@@ -2,14 +2,15 @@
 
 import { useEffect, useRef } from "react";
 import { useOnboardingStore } from "@/store/onboarding";
-import { Loader2, CheckCircle2, XCircle, Sparkles } from "lucide-react";
+import { Loader2, CheckCircle2, XCircle, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
+// 4 user-friendly steps with reassuring vocabulary
 const STEPS = [
-  { id: "create", label: "Preparing your assistant" },
-  { id: "configure", label: "Connecting to Telegram" },
-  { id: "install", label: "Adding skills" },
-  { id: "start", label: "Waking up your bot" },
+  { id: "infrastructure", label: "Setting up secure infrastructure" },
+  { id: "server", label: "Preparing your private server" },
+  { id: "installing", label: "Installing your AI assistant" },
+  { id: "connecting", label: "Establishing secure connection" },
 ];
 
 export function ProvisioningStep() {
@@ -44,7 +45,7 @@ export function ProvisioningStep() {
   }, [provisioningStatus, instanceId]);
 
   const startProvisioning = async () => {
-    setProvisioningStatus("running", "create");
+    setProvisioningStatus("running", "infrastructure");
 
     try {
       const response = await fetch("/api/provision", {
@@ -73,9 +74,6 @@ export function ProvisioningStep() {
 
         if (data.status === "complete") {
           setProvisioningStatus("complete");
-          if (data.terminalUrl) {
-            setTerminalUrl(data.terminalUrl);
-          }
           setStep("complete");
           return;
         }
@@ -86,7 +84,8 @@ export function ProvisioningStep() {
           return;
         }
 
-        setProvisioningStatus("running", data.currentStep || "configure");
+        // Use currentStep from the API (infrastructure, server, installing, connecting)
+        setProvisioningStatus("running", data.currentStep || "infrastructure");
         setTimeout(poll, 2000);
       } catch {
         setTimeout(poll, 3000);
@@ -101,14 +100,14 @@ export function ProvisioningStep() {
   return (
     <div className="space-y-4 sm:space-y-6">
       <div className="text-center space-y-2">
-        <div className="mx-auto w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-primary/10 flex items-center justify-center">
-          <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
+        <div className="mx-auto w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-emerald-100 flex items-center justify-center">
+          <Shield className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-600" />
         </div>
         <h2 className="text-xl sm:text-2xl font-semibold text-foreground">
-          {telegramBotUsername ? `Creating @${telegramBotUsername}` : "Creating your AI assistant"}
+          {telegramBotUsername ? `Setting up @${telegramBotUsername}` : "Setting up your AI assistant"}
         </h2>
         <p className="text-sm sm:text-base text-muted-foreground">
-          Almost there! This takes about 2 minutes.
+          Creating your secure, private environment. This takes about 2 minutes.
         </p>
       </div>
 

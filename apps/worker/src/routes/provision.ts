@@ -103,8 +103,10 @@ router.post("/", authMiddleware, async (req: Request, res: Response) => {
 
 async function sendCallback(
   request: ProvisionRequest,
-  status: "ready" | "error",
+  status: "progress" | "ready" | "error",
   data?: {
+    step?: string;
+    progress?: number;
     provider?: string;
     serverId?: string;
     serverIp?: string;
@@ -120,10 +122,6 @@ async function sendCallback(
   }
 
   try {
-    console.log(`[Provision] Sending callback to: ${request.callbackUrl}`);
-    console.log(`[Provision] Callback secret first 10 chars: ${request.callbackSecret?.substring(0, 10)}`);
-    console.log(`[Provision] Callback secret last 5 chars: ${request.callbackSecret?.slice(-5)}`);
-    
     const response = await fetch(request.callbackUrl, {
       method: "POST",
       headers: {
@@ -140,12 +138,17 @@ async function sendCallback(
     if (!response.ok) {
       const responseText = await response.text().catch(() => "");
       console.error(`[Provision] Callback failed: ${response.status} - ${responseText}`);
-    } else {
+    } else if (status !== "progress") {
       console.log(`[Provision] Callback sent: ${status}`);
     }
   } catch (error) {
     console.error("[Provision] Callback error:", error);
   }
+}
+
+// Helper to send progress update
+async function sendProgress(request: ProvisionRequest, step: string, progress: number) {
+  await sendCallback(request, "progress", { step, progress });
 }
 
 async function processProvisioning(request: ProvisionRequest) {
@@ -172,6 +175,9 @@ async function processProvisioning(request: ProvisionRequest) {
     const terminalPassword = generateSecurePassword(16);
     const terminalUsername = "clawdbot";
 
+    // Progress: Step 1 - Infrastructure
+    await sendProgress(request, "infrastructure", 10);
+
     // Step 1: Create Cloudflare tunnel (if configured)
     let tunnelToken: string | undefined;
     let tunnelHostname: string | undefined;
@@ -194,6 +200,8 @@ async function processProvisioning(request: ProvisionRequest) {
       console.log(`[Provision] Cloudflare not configured, using direct IP access`);
     }
 
+    await sendProgress(request, "infrastructure", 25);
+
     // Step 2: Create server with tunnel token and terminal password
     const server = await provider.createServer({
       name: `clawdhost-${serverName}`,
@@ -208,6 +216,9 @@ async function processProvisioning(request: ProvisionRequest) {
     serverId = server.id;
     console.log(`[Provision] Server created: ${server.id} at ${server.ip}`);
 
+    // Progress: Step 2 - Server
+    await sendProgress(request, "server", 35);
+
     // Track server created
     trackServerCreated({
       planId,
@@ -220,6 +231,10 @@ async function processProvisioning(request: ProvisionRequest) {
     const readyServer = await provider.waitForReady(server);
 
     console.log(`[Provision] Server ready: ${readyServer.ip}`);
+    await sendProgress(request, "server", 50);
+
+    // Progress: Step 3 - Installing
+    await sendProgress(request, "installing", 55);
 
     // Step 4: Wait for ClawdBot installation to complete and configure
     const installResult = await installClawdBot(readyServer, customerEmail, customerName, moltbotConfig);
@@ -235,6 +250,10 @@ async function processProvisioning(request: ProvisionRequest) {
 
     console.log(`[Provision] ClawdBot installed on ${readyServer.ip}`);
     console.log(`[Provision] Terminal URL: ${terminalUrl}`);
+    await sendProgress(request, "installing", 75);
+
+    // Progress: Step 4 - Connecting
+    await sendProgress(request, "connecting", 80);
 
     // Step 4b: Wait for tunnel to be accessible (up to 2 minutes)
     if (tunnelHostname) {
@@ -274,6 +293,9 @@ async function processProvisioning(request: ProvisionRequest) {
       tunnelUrl: terminalUrl,
       durationMs: Date.now() - startTime,
     });
+
+    // Progress: Complete
+    await sendProgress(request, "connecting", 95);
 
     // Step 5: Send callback to mark instance as ready
     await sendCallback(request, "ready", {

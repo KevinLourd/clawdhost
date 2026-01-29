@@ -2,12 +2,15 @@ import { NextRequest, NextResponse } from "next/server";
 import { 
   updateInstanceStatus, 
   updateInstanceVps, 
-  markInstanceReady 
+  markInstanceReady,
+  updateProvisioningProgress,
 } from "@/lib/db";
 
 interface CallbackBody {
   instanceId: string;
-  status: "ready" | "error";
+  status: "progress" | "ready" | "error";
+  step?: string;
+  progress?: number;
   error?: string;
   provider?: string;
   serverId?: string;
@@ -45,9 +48,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Missing instanceId or status" }, { status: 400 });
     }
 
-    console.log(`[Callback] Received for instance ${body.instanceId}: ${body.status}`);
+    console.log(`[Callback] Received for instance ${body.instanceId}: ${body.status} (step: ${body.step})`);
 
-    if (body.status === "ready") {
+    if (body.status === "progress" && body.step) {
+      // Update provisioning progress
+      await updateProvisioningProgress(body.instanceId, body.step, body.progress || 0);
+      console.log(`[Callback] Instance ${body.instanceId} progress: ${body.step} (${body.progress}%)`);
+    } else if (body.status === "ready") {
       // Update VPS info if provided
       if (body.provider && body.serverId && body.serverIp) {
         await updateInstanceVps(
