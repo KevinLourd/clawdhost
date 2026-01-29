@@ -111,7 +111,8 @@ async function startProvisioning(
 
     // Get user email from Clerk for the worker
     const { clerkClient } = await import("@clerk/nextjs/server");
-    const user = await clerkClient().users.getUser(clerkUserId);
+    const clerk = await clerkClient();
+    const user = await clerk.users.getUser(clerkUserId);
     const customerEmail = user.emailAddresses[0]?.emailAddress;
 
     if (!customerEmail) {
