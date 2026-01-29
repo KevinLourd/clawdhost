@@ -1,8 +1,9 @@
 "use client";
 
-import { useSignUp } from "@clerk/nextjs";
+import { useSignUp, useAuth } from "@clerk/nextjs";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 function GoogleIcon() {
   return (
@@ -29,7 +30,16 @@ function GoogleIcon() {
 
 export default function SignUpPage() {
   const { signUp, isLoaded } = useSignUp();
+  const { isSignedIn } = useAuth();
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+
+  // Redirect if already signed in
+  useEffect(() => {
+    if (isSignedIn) {
+      router.replace("/setup");
+    }
+  }, [isSignedIn, router]);
 
   const handleGoogleSignUp = async () => {
     if (!isLoaded || !signUp) return;
@@ -47,6 +57,15 @@ export default function SignUpPage() {
     }
   };
 
+  // Show loading while checking auth
+  if (isSignedIn) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen flex">
       {/* Left side - Branding */}
@@ -55,10 +74,10 @@ export default function SignUpPage() {
           <div className="flex items-center gap-3">
             <img 
               src="https://clawdhost.tech/clawdhost_logo_27kb.jpg" 
-              alt="ClawdHost" 
+              alt="MoltHost" 
               className="w-16 h-16 rounded-xl shadow-lg"
             />
-            <span className="text-3xl font-bold text-foreground">ClawdHost</span>
+            <span className="text-3xl font-bold text-foreground">MoltHost</span>
           </div>
           
           <div className="space-y-4">
@@ -107,10 +126,10 @@ export default function SignUpPage() {
           <Link href="https://clawdhost.tech" className="flex items-center gap-2">
             <img 
               src="https://clawdhost.tech/clawdhost_logo_27kb.jpg" 
-              alt="ClawdHost" 
+              alt="MoltHost" 
               className="w-8 h-8 rounded-lg"
             />
-            <span className="font-semibold">ClawdHost</span>
+            <span className="font-semibold">MoltHost</span>
           </Link>
         </div>
 
