@@ -51,10 +51,25 @@ const authMiddleware = (req: Request, res: Response, next: () => void) => {
   next();
 };
 
+interface MoltBotConfig {
+  auth?: {
+    anthropicKey?: string;
+  };
+  channels?: {
+    telegram?: {
+      botToken?: string;
+      botUsername?: string;
+      dmPolicy?: string;
+    };
+  };
+}
+
 interface ProvisionRequest {
   planId: string;
   customerEmail: string;
   customerName?: string;
+  instanceId?: string;
+  moltbotConfig?: MoltBotConfig;
   stripeCustomerId?: string;
   stripeSubscriptionId?: string;
 }
@@ -85,7 +100,7 @@ router.post("/", authMiddleware, async (req: Request, res: Response) => {
 });
 
 async function processProvisioning(request: ProvisionRequest) {
-  const { planId, customerEmail, customerName } = request;
+  const { planId, customerEmail, customerName, moltbotConfig } = request;
   const startTime = Date.now();
   let serverId: string | undefined;
   let tunnelId: string | undefined;
@@ -157,8 +172,8 @@ async function processProvisioning(request: ProvisionRequest) {
 
     console.log(`[Provision] Server ready: ${readyServer.ip}`);
 
-    // Step 4: Wait for ClawdBot installation to complete
-    const installResult = await installClawdBot(readyServer, customerEmail, customerName);
+    // Step 4: Wait for ClawdBot installation to complete and configure
+    const installResult = await installClawdBot(readyServer, customerEmail, customerName, moltbotConfig);
 
     if (!installResult.success) {
       throw new Error(`Installation failed: ${installResult.error}`);

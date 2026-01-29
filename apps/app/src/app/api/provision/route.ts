@@ -38,7 +38,7 @@ export async function POST() {
 
     // Start provisioning in background
     await updateInstanceStatus(instance.id, "provisioning");
-    startProvisioning(instance.id, clerkUserId, instance.plan_id);
+    startProvisioning(instance.id, clerkUserId, instance.plan_id, instance.moltbot_config || {});
 
     return NextResponse.json({ 
       provisioningId: instance.id,
@@ -56,7 +56,8 @@ export async function POST() {
 async function startProvisioning(
   instanceId: string,
   clerkUserId: string,
-  planId: string
+  planId: string,
+  moltbotConfig: Record<string, unknown>
 ) {
   try {
     const workerUrl = process.env.WORKER_URL;
@@ -76,7 +77,7 @@ async function startProvisioning(
       throw new Error("User email not found");
     }
 
-    // Call worker API
+    // Call worker API with config
     const response = await fetch(`${workerUrl}/provision`, {
       method: "POST",
       headers: {
@@ -88,6 +89,7 @@ async function startProvisioning(
         customerEmail,
         customerName: user.fullName || undefined,
         instanceId,
+        moltbotConfig,
       }),
     });
 

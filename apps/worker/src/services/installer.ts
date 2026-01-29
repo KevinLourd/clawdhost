@@ -1,10 +1,23 @@
 /**
  * ClawdBot installation checker
- * Cloud-init handles the actual installation, this just waits and retrieves the tunnel URL
+ * Cloud-init handles the actual installation, this configures and starts the bot
  */
 
 import { Client } from "ssh2";
 import { ServerInfo } from "../providers";
+
+export interface MoltBotConfig {
+  auth?: {
+    anthropicKey?: string;
+  };
+  channels?: {
+    telegram?: {
+      botToken?: string;
+      botUsername?: string;
+      dmPolicy?: string;
+    };
+  };
+}
 
 export interface InstallResult {
   success: boolean;
@@ -100,7 +113,8 @@ async function checkTtydReady(ip: string): Promise<boolean> {
 export async function installClawdBot(
   server: ServerInfo,
   customerEmail: string,
-  customerName?: string
+  customerName?: string,
+  moltbotConfig?: MoltBotConfig
 ): Promise<InstallResult> {
   console.log(`[Installer] Waiting for cloud-init to complete on ${server.ip}...`);
 
@@ -117,7 +131,7 @@ export async function installClawdBot(
     if (ttydReady) {
       console.log("[Installer] ttyd is responding! Cloud-init completed.");
       
-      // Save customer info via SSH
+      // Configure MoltBot via SSH
       let conn: Client | null = null;
       
       try {
@@ -129,15 +143,61 @@ export async function installClawdBot(
           await executeCommand(conn, `echo "${customerName}" > /home/clawdbot/.customer_name`);
         }
         await executeCommand(conn, "chown -R clawdbot:clawdbot /home/clawdbot/.customer_* 2>/dev/null || true");
+        
+        // Write MoltBot config if provided
+        if (moltbotConfig && (moltbotConfig.auth?.anthropicKey || moltbotConfig.channels?.telegram)) {
+          console.log("[Installer] Writing MoltBot config...");
+          
+          // Create the config directory
+          await executeCommand(conn, "mkdir -p /home/clawdbot/.clawdbot");
+          
+          // Build the moltbot.json config
+          const config = {
+            agents: {
+              defaults: {
+                workspace: "~/clawd",
+                model: "claude-sonnet-4-20250514",
+              },
+            },
+            ...(moltbotConfig.channels?.telegram && {
+              channels: {
+                telegram: {
+                  botToken: moltbotConfig.channels.telegram.botToken,
+                  dmPolicy: moltbotConfig.channels.telegram.dmPolicy || "allowlist",
+                },
+              },
+            }),
+          };
+          
+          // Write config file
+          const configJson = JSON.stringify(config, null, 2).replace(/"/g, '\\"');
+          await executeCommand(conn, `echo "${configJson}" > /home/clawdbot/.clawdbot/moltbot.json`);
+          
+          // Write Anthropic key to separate file (more secure)
+          if (moltbotConfig.auth?.anthropicKey) {
+            await executeCommand(conn, `echo "ANTHROPIC_API_KEY=${moltbotConfig.auth.anthropicKey}" > /home/clawdbot/.clawdbot/.env`);
+          }
+          
+          // Set permissions
+          await executeCommand(conn, "chown -R clawdbot:clawdbot /home/clawdbot/.clawdbot");
+          await executeCommand(conn, "chmod 600 /home/clawdbot/.clawdbot/.env 2>/dev/null || true");
+          
+          console.log("[Installer] MoltBot config written");
+          
+          // Start MoltBot daemon as clawdbot user
+          console.log("[Installer] Starting MoltBot daemon...");
+          await executeCommand(conn, "su - clawdbot -c 'moltbot gateway --daemon' || true", 30000);
+          console.log("[Installer] MoltBot daemon started");
+        }
 
         conn.end();
-        console.log(`[Installer] Customer info saved`);
+        console.log(`[Installer] Configuration complete`);
         
       } catch (error) {
         const errMsg = error instanceof Error ? error.message : "Unknown error";
-        console.log(`[Installer] SSH for customer info failed: ${errMsg}`);
+        console.log(`[Installer] SSH configuration failed: ${errMsg}`);
         if (conn) conn.end();
-        // Not critical, continue anyway
+        // Log but don't fail - user can configure manually
       }
 
       // Success - tunnel URL is handled by the provisioning route
