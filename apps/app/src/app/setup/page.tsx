@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect } from "react";
-import { useUser } from "@clerk/nextjs";
+import { useEffect, useState, useRef } from "react";
+import { useUser, useClerk } from "@clerk/nextjs";
 import { useOnboardingStore } from "@/store/onboarding";
 import {
   WelcomeStep,
@@ -10,7 +10,7 @@ import {
   ProvisioningStep,
   CompleteStep,
 } from "@/components/steps";
-import { UserButton } from "@clerk/nextjs";
+import { LogOut } from "lucide-react";
 
 const STEP_LABELS = {
   anthropic: "API Key",
@@ -21,7 +21,25 @@ const STEP_LABELS = {
 
 export default function SetupPage() {
   const { user, isLoaded } = useUser();
+  const { signOut } = useClerk();
   const { step, isLoading, setStep, setInstanceId, setTerminalUrl, setTelegramBotUsername, setLoading } = useOnboardingStore();
+  const [showMenu, setShowMenu] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  // Close menu when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setShowMenu(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // Get display name (prefer name over email)
+  const displayName = user?.firstName || user?.fullName || user?.emailAddresses[0]?.emailAddress;
+  const initials = user?.firstName?.[0]?.toUpperCase() || user?.emailAddresses[0]?.emailAddress?.[0]?.toUpperCase() || "?";
 
   // Fetch onboarding status on mount
   useEffect(() => {
@@ -76,11 +94,38 @@ export default function SetupPage() {
             />
             <span className="font-semibold text-foreground hidden sm:inline">ClawdHost</span>
           </a>
-          <div className="flex items-center gap-2 sm:gap-3">
-            <span className="text-xs sm:text-sm text-muted-foreground max-w-[120px] sm:max-w-none truncate">
-              {user?.emailAddresses[0]?.emailAddress}
-            </span>
-            <UserButton />
+          <div className="relative" ref={menuRef}>
+            <button
+              onClick={() => setShowMenu(!showMenu)}
+              className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+            >
+              <span className="text-xs sm:text-sm text-muted-foreground max-w-[120px] sm:max-w-none truncate">
+                {displayName}
+              </span>
+              {user?.imageUrl ? (
+                <img 
+                  src={user.imageUrl} 
+                  alt={displayName || "User"} 
+                  className="w-7 h-7 sm:w-8 sm:h-8 rounded-full"
+                />
+              ) : (
+                <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-primary/10 flex items-center justify-center text-xs font-medium text-primary">
+                  {initials}
+                </div>
+              )}
+            </button>
+            
+            {showMenu && (
+              <div className="absolute right-0 top-full mt-2 w-40 bg-card border rounded-lg shadow-lg py-1 z-50">
+                <button
+                  onClick={() => signOut({ redirectUrl: "/sign-in" })}
+                  className="w-full flex items-center gap-2 px-3 py-2 text-sm text-foreground hover:bg-muted transition-colors"
+                >
+                  <LogOut className="w-4 h-4" />
+                  Log out
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </header>
