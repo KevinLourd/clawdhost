@@ -86,7 +86,7 @@ export function WelcomeStep() {
           className="mt-1 w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary cursor-pointer"
         />
         <span className="text-xs sm:text-sm text-foreground group-hover:text-primary transition-colors">
-          I understand that MoltBot has powerful capabilities and I accept the associated risks.
+          I understand this is powerful and inherently risky.
         </span>
       </label>
 
