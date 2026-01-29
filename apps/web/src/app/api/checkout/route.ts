@@ -2,9 +2,14 @@ import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { plans } from "@/lib/plans";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+function getStripe() {
+  if (!process.env.STRIPE_SECRET_KEY) {
+    throw new Error("STRIPE_SECRET_KEY is not configured");
+  }
+  return new Stripe(process.env.STRIPE_SECRET_KEY);
+}
 
-async function getOrCreatePrice(plan: typeof plans[0]): Promise<string> {
+async function getOrCreatePrice(stripe: Stripe, plan: typeof plans[0]): Promise<string> {
   // Try to find existing product
   const existingProducts = await stripe.products.search({
     query: `metadata['plan_id']:'${plan.id}'`,
@@ -59,7 +64,7 @@ async function getOrCreatePrice(plan: typeof plans[0]): Promise<string> {
   return newPrice.id;
 }
 
-async function getOrCreateCustomer(email: string): Promise<string> {
+async function getOrCreateCustomer(stripe: Stripe, email: string): Promise<string> {
   // Search for existing customer by email
   const existingCustomers = await stripe.customers.list({
     email: email,
@@ -80,6 +85,7 @@ async function getOrCreateCustomer(email: string): Promise<string> {
 
 export async function POST(request: NextRequest) {
   try {
+    const stripe = getStripe();
     const body = await request.json();
     const { planId, email } = body;
 
@@ -89,7 +95,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Get or create the Stripe price
-    const priceId = await getOrCreatePrice(plan);
+    const priceId = await getOrCreatePrice(stripe, plan);
 
     // Build session options
     const sessionOptions: Stripe.Checkout.SessionCreateParams = {
@@ -116,7 +122,7 @@ export async function POST(request: NextRequest) {
 
     // If email provided, get or create customer
     if (email) {
-      const customerId = await getOrCreateCustomer(email);
+      const customerId = await getOrCreateCustomer(stripe, email);
       sessionOptions.customer = customerId;
     }
 

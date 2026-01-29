@@ -15,7 +15,8 @@ node_modules
 /coverage
 
 # next.js
-/.next/
+.next/
+**/.next/
 /out/
 
 # production
@@ -38,6 +39,9 @@ yarn-error.log*
 .env.production
 .env*.local
 !.env.example
+
+# cursor (contains tokens)
+.cursor/mcp.json
 
 # vercel
 .vercel

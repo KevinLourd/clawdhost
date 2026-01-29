@@ -1,5 +1,5 @@
 {
-  "name": "clawdhost-worker",
+  "name": "@clawdhost/worker",
   "version": "1.0.0",
   "description": "Provisioning worker for Clawd Host",
   "main": "dist/index.js",

@@ -1,6 +1,11 @@
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+function getResend() {
+  if (!process.env.RESEND_API_KEY) {
+    throw new Error("RESEND_API_KEY is not configured");
+  }
+  return new Resend(process.env.RESEND_API_KEY);
+}
 
 const FROM_EMAIL = "Clawd Host <noreply@clawdhost.tech>";
 const SUPPORT_EMAIL = "support@clawdhost.tech";
@@ -17,6 +22,7 @@ interface WelcomeEmailParams {
  * Sent immediately after purchase
  */
 export async function sendWelcomeEmail({ to, customerName, planName }: WelcomeEmailParams) {
+  const resend = getResend();
   const greeting = customerName ? `Hi ${customerName}` : "Hi there";
   
   const { data, error } = await resend.emails.send({
@@ -90,6 +96,7 @@ export async function sendWelcomeEmail({ to, customerName, planName }: WelcomeEm
  * Sent right after welcome email
  */
 export async function sendProvisioningStartedEmail({ to, customerName, planName }: WelcomeEmailParams) {
+  const resend = getResend();
   const greeting = customerName ? `Hi ${customerName}` : "Hi there";
   
   const { data, error } = await resend.emails.send({
@@ -178,6 +185,7 @@ export async function sendCredentialsEmail({
   planName,
   tunnelUrl,
 }: CredentialsEmailParams) {
+  const resend = getResend();
   const greeting = customerName ? `Hi ${customerName}` : "Hi there";
 
   const { data, error } = await resend.emails.send({
