@@ -113,6 +113,8 @@ async function sendCallback(
     tunnelId?: string;
     tunnelUrl?: string;
     terminalUrl?: string;
+    gatewayUrl?: string;
+    gatewayToken?: string;
     error?: string;
   }
 ) {
@@ -186,6 +188,8 @@ async function processProvisioning(request: ProvisionRequest) {
                                  process.env.CLOUDFLARE_ACCOUNT_ID && 
                                  process.env.CLOUDFLARE_ZONE_ID;
 
+    let gatewayHostname: string | undefined;
+    
     if (hasCloudflareConfig) {
       console.log(`[Provision] Creating Cloudflare tunnel for ${serverName}...`);
       
@@ -193,8 +197,10 @@ async function processProvisioning(request: ProvisionRequest) {
       tunnelId = tunnel.tunnelId;
       tunnelToken = tunnel.tunnelToken;
       tunnelHostname = tunnel.hostname;
+      gatewayHostname = tunnel.gatewayHostname;
       
       console.log(`[Provision] Tunnel created: ${tunnelHostname}`);
+      console.log(`[Provision] Gateway tunnel: ${gatewayHostname}`);
       console.log(`[Provision] Tunnel token received: ${tunnelToken ? 'yes' : 'no'}`);
     } else {
       console.log(`[Provision] Cloudflare not configured, using direct IP access`);
@@ -297,6 +303,11 @@ async function processProvisioning(request: ProvisionRequest) {
     // Progress: Complete
     await sendProgress(request, "connecting", 95);
 
+    // Build gateway URL for remote RPC access
+    const gatewayUrl = gatewayHostname 
+      ? `wss://${gatewayHostname}`
+      : `ws://${readyServer.ip}:18789`;
+
     // Step 5: Send callback to mark instance as ready
     await sendCallback(request, "ready", {
       provider: provider.name,
@@ -305,6 +316,8 @@ async function processProvisioning(request: ProvisionRequest) {
       tunnelId,
       tunnelUrl: tunnelHostname ? `https://${tunnelHostname}` : undefined,
       terminalUrl,
+      gatewayUrl,
+      gatewayToken: installResult.gatewayToken,
     });
 
     // Step 6: Send MoltBot ready email

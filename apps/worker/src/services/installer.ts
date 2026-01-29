@@ -19,6 +19,16 @@ export interface MoltBotConfig {
   };
 }
 
+export interface InstallResultWithToken extends InstallResult {
+  gatewayToken?: string;
+}
+
+function generateGatewayToken(): string {
+  const bytes = new Uint8Array(32);
+  crypto.getRandomValues(bytes);
+  return Buffer.from(bytes).toString("hex");
+}
+
 export interface InstallResult {
   success: boolean;
   tunnelUrl?: string;
@@ -115,7 +125,7 @@ export async function installClawdBot(
   customerEmail: string,
   customerName?: string,
   moltbotConfig?: MoltBotConfig
-): Promise<InstallResult> {
+): Promise<InstallResultWithToken> {
   console.log(`[Installer] Waiting for cloud-init to complete on ${server.ip}...`);
 
   // Wait for ttyd to be ready (indicates cloud-init completed) - up to 10 minutes
@@ -133,6 +143,7 @@ export async function installClawdBot(
       
       // Configure MoltBot via SSH
       let conn: Client | null = null;
+      let gatewayToken: string | undefined;
       
       try {
         conn = await connect(server);
@@ -153,9 +164,16 @@ export async function installClawdBot(
           
           // Build the clawdbot.json config
           const ownerUsername = moltbotConfig.channels?.telegram?.ownerUsername;
+          gatewayToken = generateGatewayToken();
+          
           const config = {
             gateway: {
               mode: "local",
+              bind: "lan", // Allow remote connections from ClawdHost
+              port: 18789,
+              auth: {
+                token: gatewayToken,
+              },
             },
             agents: {
               defaults: {
@@ -192,6 +210,7 @@ export async function installClawdBot(
           await executeCommand(conn, "chmod 600 /home/clawdbot/.clawdbot/.env /home/clawdbot/.clawdbot/clawdbot.json 2>/dev/null || true");
           
           console.log("[Installer] ClawdBot config written");
+          console.log("[Installer] Gateway token generated for remote access");
           
           // Create systemd service for gateway (systemctl --user doesn't work on headless servers)
           console.log("[Installer] Creating ClawdBot gateway systemd service...");
@@ -235,7 +254,7 @@ SERVICEEOF`);
       }
 
       // Success - tunnel URL is handled by the provisioning route
-      return { success: true };
+      return { success: true, gatewayToken };
     } else {
       console.log(`[Installer] ttyd not ready yet on port 7681`);
     }

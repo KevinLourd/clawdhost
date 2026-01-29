@@ -8,7 +8,8 @@ const CF_API_URL = "https://api.cloudflare.com/client/v4";
 interface TunnelConfig {
   tunnelId: string;
   tunnelToken: string;
-  hostname: string;
+  hostname: string; // Terminal hostname
+  gatewayHostname: string; // Gateway hostname for RPC access
 }
 
 function getConfig() {
@@ -58,6 +59,7 @@ export async function createTunnel(serverName: string): Promise<TunnelConfig> {
   // Use first-level subdomain to be covered by Universal SSL
   // (sub-subdomains like xxx.terminal.clawdhost.tech are NOT covered)
   const hostname = `terminal-${serverName}.clawdhost.tech`;
+  const gatewayHostname = `gateway-${serverName}.clawdhost.tech`;
 
   console.log(`[Cloudflare] Creating tunnel: ${tunnelName}`);
 
@@ -85,7 +87,9 @@ export async function createTunnel(serverName: string): Promise<TunnelConfig> {
 
   console.log(`[Cloudflare] Got tunnel token: ${tunnelToken ? 'yes' : 'no'}`);
 
-  // Step 3: Configure tunnel ingress (route hostname to localhost:7681)
+  // Step 3: Configure tunnel ingress
+  // - Terminal (ttyd) on port 7681
+  // - Gateway (MoltBot RPC) on port 18789
   await cfFetch(`/accounts/${accountId}/cfd_tunnel/${tunnel.id}/configurations`, {
     method: "PUT",
     body: JSON.stringify({
@@ -96,6 +100,10 @@ export async function createTunnel(serverName: string): Promise<TunnelConfig> {
             service: "http://localhost:7681",
           },
           {
+            hostname: gatewayHostname,
+            service: "http://localhost:18789",
+          },
+          {
             service: "http_status:404",
           },
         ],
@@ -103,9 +111,9 @@ export async function createTunnel(serverName: string): Promise<TunnelConfig> {
     }),
   });
 
-  console.log(`[Cloudflare] Configured ingress for ${hostname}`);
+  console.log(`[Cloudflare] Configured ingress for ${hostname} and ${gatewayHostname}`);
 
-  // Step 4: Create DNS CNAME record
+  // Step 4: Create DNS CNAME records for both hostnames
   await cfFetch(`/zones/${zoneId}/dns_records`, {
     method: "POST",
     body: JSON.stringify({
@@ -119,10 +127,24 @@ export async function createTunnel(serverName: string): Promise<TunnelConfig> {
 
   console.log(`[Cloudflare] DNS record created: ${hostname}`);
 
+  await cfFetch(`/zones/${zoneId}/dns_records`, {
+    method: "POST",
+    body: JSON.stringify({
+      type: "CNAME",
+      name: `gateway-${serverName}`,
+      content: `${tunnel.id}.cfargotunnel.com`,
+      proxied: true,
+      ttl: 1, // Auto
+    }),
+  });
+
+  console.log(`[Cloudflare] DNS record created: ${gatewayHostname}`);
+
   return {
     tunnelId: tunnel.id,
     tunnelToken: tunnelToken,
     hostname,
+    gatewayHostname,
   };
 }
 

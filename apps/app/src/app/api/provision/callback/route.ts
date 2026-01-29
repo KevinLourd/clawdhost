@@ -4,6 +4,7 @@ import {
   updateInstanceVps, 
   markInstanceReady,
   updateProvisioningProgress,
+  setGatewayCredentials,
 } from "@/lib/db";
 
 interface CallbackBody {
@@ -18,6 +19,8 @@ interface CallbackBody {
   tunnelId?: string;
   tunnelUrl?: string;
   terminalUrl?: string;
+  gatewayUrl?: string;
+  gatewayToken?: string;
 }
 
 export async function POST(request: NextRequest) {
@@ -66,6 +69,12 @@ export async function POST(request: NextRequest) {
           body.tunnelUrl,
           body.terminalUrl
         );
+      }
+      
+      // Store gateway credentials for remote RPC access
+      if (body.gatewayUrl && body.gatewayToken) {
+        await setGatewayCredentials(body.instanceId, body.gatewayUrl, body.gatewayToken);
+        console.log(`[Callback] Gateway credentials stored for instance ${body.instanceId}`);
       }
       
       // Mark instance as ready

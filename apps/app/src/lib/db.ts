@@ -336,3 +336,41 @@ export function getProvisioningProgress(instance: Instance): { step: string; pro
     progress: provisioning.progress || 0,
   };
 }
+
+// Store gateway credentials for remote RPC access
+export async function setGatewayCredentials(
+  instanceId: string,
+  gatewayUrl: string,
+  gatewayToken: string
+): Promise<void> {
+  const sql = getDb();
+  
+  const gatewayConfig = JSON.stringify({
+    gateway: {
+      url: gatewayUrl,
+      token: gatewayToken,
+    }
+  });
+  
+  await sql`
+    UPDATE instances 
+    SET moltbot_config = COALESCE(moltbot_config, '{}'::jsonb) || ${gatewayConfig}::jsonb,
+        config_updated_at = NOW()
+    WHERE id = ${instanceId}
+  `;
+}
+
+// Get gateway credentials from moltbot_config
+export function getGatewayCredentials(instance: Instance): { url: string; token: string } | null {
+  const config = instance.moltbot_config as Record<string, unknown> | null;
+  const gateway = config?.gateway as { url?: string; token?: string } | undefined;
+  
+  if (!gateway?.url || !gateway?.token) {
+    return null;
+  }
+  
+  return {
+    url: gateway.url,
+    token: gateway.token,
+  };
+}
