@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useOnboardingStore } from "@/store/onboarding";
-import { KeyRound, ExternalLink, Mic, Video, Palette } from "lucide-react";
+import { KeyRound, ExternalLink, Mic, Video } from "lucide-react";
 
 export function GeminiStep() {
   const { setStep } = useOnboardingStore();
@@ -63,7 +63,7 @@ export function GeminiStep() {
         <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Gemini enables</p>
         <div className="grid grid-cols-1 gap-2 text-sm">
           <div className="flex items-center gap-2 text-foreground">
-            <Palette className="w-4 h-4 text-primary" />
+            <span className="text-base">🍌</span>
             <span>Image generation (Nano Banana Pro)</span>
           </div>
           <div className="flex items-center gap-2 text-foreground">
