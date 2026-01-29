@@ -9,8 +9,8 @@ import { Button } from "@/components/ui/button";
 const STEPS = [
   { id: "infrastructure", label: "Creating secure channel" },
   { id: "server", label: "Preparing your private server" },
-  { id: "installing", label: "Installing your AI assistant" },
-  { id: "connecting", label: "Verifying protected access" },
+  { id: "installing", label: "Installing MoltBot" },
+  { id: "connecting", label: "Setting up encrypted connections" },
 ];
 
 export function ProvisioningStep() {
