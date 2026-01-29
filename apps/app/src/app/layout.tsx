@@ -21,6 +21,10 @@ export const metadata: Metadata = {
   authors: [{ name: "Clawd Host" }],
   creator: "Clawd Host",
   publisher: "Clawd Host",
+  icons: {
+    icon: "/icon.png",
+    apple: "/apple-icon.png",
+  },
   robots: {
     index: false,
     follow: false,
