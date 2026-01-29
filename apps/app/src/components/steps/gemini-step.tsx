@@ -42,8 +42,18 @@ export function GeminiStep() {
     }
   };
 
-  const handleSkip = () => {
-    setStep("telegram");
+  const handleSkip = async () => {
+    // Mark as configured (skipped) in DB
+    try {
+      await fetch("/api/onboarding/gemini", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ geminiKey: "" }),
+      });
+    } catch {
+      // Continue anyway
+    }
+    setStep("openai");
   };
 
   return (

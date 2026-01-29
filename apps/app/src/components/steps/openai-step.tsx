@@ -47,8 +47,18 @@ export function OpenAIStep() {
     }
   };
 
-  const handleSkip = () => {
-    setStep("gemini");
+  const handleSkip = async () => {
+    // Mark as configured (skipped) in DB
+    try {
+      await fetch("/api/onboarding/openai", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ openaiKey: "" }),
+      });
+    } catch {
+      // Continue anyway
+    }
+    setStep("telegram");
   };
 
   return (
@@ -74,10 +84,6 @@ export function OpenAIStep() {
           <div className="flex items-center gap-2 text-foreground">
             <Image className="w-4 h-4 text-primary" />
             <span>Image understanding (GPT-5.2)</span>
-          </div>
-          <div className="flex items-center gap-2 text-foreground">
-            <RefreshCw className="w-4 h-4 text-primary" />
-            <span>Fallback AI model if Claude is unavailable</span>
           </div>
         </div>
       </div>
