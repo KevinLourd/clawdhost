@@ -77,6 +77,11 @@ async function startProvisioning(
       throw new Error("User email not found");
     }
 
+    // Get app URL for callback
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.VERCEL_URL 
+      ? `https://${process.env.VERCEL_URL}` 
+      : "http://localhost:3000";
+
     // Call worker API with config
     const response = await fetch(`${workerUrl}/provision`, {
       method: "POST",
@@ -90,6 +95,8 @@ async function startProvisioning(
         customerName: user.fullName || undefined,
         instanceId,
         moltbotConfig,
+        callbackUrl: `${appUrl}/api/provision/callback`,
+        callbackSecret: workerSecret,
       }),
     });
 

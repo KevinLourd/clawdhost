@@ -72,6 +72,8 @@ interface ProvisionRequest {
   moltbotConfig?: MoltBotConfig;
   stripeCustomerId?: string;
   stripeSubscriptionId?: string;
+  callbackUrl?: string;
+  callbackSecret?: string;
 }
 
 /**
@@ -98,6 +100,48 @@ router.post("/", authMiddleware, async (req: Request, res: Response) => {
     console.error("[Provision] Unhandled error:", error);
   });
 });
+
+async function sendCallback(
+  request: ProvisionRequest,
+  status: "ready" | "error",
+  data?: {
+    provider?: string;
+    serverId?: string;
+    serverIp?: string;
+    tunnelId?: string;
+    tunnelUrl?: string;
+    terminalUrl?: string;
+    error?: string;
+  }
+) {
+  if (!request.callbackUrl || !request.callbackSecret || !request.instanceId) {
+    console.log("[Provision] No callback configured, skipping");
+    return;
+  }
+
+  try {
+    const response = await fetch(request.callbackUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${request.callbackSecret}`,
+      },
+      body: JSON.stringify({
+        instanceId: request.instanceId,
+        status,
+        ...data,
+      }),
+    });
+
+    if (!response.ok) {
+      console.error(`[Provision] Callback failed: ${response.status}`);
+    } else {
+      console.log(`[Provision] Callback sent: ${status}`);
+    }
+  } catch (error) {
+    console.error("[Provision] Callback error:", error);
+  }
+}
 
 async function processProvisioning(request: ProvisionRequest) {
   const { planId, customerEmail, customerName, moltbotConfig } = request;
@@ -226,7 +270,17 @@ async function processProvisioning(request: ProvisionRequest) {
       durationMs: Date.now() - startTime,
     });
 
-    // Step 5: Send MoltBot ready email
+    // Step 5: Send callback to mark instance as ready
+    await sendCallback(request, "ready", {
+      provider: provider.name,
+      serverId: readyServer.id,
+      serverIp: readyServer.ip,
+      tunnelId,
+      tunnelUrl: tunnelHostname ? `https://${tunnelHostname}` : undefined,
+      terminalUrl,
+    });
+
+    // Step 6: Send MoltBot ready email
     await sendMoltBotReadyEmail({
       to: customerEmail,
       customerName,
@@ -280,6 +334,11 @@ async function processProvisioning(request: ProvisionRequest) {
       serverId,
       error: error instanceof Error ? error.message : "Unknown error",
       durationMs: Date.now() - startTime,
+    });
+
+    // Send callback to mark instance as error
+    await sendCallback(request, "error", {
+      error: error instanceof Error ? error.message : "Unknown error",
     });
 
     // Send error notification
