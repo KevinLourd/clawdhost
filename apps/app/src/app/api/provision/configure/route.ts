@@ -114,6 +114,39 @@ export async function POST() {
 
       console.log(`[Configure] Configuration complete for instance ${instance.id}`);
 
+      // Step 4: Send ready email (was skipped during early provisioning)
+      try {
+        const { clerkClient } = await import("@clerk/nextjs/server");
+        const clerk = await clerkClient();
+        const clerkUser = await clerk.users.getUser(clerkUserId);
+        const customerEmail = clerkUser.emailAddresses[0]?.emailAddress;
+        const customerName = clerkUser.fullName || clerkUser.firstName || undefined;
+
+        if (customerEmail) {
+          // Call worker to send email
+          const workerUrl = process.env.WORKER_URL;
+          const workerSecret = process.env.WORKER_SECRET;
+          
+          if (workerUrl && workerSecret) {
+            await fetch(`${workerUrl}/email/ready`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${workerSecret}`,
+              },
+              body: JSON.stringify({
+                to: customerEmail,
+                customerName,
+              }),
+            });
+            console.log(`[Configure] Ready email sent to ${customerEmail}`);
+          }
+        }
+      } catch (emailError) {
+        console.error("[Configure] Failed to send ready email:", emailError);
+        // Don't fail the response if email fails
+      }
+
       return NextResponse.json({ success: true });
     } catch (rpcError) {
       console.error("[Configure] RPC error:", rpcError);

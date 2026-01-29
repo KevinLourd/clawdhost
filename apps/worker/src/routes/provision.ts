@@ -327,11 +327,15 @@ async function processProvisioning(request: ProvisionRequest) {
       gatewayToken: installResult.gatewayToken,
     });
 
-    // Step 6: Send MoltBot ready email
-    await sendMoltBotReadyEmail({
-      to: customerEmail,
-      customerName,
-    });
+    // Step 6: Send MoltBot ready email (skip in earlyMode - will be sent after config is applied)
+    if (!earlyMode) {
+      await sendMoltBotReadyEmail({
+        to: customerEmail,
+        customerName,
+      });
+    } else {
+      console.log(`[Provision] Skipping ready email in earlyMode (will be sent after config)`);
+    }
 
     console.log(`[Provision] Complete for ${customerEmail}`);
 

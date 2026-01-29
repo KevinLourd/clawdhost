@@ -10,6 +10,7 @@
 import express from "express";
 import provisionRouter from "./routes/provision";
 import deprovisionRouter from "./routes/deprovision";
+import emailRouter from "./routes/email";
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -26,6 +27,7 @@ app.use((req, _res, next) => {
 // Routes
 app.use("/provision", provisionRouter);
 app.use("/deprovision", deprovisionRouter);
+app.use("/email", emailRouter);
 
 // Root health check
 app.get("/", (_req, res) => {
