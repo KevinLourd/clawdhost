@@ -93,6 +93,8 @@ async function sendRpcRequestOnce(
           console.log("[Gateway RPC] Received connect.challenge, sending connect request...");
           
           // Send connect request with authentication
+          // Valid client.id: gateway-client, cli, webchat, etc.
+          // Valid client.mode: backend, cli, ui, node, etc.
           const connectRequest: ProtocolRequest = {
             type: "req",
             id: generateRequestId(),
@@ -101,10 +103,10 @@ async function sendRpcRequestOnce(
               minProtocol: 3,
               maxProtocol: 3,
               client: {
-                id: "clawdhost-provisioner",
+                id: "gateway-client",
                 version: "1.0.0",
-                platform: "server",
-                mode: "operator",
+                platform: "linux",
+                mode: "backend",
               },
               role: "operator",
               scopes: ["operator.read", "operator.write", "operator.admin"],
@@ -115,7 +117,7 @@ async function sendRpcRequestOnce(
                 token: gatewayToken,
               },
               locale: "en-US",
-              userAgent: "clawdhost-provisioner/1.0.0",
+              userAgent: "clawdhost/1.0.0",
             },
           };
           ws.send(JSON.stringify(connectRequest));
