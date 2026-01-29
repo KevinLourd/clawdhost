@@ -7,7 +7,7 @@ import { getProviderForPlan } from "../providers";
 import { hetznerProvider } from "../providers/hetzner";
 import { scalewayProvider } from "../providers/scaleway";
 import { installClawdBot } from "../services/installer";
-import { sendCredentialsEmail, sendProvisioningErrorEmail } from "../services/email";
+import { sendInstanceReadyEmail, sendProvisioningErrorEmail } from "../services/email";
 import { createTunnel, deleteTunnel } from "../services/cloudflare";
 import { saveInstanceToSubscription } from "../services/stripe";
 import {
@@ -211,20 +211,18 @@ async function processProvisioning(request: ProvisionRequest) {
       durationMs: Date.now() - startTime,
     });
 
-    // Step 5: Send credentials email with terminal link
+    // Step 5: Send instance ready email
     const planNames: Record<string, string> = {
+      free: "Free",
       linux: "Essential",
       "macos-m1": "Apple",
       "macos-m4": "Pro",
     };
 
-    await sendCredentialsEmail({
+    await sendInstanceReadyEmail({
       to: customerEmail,
       customerName,
-      terminalUrl: terminalUrl,
       planName: planNames[planId] || planId,
-      terminalUsername,
-      terminalPassword,
     });
 
     console.log(`[Provision] Complete for ${customerEmail}`);
