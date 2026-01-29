@@ -221,29 +221,44 @@ async function sendRpcRequest(
   throw lastError || new Error("RPC request failed");
 }
 
+interface ConfigGetResult {
+  config: Record<string, unknown>;
+  hash: string;
+}
+
+/**
+ * Get current configuration and its hash
+ * The hash is required for optimistic locking when patching
+ */
+export async function getConfig(
+  gatewayUrl: string,
+  gatewayToken: string
+): Promise<ConfigGetResult> {
+  const result = await sendRpcRequest(gatewayUrl, gatewayToken, "config.get", {});
+  return result as ConfigGetResult;
+}
+
 /**
  * Patch the MoltBot configuration via Gateway RPC
  * Config is passed as a JSON string in the 'raw' parameter
  * API keys should be in the 'env' block of the config
+ * 
+ * This function automatically fetches the current config hash first
+ * (required for MoltBot's optimistic locking)
  */
 export async function patchConfig(
   gatewayUrl: string,
   gatewayToken: string,
   config: Record<string, unknown>
 ): Promise<void> {
-  // MoltBot expects the config as a JSON string in 'raw'
+  // First get the current config hash (required for optimistic locking)
+  console.log("[Gateway RPC] Fetching current config hash...");
+  const { hash: baseHash } = await getConfig(gatewayUrl, gatewayToken);
+  console.log(`[Gateway RPC] Got config hash: ${baseHash.substring(0, 8)}...`);
+  
+  // MoltBot expects the config as a JSON string in 'raw' with the baseHash
   await sendRpcRequest(gatewayUrl, gatewayToken, "config.patch", { 
-    raw: JSON.stringify(config)
+    raw: JSON.stringify(config),
+    baseHash,
   });
-}
-
-/**
- * Get current configuration
- */
-export async function getConfig(
-  gatewayUrl: string,
-  gatewayToken: string
-): Promise<Record<string, unknown>> {
-  const result = await sendRpcRequest(gatewayUrl, gatewayToken, "config.get", {});
-  return result as Record<string, unknown>;
 }
