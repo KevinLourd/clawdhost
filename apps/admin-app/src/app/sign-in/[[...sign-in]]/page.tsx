@@ -9,6 +9,7 @@ export default function SignInPage() {
           <p className="text-gray-500 mt-2">Sign in to access the admin dashboard</p>
         </div>
         <SignIn
+          forceRedirectUrl="/"
           appearance={{
             elements: {
               rootBox: "mx-auto",
