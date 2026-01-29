@@ -1,107 +1,61 @@
 ---
-description: ClawdHost monorepo guidelines
+description: ClawdHost project guidelines
 globs: 
 alwaysApply: true
 ---
 
-# ClawdHost
-
+App name: "ClawdHost"
 Managed MoltBot Hosting Platform - "Your AI, always on, always yours"
 
-## Product
-
-ClawdHost provides managed hosting for MoltBot (AI assistant).
-- Users pay for a VPS + MoltBot pre-configured
+What we are:
+- Managed hosting for MoltBot (AI assistant)
 - Web-based onboarding (no terminal required for users)
-- Telegram first, then WhatsApp, Discord, iMessage coming soon
+- VPS provisioning + MoltBot pre-configured
 
-## Monorepo Structure
+What we are NOT:
+- Not MoltBot itself (we build on top of it)
+- Not modifying MoltBot core
 
-```
-clawdhost/
-├── apps/
-│   ├── landing/       # Landing page (clawdhost.tech) - Vercel: clawdhost-landing
-│   ├── app/           # Setup wizard (app.clawdhost.tech) - Vercel: clawdhost-app
-│   └── worker/        # Provisioning worker (Railway)
-└── packages/
-    └── shared/        # Shared types
-```
+English language everywhere in what we produce:
+- Website
+- Functions
+- Code
+- Comments
+Only our chat/1-1 discussions can be whatever language
 
-## Tech Stack
+Monorepo Structure:
+- apps/landing/ → clawdhost.tech (Vercel: clawdhost-landing)
+- apps/app/ → app.clawdhost.tech (Vercel: clawdhost-app)
+- apps/worker/ → Railway
+- packages/shared/ → Shared types
 
-- **Framework**: Next.js 16, React 19
-- **Styling**: Tailwind v4, Shadcn/ui
-- **Auth**: Clerk
-- **Database**: Neon PostgreSQL
-- **Payments**: Stripe
-- **Hosting**: Vercel (apps), Railway (worker)
-- **VPS Providers**: Hetzner, Scaleway
-- **Tunnels**: Cloudflare Tunnel
+Design:
+- Light theme with green primary
+- NextJS, Tailwind, Shadcn
+- Minimalist, clean, modern
+- Reassuring UX: progress indicators, confirmations
+- No terminal jargon visible to end users
 
-## Database
+About command execution in chat:
+- Always execute commands in chat. Don't ask permission.
+- Stop asking me to execute commands in my shell. All commands must be by you, from the chat.
+
+Database:
+- Neon PostgreSQL
+- Use Neon MCP (project-1-clawdhost-Neon) to verify database state
+- Tables: users, instances, provisioning_logs
 
 Neon Project: clawdhost (sparkling-fog-74915550)
 - Production: postgresql://neondb_owner:npg_4CstETVGkZi0@ep-young-rice-a18hjmtu-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require
 
-Tables: users, instances, provisioning_logs
+Migrations:
+- Ne fais jamais de migration en direct via NEON MCP
+- N'edit jamais une migration file déjà migrated up. Recrée une nouvelle à chaque fois.
+- S'il y a une erreur dans une migration, ne fait jamais un migrate down. Recrée une nouvelle migration corrective.
 
-Use Neon MCP (project-1-clawdhost-Neon) to verify database state.
+All userId communications must be based on clerkUserId!
 
-## Commands
+Code files length: Keep all code files below 200 lines. If you see a larger file, split it.
 
-```bash
-pnpm dev              # Run all apps in parallel
-pnpm dev:landing      # Landing page (port 3000)
-pnpm dev:app          # Onboarding wizard (port 3001)
-pnpm dev:worker       # Worker
-pnpm build            # Build all
-```
-
-## Design Guidelines
-
-- Light theme with green primary (#22c55e)
-- Reassuring UX: progress indicators, confirmations
-- Minimalist, clean, modern
-- No terminal jargon visible to end users
-
-## Onboarding Flow
-
-1. Clerk login/signup
-2. Plan selection (or pre-selected via URL param)
-3. Stripe checkout
-4. VPS provisioning (parallel with step 5)
-5. User enters: Anthropic API key + Telegram bot token
-6. Configure MoltBot via SSH
-7. Done → Show Telegram link + terminal access
-
-## Code Style
-
-- Files < 200 lines
-- Lazy-init external services (Stripe, Resend) to avoid build-time errors
-- Use `getStripe()`, `getResend()` pattern, not module-level instantiation
-- Store clerkUserId in DB, not internal IDs
-
-## API Keys Pattern
-
-```typescript
-// ❌ Bad - fails at build time without env vars
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
-
-// ✅ Good - only fails at runtime when actually called
-function getStripe() {
-  if (!process.env.STRIPE_SECRET_KEY) {
-    throw new Error("STRIPE_SECRET_KEY is not configured");
-  }
-  return new Stripe(process.env.STRIPE_SECRET_KEY);
-}
-```
-
-## MoltBot Integration
-
-MoltBot config lives at `~/.clawdbot/moltbot.json` on the VPS.
-Key Gateway RPC methods:
-- `config.get`, `config.patch` - read/write config
-- `skills.status`, `skills.install` - manage skills
-- `sessions.list` - list active sessions
-
-WhatsApp requires QR code scan - handle via terminal or wizard.start WebSocket.
+Lazy-init pattern for external services (to avoid build-time errors):
+- Use getStripe(), getResend() pattern, not module-level instantiation
