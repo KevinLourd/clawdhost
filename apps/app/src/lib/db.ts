@@ -7,8 +7,6 @@ function getDb() {
   return neon(process.env.DATABASE_URL);
 }
 
-export const sql = getDb();
-
 // Types
 export interface User {
   id: string;
