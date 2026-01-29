@@ -1,6 +1,7 @@
 /**
  * Provider interface for server provisioning
  * Supports multiple cloud providers (Hetzner, Scaleway, etc.)
+ * Last updated: 2026-01-29 - Added free/pro/apple plans
  */
 
 export interface ServerInfo {
