@@ -192,9 +192,11 @@ export async function getOrCreateDraftInstance(userId: string, planId: string = 
 export async function setAnthropicKey(instanceId: string, anthropicKey: string): Promise<void> {
   const sql = getDb();
   
+  const authConfig = JSON.stringify({ auth: { anthropicKey } });
+  
   await sql`
     UPDATE instances 
-    SET moltbot_config = COALESCE(moltbot_config, '{}'::jsonb) || jsonb_build_object('auth', jsonb_build_object('anthropicKey', ${anthropicKey})),
+    SET moltbot_config = COALESCE(moltbot_config, '{}'::jsonb) || ${authConfig}::jsonb,
         config_updated_at = NOW()
     WHERE id = ${instanceId}
   `;
@@ -204,9 +206,19 @@ export async function setAnthropicKey(instanceId: string, anthropicKey: string):
 export async function setTelegramConfig(instanceId: string, botToken: string, botUsername: string): Promise<void> {
   const sql = getDb();
   
+  const telegramConfig = JSON.stringify({ 
+    channels: { 
+      telegram: { 
+        botToken, 
+        botUsername, 
+        dmPolicy: "allowlist" 
+      } 
+    } 
+  });
+  
   await sql`
     UPDATE instances 
-    SET moltbot_config = COALESCE(moltbot_config, '{}'::jsonb) || jsonb_build_object('channels', jsonb_build_object('telegram', jsonb_build_object('botToken', ${botToken}, 'botUsername', ${botUsername}, 'dmPolicy', 'allowlist'))),
+    SET moltbot_config = COALESCE(moltbot_config, '{}'::jsonb) || ${telegramConfig}::jsonb,
         config_updated_at = NOW()
     WHERE id = ${instanceId}
   `;
