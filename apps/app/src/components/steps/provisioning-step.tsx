@@ -20,7 +20,6 @@ export function ProvisioningStep() {
     provisioningMessage,
     telegramBotUsername,
     setProvisioningStatus,
-    setTerminalUrl,
     setStep,
     setError,
   } = useOnboardingStore();
@@ -121,18 +120,20 @@ export function ProvisioningStep() {
             <div
               key={step.id}
               className={`flex items-center gap-2 sm:gap-3 p-2.5 sm:p-3 rounded-lg transition-colors ${
-                isCurrent ? "bg-primary/10 border border-primary/20" : "bg-muted"
+                isComplete ? "bg-emerald-50 border border-emerald-200" :
+                isCurrent ? "bg-emerald-50 border border-emerald-300" : "bg-muted"
               }`}
             >
-              {isComplete && <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-primary shrink-0" />}
-              {isCurrent && <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 text-primary animate-spin shrink-0" />}
+              {isComplete && <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600 shrink-0" />}
+              {isCurrent && <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600 animate-spin shrink-0" />}
               {isError && <XCircle className="w-4 h-4 sm:w-5 sm:h-5 text-red-600 shrink-0" />}
               {!isComplete && !isCurrent && !isError && (
                 <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full border-2 border-muted-foreground/30 shrink-0" />
               )}
               <span
                 className={`text-xs sm:text-sm ${
-                  isComplete || isCurrent ? "text-foreground font-medium" : "text-muted-foreground"
+                  isComplete ? "text-emerald-800 font-medium" :
+                  isCurrent ? "text-emerald-900 font-medium" : "text-muted-foreground"
                 }`}
               >
                 {step.label}
