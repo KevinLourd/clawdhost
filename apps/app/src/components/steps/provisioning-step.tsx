@@ -7,10 +7,10 @@ import { Button } from "@/components/ui/button";
 
 // 4 user-friendly steps with reassuring vocabulary
 const STEPS = [
-  { id: "infrastructure", label: "Setting up secure infrastructure" },
+  { id: "infrastructure", label: "Creating secure channel" },
   { id: "server", label: "Preparing your private server" },
   { id: "installing", label: "Installing your AI assistant" },
-  { id: "connecting", label: "Establishing secure connection" },
+  { id: "connecting", label: "Verifying protected access" },
 ];
 
 export function ProvisioningStep() {
