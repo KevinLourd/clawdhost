@@ -1,10 +1,11 @@
 import posthog from "posthog-js";
 
-export const POSTHOG_KEY = "phc_cNwJHfuKr91Gy7qE0kLVnZV9ZIKhDaQejP2Tm2lSmKx";
-export const POSTHOG_HOST = "https://eu.i.posthog.com";
+const POSTHOG_KEY = process.env.NEXT_PUBLIC_POSTHOG_KEY;
+const POSTHOG_HOST = process.env.NEXT_PUBLIC_POSTHOG_HOST || "https://eu.i.posthog.com";
 
 export function initPostHog() {
   if (typeof window === "undefined") return;
+  if (!POSTHOG_KEY) return; // Skip if no key configured
   if (posthog.__loaded) return; // Prevent double init
   
   posthog.init(POSTHOG_KEY, {
