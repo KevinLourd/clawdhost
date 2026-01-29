@@ -5,7 +5,7 @@ import {
   getOrCreateDraftInstance,
   updateInstanceStatus,
 } from "@/lib/db";
-import { patchConfig, setEnvVars, applyConfig } from "@/lib/gateway-rpc";
+import { patchConfig } from "@/lib/gateway-rpc";
 
 interface MoltBotAuth {
   anthropicKey?: string;
@@ -71,7 +71,11 @@ export async function POST() {
     await updateInstanceStatus(instance.id, "configuring");
 
     try {
-      // Step 1: Set environment variables
+      // Build the config patch with env vars and channels
+      // API keys go in the 'env' block per MoltBot docs
+      const configPatch: Record<string, unknown> = {};
+
+      // Add API keys to env block
       const envVars: Record<string, string> = {};
       if (authConfig?.anthropicKey) {
         envVars.ANTHROPIC_API_KEY = authConfig.anthropicKey;
@@ -84,30 +88,27 @@ export async function POST() {
       }
 
       if (Object.keys(envVars).length > 0) {
-        console.log(`[Configure] Setting ${Object.keys(envVars).length} environment variables`);
-        await setEnvVars(instance.gateway_url, instance.gateway_token, envVars);
+        configPatch.env = envVars;
+        console.log(`[Configure] Adding ${Object.keys(envVars).length} API keys to config`);
       }
 
-      // Step 2: Patch config with Telegram channel
+      // Add Telegram channel config
       if (telegram?.botToken) {
         const ownerUsername = telegram.ownerUsername;
-        const channelConfig = {
-          channels: {
-            telegram: {
-              botToken: telegram.botToken,
-              enabled: true,
-              dmPolicy: ownerUsername ? "allowlist" : "pairing",
-              ...(ownerUsername && { allowFrom: [ownerUsername] }),
-            },
+        configPatch.channels = {
+          telegram: {
+            botToken: telegram.botToken,
+            enabled: true,
+            dmPolicy: ownerUsername ? "allowlist" : "pairing",
+            ...(ownerUsername && { allowFrom: [ownerUsername] }),
           },
         };
-        console.log(`[Configure] Patching Telegram config`);
-        await patchConfig(instance.gateway_url, instance.gateway_token, channelConfig);
+        console.log(`[Configure] Adding Telegram channel to config`);
       }
 
-      // Step 3: Apply configuration
-      console.log(`[Configure] Applying configuration`);
-      await applyConfig(instance.gateway_url, instance.gateway_token);
+      // Patch config (includes env vars + channels, triggers restart)
+      console.log(`[Configure] Patching configuration`);
+      await patchConfig(instance.gateway_url, instance.gateway_token, configPatch);
 
       // Mark as ready (configuration complete)
       await updateInstanceStatus(instance.id, "ready");

@@ -223,34 +223,18 @@ async function sendRpcRequest(
 
 /**
  * Patch the MoltBot configuration via Gateway RPC
+ * Config is passed as a JSON string in the 'raw' parameter
+ * API keys should be in the 'env' block of the config
  */
 export async function patchConfig(
   gatewayUrl: string,
   gatewayToken: string,
   config: Record<string, unknown>
 ): Promise<void> {
-  await sendRpcRequest(gatewayUrl, gatewayToken, "config.patch", { config });
-}
-
-/**
- * Apply the configuration (restart services as needed)
- */
-export async function applyConfig(
-  gatewayUrl: string,
-  gatewayToken: string
-): Promise<void> {
-  await sendRpcRequest(gatewayUrl, gatewayToken, "config.apply", {});
-}
-
-/**
- * Set environment variables via Gateway RPC
- */
-export async function setEnvVars(
-  gatewayUrl: string,
-  gatewayToken: string,
-  envVars: Record<string, string>
-): Promise<void> {
-  await sendRpcRequest(gatewayUrl, gatewayToken, "env.set", { vars: envVars });
+  // MoltBot expects the config as a JSON string in 'raw'
+  await sendRpcRequest(gatewayUrl, gatewayToken, "config.patch", { 
+    raw: JSON.stringify(config)
+  });
 }
 
 /**
