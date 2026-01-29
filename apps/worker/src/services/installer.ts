@@ -160,7 +160,7 @@ export async function installClawdBot(
             agents: {
               defaults: {
                 workspace: "~/clawd",
-                model: "claude-opus-4-20250514",
+                model: "claude-opus-4-5-20251101",
               },
             },
             ...(moltbotConfig.channels?.telegram && {
