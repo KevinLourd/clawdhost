@@ -8,6 +8,7 @@ import {
   WelcomeStep,
   AnthropicStep,
   TelegramStep,
+  TelegramUserStep,
   ProvisioningStep,
   CompleteStep,
 } from "@/components/steps";
@@ -15,7 +16,8 @@ import { LogOut } from "lucide-react";
 
 const STEP_LABELS = {
   anthropic: "API Key",
-  telegram: "Channel",
+  telegram: "Bot",
+  "telegram-user": "Access",
   provisioning: "Setup",
   complete: "Done",
 };
@@ -201,6 +203,7 @@ export default function SetupPage() {
           {step === "welcome" && <WelcomeStep />}
           {step === "anthropic" && <AnthropicStep />}
           {step === "telegram" && <TelegramStep />}
+          {step === "telegram-user" && <TelegramUserStep />}
           {step === "provisioning" && <ProvisioningStep />}
           {step === "complete" && <CompleteStep />}
         </div>

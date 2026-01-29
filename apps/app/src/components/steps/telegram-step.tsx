@@ -12,7 +12,6 @@ const logoDevToken = process.env.NEXT_PUBLIC_LOGO_DEV_TOKEN;
 export function TelegramStep() {
   const { setStep, setTelegramBotUsername } = useOnboardingStore();
   const [token, setToken] = useState("");
-  const [telegramUsername, setTelegramUsername] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [validating, setValidating] = useState(false);
@@ -63,25 +62,14 @@ export function TelegramStep() {
       return;
     }
 
-    if (!telegramUsername.trim()) {
-      setError("Please enter your Telegram username");
-      return;
-    }
-
     setLoading(true);
     setError("");
-
-    // Clean up telegram username (remove @ if present)
-    const cleanUsername = telegramUsername.trim().replace(/^@/, "");
 
     try {
       const response = await fetch("/api/onboarding/telegram", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-          telegramBotToken: token,
-          ownerUsername: cleanUsername,
-        }),
+        body: JSON.stringify({ telegramBotToken: token }),
       });
 
       if (!response.ok) {
@@ -91,7 +79,7 @@ export function TelegramStep() {
 
       // Save bot username to store for later steps
       setTelegramBotUsername(botName);
-      setStep("provisioning");
+      setStep("telegram-user");
     } catch (err) {
       setError((err as Error).message);
     } finally {
@@ -156,26 +144,6 @@ export function TelegramStep() {
           )}
         </div>
 
-        <div>
-          <label htmlFor="telegram-username" className="block text-sm font-medium text-foreground mb-1">
-            Your Telegram Username
-          </label>
-          <Input
-            id="telegram-username"
-            type="text"
-            placeholder="@your_username"
-            value={telegramUsername}
-            onChange={(e) => {
-              setTelegramUsername(e.target.value);
-              setError("");
-            }}
-            autoComplete="off"
-          />
-          <p className="text-xs text-muted-foreground mt-1">
-            This grants you access to chat with your bot.
-          </p>
-        </div>
-
         <div className="bg-muted rounded-lg p-3 sm:p-4 text-xs sm:text-sm text-muted-foreground space-y-2">
           <p className="font-medium text-foreground">How to create a Telegram bot:</p>
           <ol className="list-decimal list-inside space-y-1">
@@ -206,8 +174,8 @@ export function TelegramStep() {
           <ArrowLeft className="w-4 h-4" />
           <span className="hidden sm:inline ml-1">Back</span>
         </Button>
-        <Button onClick={handleContinue} className="flex-[2]" disabled={!token || !botName || !telegramUsername.trim() || loading}>
-          {loading ? "Creating..." : botName && telegramUsername.trim() ? `Create @${botName}` : "Complete all fields"}
+        <Button onClick={handleContinue} className="flex-[2]" disabled={!token || !botName || loading}>
+          {loading ? "Saving..." : botName ? "Continue" : "Enter bot token"}
         </Button>
       </div>
     </div>

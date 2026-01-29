@@ -202,12 +202,11 @@ export async function setAnthropicKey(instanceId: string, anthropicKey: string):
   `;
 }
 
-// Onboarding: update telegram config (token + username + owner)
-export async function setTelegramConfig(
+// Onboarding: update telegram bot config (token + bot username)
+export async function setTelegramBotConfig(
   instanceId: string, 
   botToken: string, 
-  botUsername: string,
-  ownerUsername: string
+  botUsername: string
 ): Promise<void> {
   const sql = getDb();
   
@@ -216,7 +215,6 @@ export async function setTelegramConfig(
       telegram: { 
         botToken, 
         botUsername,
-        ownerUsername, // Used to pre-approve the owner in allowFrom
       } 
     } 
   });
@@ -229,8 +227,28 @@ export async function setTelegramConfig(
   `;
 }
 
+// Onboarding: update telegram owner username
+export async function setTelegramOwner(
+  instanceId: string, 
+  ownerUsername: string
+): Promise<void> {
+  const sql = getDb();
+  
+  // We need to merge into the existing telegram config
+  await sql`
+    UPDATE instances 
+    SET moltbot_config = jsonb_set(
+      COALESCE(moltbot_config, '{}'::jsonb),
+      '{channels,telegram,ownerUsername}',
+      ${JSON.stringify(ownerUsername)}::jsonb
+    ),
+    config_updated_at = NOW()
+    WHERE id = ${instanceId}
+  `;
+}
+
 // Get onboarding step based on config
-export function getOnboardingStep(instance: Instance): "welcome" | "anthropic" | "telegram" | "provisioning" | "complete" {
+export function getOnboardingStep(instance: Instance): "welcome" | "anthropic" | "telegram" | "telegram-user" | "provisioning" | "complete" {
   const config = instance.moltbot_config as Record<string, unknown> | null;
   
   if (instance.status === "ready") {
@@ -252,13 +270,18 @@ export function getOnboardingStep(instance: Instance): "welcome" | "anthropic" |
   
   const auth = config.auth as Record<string, unknown> | undefined;
   const channels = config.channels as Record<string, unknown> | undefined;
+  const telegram = channels?.telegram as Record<string, unknown> | undefined;
   
   if (!auth?.anthropicKey) {
     return "anthropic";
   }
   
-  if (!channels?.telegram) {
+  if (!telegram?.botToken) {
     return "telegram";
+  }
+  
+  if (!telegram?.ownerUsername) {
+    return "telegram-user";
   }
   
   return "provisioning";

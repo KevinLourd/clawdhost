@@ -3,7 +3,7 @@ import { auth } from "@clerk/nextjs/server";
 import { 
   getOrCreateUser, 
   getOrCreateDraftInstance,
-  setTelegramConfig 
+  setTelegramBotConfig 
 } from "@/lib/db";
 
 interface TelegramBotInfo {
@@ -47,18 +47,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { telegramBotToken, ownerUsername } = await request.json();
+    const { telegramBotToken } = await request.json();
 
     if (!telegramBotToken || !telegramBotToken.includes(":")) {
       return NextResponse.json(
         { error: "Invalid Telegram bot token format" },
-        { status: 400 }
-      );
-    }
-
-    if (!ownerUsername || typeof ownerUsername !== "string") {
-      return NextResponse.json(
-        { error: "Your Telegram username is required" },
         { status: 400 }
       );
     }
@@ -76,8 +69,8 @@ export async function POST(request: NextRequest) {
     const user = await getOrCreateUser(clerkUserId);
     const instance = await getOrCreateDraftInstance(user.id);
     
-    // Store token, bot username, and owner username
-    await setTelegramConfig(instance.id, telegramBotToken, validation.username!, ownerUsername);
+    // Store token and bot username
+    await setTelegramBotConfig(instance.id, telegramBotToken, validation.username!);
 
     return NextResponse.json({ 
       success: true,
