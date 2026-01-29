@@ -166,10 +166,10 @@ export async function markInstanceReady(instanceId: string): Promise<void> {
 export async function getOrCreateDraftInstance(userId: string, planId: string = "free"): Promise<Instance> {
   const sql = getDb();
   
-  // Check for existing pending instance
+  // Check for existing active instance (any status except terminated)
   const existing = await sql`
     SELECT * FROM instances 
-    WHERE user_id = ${userId} AND status = 'pending'
+    WHERE user_id = ${userId} AND status != 'terminated'
     ORDER BY created_at DESC 
     LIMIT 1
   `;
@@ -178,7 +178,7 @@ export async function getOrCreateDraftInstance(userId: string, planId: string = 
     return existing[0] as Instance;
   }
   
-  // Create new draft instance
+  // Create new draft instance only if no active instance exists
   const created = await sql`
     INSERT INTO instances (user_id, plan_id, status, moltbot_config)
     VALUES (${userId}, ${planId}, 'pending', '{}')
