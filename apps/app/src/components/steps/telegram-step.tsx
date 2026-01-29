@@ -170,12 +170,12 @@ export function TelegramStep() {
       </div>
 
       <div className="flex gap-2 sm:gap-3">
-        <Button variant="outline" onClick={() => setStep("anthropic")} className="flex-1" size="default">
+        <Button variant="outline" onClick={() => setStep("openai")} className="flex-1" size="default">
           <ArrowLeft className="w-4 h-4" />
           <span className="hidden sm:inline ml-1">Back</span>
         </Button>
         <Button onClick={handleContinue} className="flex-[2]" disabled={!token || !botName || loading}>
-          {loading ? "Saving..." : botName ? "Continue" : "Enter bot token"}
+          {loading ? "Saving..." : botName ? `Create @${botName}` : "Enter bot token"}
         </Button>
       </div>
     </div>
