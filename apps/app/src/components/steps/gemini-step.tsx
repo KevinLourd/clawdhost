@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useOnboardingStore } from "@/store/onboarding";
-import { KeyRound, ExternalLink, Mic, Video, FileText } from "lucide-react";
+import { KeyRound, ExternalLink, Mic, Video, Palette } from "lucide-react";
 
 export function GeminiStep() {
   const { setStep } = useOnboardingStore();
@@ -63,16 +63,16 @@ export function GeminiStep() {
         <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Gemini enables</p>
         <div className="grid grid-cols-1 gap-2 text-sm">
           <div className="flex items-center gap-2 text-foreground">
+            <Palette className="w-4 h-4 text-primary" />
+            <span>Image generation (Nano Banana Pro)</span>
+          </div>
+          <div className="flex items-center gap-2 text-foreground">
             <Video className="w-4 h-4 text-primary" />
-            <span>Video understanding and analysis</span>
+            <span>Video generation and understanding (Veo 3)</span>
           </div>
           <div className="flex items-center gap-2 text-foreground">
             <Mic className="w-4 h-4 text-primary" />
-            <span>Voice transcription (alternative to OpenAI)</span>
-          </div>
-          <div className="flex items-center gap-2 text-foreground">
-            <FileText className="w-4 h-4 text-primary" />
-            <span>Large document processing (2M token context)</span>
+            <span>Voice transcription</span>
           </div>
         </div>
       </div>
@@ -110,14 +110,15 @@ export function GeminiStep() {
         </a>
       </div>
 
-      <div className="flex gap-3">
-        <Button variant="outline" onClick={handleSkip} size="lg" className="flex-1">
+      {key ? (
+        <Button onClick={handleContinue} size="lg" className="w-full" disabled={loading}>
+          {loading ? "Saving..." : "Continue"}
+        </Button>
+      ) : (
+        <Button variant="outline" onClick={handleSkip} size="lg" className="w-full">
           Skip
         </Button>
-        <Button onClick={handleContinue} size="lg" className="flex-1" disabled={loading}>
-          {loading ? "Saving..." : key ? "Continue" : "Skip"}
-        </Button>
-      </div>
+      )}
     </div>
   );
 }

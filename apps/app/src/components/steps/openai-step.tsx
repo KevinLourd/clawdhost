@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useOnboardingStore } from "@/store/onboarding";
-import { KeyRound, ExternalLink, Mic, Image, RefreshCw } from "lucide-react";
+import { KeyRound, ExternalLink, Mic, Image } from "lucide-react";
 
 export function OpenAIStep() {
   const { setStep } = useOnboardingStore();
@@ -115,14 +115,15 @@ export function OpenAIStep() {
         </a>
       </div>
 
-      <div className="flex gap-3">
-        <Button variant="outline" onClick={handleSkip} size="lg" className="flex-1">
+      {key ? (
+        <Button onClick={handleContinue} size="lg" className="w-full" disabled={loading}>
+          {loading ? "Saving..." : "Continue"}
+        </Button>
+      ) : (
+        <Button variant="outline" onClick={handleSkip} size="lg" className="w-full">
           Skip
         </Button>
-        <Button onClick={handleContinue} size="lg" className="flex-1" disabled={loading}>
-          {loading ? "Saving..." : key ? "Continue" : "Skip"}
-        </Button>
-      </div>
+      )}
     </div>
   );
 }
