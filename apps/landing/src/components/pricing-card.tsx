@@ -22,7 +22,7 @@ export function PricingCard({ plan }: PricingCardProps) {
     }
     if (plan.id === "free") {
       setIsLoading(true);
-      window.location.href = "https://app.clawdhost.tech";
+      window.location.href = "https://app.clawdhost.tech/sign-up";
     }
   };
 
