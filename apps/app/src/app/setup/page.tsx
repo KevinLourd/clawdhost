@@ -23,8 +23,8 @@ export default function SetupPage() {
 
   if (!isLoaded) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600" />
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
       </div>
     );
   }
@@ -35,23 +35,25 @@ export default function SetupPage() {
   return (
     <div className="min-h-screen flex flex-col">
       {/* Header */}
-      <header className="border-b bg-white/80 backdrop-blur-sm">
+      <header className="border-b bg-background/80 backdrop-blur-sm">
         <div className="max-w-2xl mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center">
-              <span className="text-white font-bold text-sm">C</span>
-            </div>
-            <span className="font-semibold text-slate-900">ClawdHost</span>
-          </div>
+          <a href="https://clawdhost.tech" className="flex items-center gap-2">
+            <img 
+              src="/clawdhost_logo_27kb.jpg" 
+              alt="ClawdHost" 
+              className="w-8 h-8 rounded-lg"
+            />
+            <span className="font-semibold text-foreground">ClawdHost</span>
+          </a>
           <div className="flex items-center gap-3">
-            <span className="text-sm text-slate-600">{user?.emailAddresses[0]?.emailAddress}</span>
+            <span className="text-sm text-muted-foreground">{user?.emailAddresses[0]?.emailAddress}</span>
             <UserButton />
           </div>
         </div>
       </header>
 
       {/* Progress bar */}
-      <div className="bg-white border-b">
+      <div className="bg-card border-b">
         <div className="max-w-2xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             {steps.map((s, index) => (
@@ -60,17 +62,17 @@ export default function SetupPage() {
                   <div
                     className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors ${
                       index < currentIndex
-                        ? "bg-green-600 text-white"
+                        ? "bg-primary text-primary-foreground"
                         : index === currentIndex
-                        ? "bg-green-100 text-green-700 ring-2 ring-green-600"
-                        : "bg-slate-100 text-slate-400"
+                        ? "bg-primary/10 text-primary ring-2 ring-primary"
+                        : "bg-muted text-muted-foreground"
                     }`}
                   >
                     {index < currentIndex ? "✓" : index + 1}
                   </div>
                   <span
                     className={`text-xs mt-1 ${
-                      index <= currentIndex ? "text-slate-700" : "text-slate-400"
+                      index <= currentIndex ? "text-foreground" : "text-muted-foreground"
                     }`}
                   >
                     {STEP_LABELS[s]}
@@ -79,7 +81,7 @@ export default function SetupPage() {
                 {index < steps.length - 1 && (
                   <div
                     className={`w-16 sm:w-24 h-0.5 mx-2 ${
-                      index < currentIndex ? "bg-green-600" : "bg-slate-200"
+                      index < currentIndex ? "bg-primary" : "bg-border"
                     }`}
                   />
                 )}
@@ -91,7 +93,7 @@ export default function SetupPage() {
 
       {/* Main content */}
       <main className="flex-1 flex items-center justify-center p-4">
-        <div className="w-full max-w-md bg-white rounded-2xl shadow-lg border p-6 sm:p-8">
+        <div className="w-full max-w-md bg-card rounded-2xl shadow-lg border p-6 sm:p-8">
           {step === "anthropic" && <AnthropicStep />}
           {step === "telegram" && <TelegramStep />}
           {step === "provisioning" && <ProvisioningStep />}
@@ -100,9 +102,9 @@ export default function SetupPage() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t bg-white/80">
-        <div className="max-w-2xl mx-auto px-4 py-4 text-center text-sm text-slate-500">
-          Powered by <a href="https://moltbot.com" className="text-primary hover:underline">MoltBot</a>
+      <footer className="border-t bg-background/80">
+        <div className="max-w-2xl mx-auto px-4 py-4 text-center text-sm text-muted-foreground">
+          Powered by <a href="https://molt.bot" className="text-primary hover:underline">MoltBot</a>
         </div>
       </footer>
     </div>
