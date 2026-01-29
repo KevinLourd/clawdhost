@@ -15,12 +15,12 @@ export const plans: Plan[] = [
   {
     id: "free",
     name: "Free",
-    description: "Your personal AI assistant, always on. Use your own AI provider.",
+    description: "Your personal MoltBot, always on. Use your own AI provider.",
     price: 0,
     currency: "USD",
     interval: "month",
     features: [
-      "1 AI assistant running 24/7",
+      "1 MoltBot running 24/7",
       "3 messaging apps (WhatsApp, Telegram...)",
       "10 automations (email, calendar...)",
       "10 triggers (reminders, alerts...)",
@@ -28,7 +28,7 @@ export const plans: Plan[] = [
       "Free forever",
     ],
     badge: "Start Here",
-    popular: true,
+    comingSoon: true,
   },
   {
     id: "pro",
@@ -38,14 +38,15 @@ export const plans: Plan[] = [
     currency: "USD",
     interval: "month",
     features: [
-      "Unlimited AI assistants",
+      "Unlimited MoltBots",
       "Unlimited messaging apps",
       "Unlimited automations",
       "Unlimited triggers",
       "Bring your own AI key",
       "Priority support",
     ],
-    badge: "Per Assistant",
+    badge: "Popular",
+    popular: true,
     comingSoon: true,
   },
   {
