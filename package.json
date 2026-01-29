@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "pnpm -r --parallel run dev",
-    "dev:web": "pnpm --filter @clawdhost/web dev",
-    "dev:onboarding": "pnpm --filter @clawdhost/onboarding dev",
+    "dev:landing": "pnpm --filter @clawdhost/landing dev",
+    "dev:app": "pnpm --filter @clawdhost/app dev",
     "dev:worker": "pnpm --filter @clawdhost/worker dev",
     "build": "pnpm -r run build",
     "lint": "pnpm -r run lint"

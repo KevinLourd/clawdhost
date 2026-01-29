@@ -20,8 +20,8 @@ ClawdHost provides managed hosting for MoltBot (AI assistant).
 ```
 clawdhost/
 ├── apps/
-│   ├── web/           # Landing page (clawdhost.tech)
-│   ├── onboarding/    # Setup wizard (app.clawdhost.tech)
+│   ├── landing/       # Landing page (clawdhost.tech) - Vercel: clawdhost-landing
+│   ├── app/           # Setup wizard (app.clawdhost.tech) - Vercel: clawdhost-app
 │   └── worker/        # Provisioning worker (Railway)
 └── packages/
     └── shared/        # Shared types
@@ -51,8 +51,8 @@ Use Neon MCP (project-1-clawdhost-Neon) to verify database state.
 
 ```bash
 pnpm dev              # Run all apps in parallel
-pnpm dev:web          # Landing page (port 3000)
-pnpm dev:onboarding   # Onboarding wizard (port 3001)
+pnpm dev:landing      # Landing page (port 3000)
+pnpm dev:app          # Onboarding wizard (port 3001)
 pnpm dev:worker       # Worker
 pnpm build            # Build all
 ```
