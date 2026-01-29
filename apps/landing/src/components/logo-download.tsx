@@ -61,7 +61,7 @@ export function LogoDownload({ size = "md" }: LogoDownloadProps) {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `molthost-${name.toLowerCase().replace(/[^a-z0-9]/g, "-")}.jpg`;
+      a.download = `clawdhost-${name.toLowerCase().replace(/[^a-z0-9]/g, "-")}.jpg`;
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
@@ -82,13 +82,13 @@ export function LogoDownload({ size = "md" }: LogoDownloadProps) {
       >
         <Image
           src="/clawdhost_logo_27kb.jpg"
-          alt="MoltHost Logo"
+          alt="ClawdHost Logo"
           width={logoSize}
           height={logoSize}
           className="rounded-lg"
         />
         <span className={`font-bold ${size === "sm" ? "text-base" : "text-xl"}`}>
-          MoltHost
+          ClawdHost
         </span>
       </button>
 

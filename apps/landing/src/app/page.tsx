@@ -67,11 +67,7 @@ export default function Home() {
           <span className="text-sm font-medium">Managed MoltBot Hosting</span>
         </div>
         <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-6">
-          Your <span className="relative inline-block">
-            <span className="text-muted-foreground/40 line-through decoration-2">Clawd</span>
-            <span className="absolute -top-1 left-full ml-1 text-primary animate-pulse">Molt</span>
-          </span>
-          <span className="ml-16 md:ml-20">Bot,</span>
+          Your MoltBot,
           <br />
           <span className="text-primary">ready in 5 minutes</span>
         </h1>
@@ -141,9 +137,9 @@ export default function Home() {
           </div>
           
           <div className="border rounded-lg p-6 bg-background/80 backdrop-blur-sm hover:border-primary/30 transition-colors">
-            <h3 className="font-semibold mb-2">Why use MoltHost?</h3>
+            <h3 className="font-semibold mb-2">Why use ClawdHost?</h3>
             <p className="text-muted-foreground text-sm">
-              To be truly useful, MoltBot needs to run 24/7. With MoltHost, 
+              To be truly useful, MoltBot needs to run 24/7. With ClawdHost, 
               your assistant is always available — no need to keep your computer 
               running or manage anything yourself.
             </p>
@@ -235,7 +231,7 @@ export default function Home() {
               </a>
             </div>
             <div className="text-sm text-muted-foreground text-right">
-              <p>© 2026 MoltHost</p>
+              <p>© 2026 ClawdHost</p>
             </div>
           </div>
         </div>

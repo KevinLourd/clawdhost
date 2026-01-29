@@ -74,10 +74,10 @@ export default function SignInPage() {
           <div className="flex items-center gap-3">
             <img 
               src="https://clawdhost.tech/clawdhost_logo_27kb.jpg" 
-              alt="MoltHost" 
+              alt="ClawdHost" 
               className="w-16 h-16 rounded-xl shadow-lg"
             />
-            <span className="text-3xl font-bold text-foreground">MoltHost</span>
+            <span className="text-3xl font-bold text-foreground">ClawdHost</span>
           </div>
           
           <div className="space-y-4">
@@ -126,10 +126,10 @@ export default function SignInPage() {
           <Link href="https://clawdhost.tech" className="flex items-center gap-2">
             <img 
               src="https://clawdhost.tech/clawdhost_logo_27kb.jpg" 
-              alt="MoltHost" 
+              alt="ClawdHost" 
               className="w-8 h-8 rounded-lg"
             />
-            <span className="font-semibold">MoltHost</span>
+            <span className="font-semibold">ClawdHost</span>
           </Link>
         </div>
 

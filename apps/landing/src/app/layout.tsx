@@ -14,22 +14,22 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "MoltHost - Easy MoltBot Hosting, 24/7",
+  title: "ClawdHost - Easy MoltBot Hosting, 24/7",
   description: "The easiest way to host MoltBot. Get your own AI assistant running 24/7 in the cloud. No setup required. Free tier available.",
   metadataBase: new URL("https://clawdhost.tech"),
-  keywords: ["MoltBot", "MoltBot hosting", "AI assistant", "cloud hosting", "macOS VPS", "Linux VPS", "WhatsApp bot", "Telegram bot", "iCloud sync"],
-  authors: [{ name: "MoltHost" }],
-  creator: "MoltHost",
-  publisher: "MoltHost",
+  keywords: ["MoltBot", "MoltBot hosting", "ClawdHost", "AI assistant", "cloud hosting", "macOS VPS", "Linux VPS", "WhatsApp bot", "Telegram bot", "iCloud sync"],
+  authors: [{ name: "ClawdHost" }],
+  creator: "ClawdHost",
+  publisher: "ClawdHost",
   robots: {
     index: true,
     follow: true,
   },
   openGraph: {
-    title: "MoltHost - Easy MoltBot Hosting, 24/7",
+    title: "ClawdHost - Easy MoltBot Hosting, 24/7",
     description: "The easiest way to host MoltBot. Get your own AI assistant running 24/7 in the cloud. No setup required. Free tier available.",
     url: "https://clawdhost.tech",
-    siteName: "MoltHost",
+    siteName: "ClawdHost",
     type: "website",
     locale: "en_US",
     images: [
@@ -37,13 +37,13 @@ export const metadata: Metadata = {
         url: "https://clawdhost.tech/clawdhost_landscape_64kb.jpg",
         width: 1200,
         height: 630,
-        alt: "MoltHost - Easy MoltBot Hosting",
+        alt: "ClawdHost - Easy MoltBot Hosting",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "MoltHost - Easy MoltBot Hosting, 24/7",
+    title: "ClawdHost - Easy MoltBot Hosting, 24/7",
     description: "The easiest way to host MoltBot. Get your own AI assistant running 24/7 in the cloud. No setup required.",
     images: ["https://clawdhost.tech/clawdhost_landscape_64kb.jpg"],
   },
@@ -80,7 +80,7 @@ export default function RootLayout({
                 {
                   "@type": "Organization",
                   "@id": "https://clawdhost.tech/#organization",
-                  name: "MoltHost",
+                  name: "ClawdHost",
                   url: "https://clawdhost.tech",
                   logo: "https://clawdhost.tech/clawdhost_logo_27kb.jpg",
                   contactPoint: {
@@ -93,7 +93,7 @@ export default function RootLayout({
                   "@type": "WebSite",
                   "@id": "https://clawdhost.tech/#website",
                   url: "https://clawdhost.tech",
-                  name: "MoltHost",
+                  name: "ClawdHost",
                   publisher: { "@id": "https://clawdhost.tech/#organization" },
                 },
                 {
