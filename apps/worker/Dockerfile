@@ -1,5 +1,8 @@
 FROM node:22-alpine
 
+# Cache buster - update to force rebuild
+ARG CACHE_BUST=2026-01-29-v2
+
 WORKDIR /app
 
 # Copy package files
