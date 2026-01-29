@@ -23,9 +23,16 @@ interface RpcResponse {
 }
 
 /**
- * Send an RPC request to the Gateway
+ * Wait for a specified number of milliseconds
  */
-async function sendRpcRequest(
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+/**
+ * Send an RPC request to the Gateway (single attempt)
+ */
+async function sendRpcRequestOnce(
   gatewayUrl: string,
   gatewayToken: string,
   method: string,
@@ -73,7 +80,7 @@ async function sendRpcRequest(
             resolve(response.result);
           }
         }
-      } catch (error) {
+      } catch {
         // Ignore non-JSON messages
       }
     });
@@ -90,6 +97,50 @@ async function sendRpcRequest(
       }
     });
   });
+}
+
+/**
+ * Send an RPC request to the Gateway with retry logic
+ * Gateway may take up to 30s to be ready after server provisioning
+ */
+async function sendRpcRequest(
+  gatewayUrl: string,
+  gatewayToken: string,
+  method: string,
+  params?: Record<string, unknown>
+): Promise<unknown> {
+  const maxRetries = 6;
+  const retryDelays = [5000, 5000, 10000, 10000, 15000, 15000]; // Total: 60s of waiting
+  
+  let lastError: Error | null = null;
+  
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      return await sendRpcRequestOnce(gatewayUrl, gatewayToken, method, params);
+    } catch (error) {
+      lastError = error instanceof Error ? error : new Error(String(error));
+      
+      // Check if it's a retryable error (connection errors, 502, etc.)
+      const errorMsg = lastError.message.toLowerCase();
+      const isRetryable = 
+        errorMsg.includes("502") ||
+        errorMsg.includes("503") ||
+        errorMsg.includes("connection") ||
+        errorMsg.includes("econnrefused") ||
+        errorMsg.includes("timeout") ||
+        errorMsg.includes("closed before");
+      
+      if (!isRetryable || attempt === maxRetries) {
+        throw lastError;
+      }
+      
+      const delay = retryDelays[attempt] || 10000;
+      console.log(`[Gateway RPC] Attempt ${attempt + 1} failed: ${lastError.message}. Retrying in ${delay}ms...`);
+      await sleep(delay);
+    }
+  }
+  
+  throw lastError || new Error("RPC request failed");
 }
 
 /**
