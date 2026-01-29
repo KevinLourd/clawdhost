@@ -4,7 +4,10 @@ import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useOnboardingStore } from "@/store/onboarding";
-import { MessageCircle, ExternalLink, ArrowLeft, CheckCircle2 } from "lucide-react";
+import { ExternalLink, ArrowLeft, CheckCircle2 } from "lucide-react";
+import Image from "next/image";
+
+const logoDevToken = process.env.NEXT_PUBLIC_LOGO_DEV_TOKEN;
 
 export function TelegramStep() {
   const { setStep, setTelegramBotUsername } = useOnboardingStore();
@@ -99,8 +102,14 @@ export function TelegramStep() {
   return (
     <div className="space-y-4 sm:space-y-6">
       <div className="text-center space-y-2">
-        <div className="mx-auto w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-primary/10 flex items-center justify-center">
-          <MessageCircle className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
+        <div className="mx-auto w-10 h-10 sm:w-12 sm:h-12 rounded-full overflow-hidden">
+          <Image
+            src={`https://img.logo.dev/telegram.org?token=${logoDevToken}`}
+            alt="Telegram"
+            width={48}
+            height={48}
+            className="w-full h-full object-cover"
+          />
         </div>
         <h2 className="text-xl sm:text-2xl font-semibold text-foreground">Telegram Bot</h2>
         <p className="text-sm sm:text-base text-muted-foreground">
