@@ -7,7 +7,7 @@ import { getProviderForPlan } from "../providers";
 import { hetznerProvider } from "../providers/hetzner";
 import { scalewayProvider } from "../providers/scaleway";
 import { installClawdBot } from "../services/installer";
-import { sendInstanceReadyEmail, sendProvisioningErrorEmail } from "../services/email";
+import { sendMoltBotReadyEmail, sendProvisioningErrorEmail } from "../services/email";
 import { createTunnel, deleteTunnel } from "../services/cloudflare";
 import { saveInstanceToSubscription } from "../services/stripe";
 import {
@@ -211,18 +211,10 @@ async function processProvisioning(request: ProvisionRequest) {
       durationMs: Date.now() - startTime,
     });
 
-    // Step 5: Send instance ready email
-    const planNames: Record<string, string> = {
-      free: "Free",
-      linux: "Essential",
-      "macos-m1": "Apple",
-      "macos-m4": "Pro",
-    };
-
-    await sendInstanceReadyEmail({
+    // Step 5: Send MoltBot ready email
+    await sendMoltBotReadyEmail({
       to: customerEmail,
       customerName,
-      planName: planNames[planId] || planId,
     });
 
     console.log(`[Provision] Complete for ${customerEmail}`);

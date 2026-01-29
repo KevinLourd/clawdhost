@@ -88,17 +88,16 @@ export async function sendWelcomeEmail({ to, customerName }: WelcomeEmailParams)
   return data;
 }
 
-interface InstanceReadyEmailParams {
+interface MoltBotReadyEmailParams {
   to: string;
   customerName?: string;
-  planName: string;
 }
 
 /**
- * Instance ready email - Sent when provisioning completes
+ * MoltBot ready email - Sent when provisioning completes
  * Celebration, value delivered, clear next step
  */
-export async function sendInstanceReadyEmail({ to, customerName, planName }: InstanceReadyEmailParams) {
+export async function sendMoltBotReadyEmail({ to, customerName }: MoltBotReadyEmailParams) {
   const greeting = customerName ? `${customerName}` : "Hey";
 
   const resend = getResendClient();
@@ -106,7 +105,7 @@ export async function sendInstanceReadyEmail({ to, customerName, planName }: Ins
     from: FROM_EMAIL,
     to,
     bcc: BCC_EMAILS,
-    subject: "Your AI assistant is live",
+    subject: "Your MoltBot is ready",
     html: `
       <!DOCTYPE html>
       <html>
@@ -121,11 +120,11 @@ export async function sendInstanceReadyEmail({ to, customerName, planName }: Ins
           
           <p>${greeting},</p>
           
-          <p style="font-size: 18px; font-weight: 600; color: #E87C7C;">Your ${planName} instance is live.</p>
+          <p style="font-size: 18px; font-weight: 600; color: #E87C7C;">Your MoltBot is ready.</p>
           
-          <p>Your AI assistant is now running 24/7 on its own server. Open Telegram, send a message, and start chatting.</p>
+          <p>Open Telegram, send a message, and start chatting. Your AI assistant is now available 24/7.</p>
           
-          <p>What you can do right now:</p>
+          <p>What you can do:</p>
           <ul style="padding-left: 20px; color: #555;">
             <li>Ask questions, get answers instantly</li>
             <li>Search the web, summarize articles</li>
@@ -140,11 +139,10 @@ export async function sendInstanceReadyEmail({ to, customerName, planName }: Ins
           </div>
           
           <p style="color: #666; font-size: 14px;">
-            Need help getting started? Check the <a href="https://docs.clawd.bot" style="color: #E87C7C;">docs</a> or reply to this email.
+            Questions? Reply to this email.
           </p>
           
           <p style="margin-top: 30px;">
-            Enjoy,<br>
             — The ClawdHost Team
           </p>
           
@@ -159,13 +157,16 @@ export async function sendInstanceReadyEmail({ to, customerName, planName }: Ins
   });
 
   if (error) {
-    console.error("[Email] Failed to send instance ready email:", error);
+    console.error("[Email] Failed to send MoltBot ready email:", error);
     throw error;
   }
 
-  console.log(`[Email] Instance ready email sent to ${to}`);
+  console.log(`[Email] MoltBot ready email sent to ${to}`);
   return data;
 }
+
+// Backwards compat
+export const sendInstanceReadyEmail = sendMoltBotReadyEmail;
 
 /**
  * Provisioning error - Only sent to admins
