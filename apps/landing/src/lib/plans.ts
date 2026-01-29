@@ -33,7 +33,7 @@ export const plans: Plan[] = [
     id: "pro",
     name: "Pro",
     description: "For power users. No limits, scale as you need.",
-    price: 49,
+    price: 20,
     currency: "USD",
     interval: "month",
     features: [
@@ -51,7 +51,7 @@ export const plans: Plan[] = [
   {
     id: "apple",
     name: "Apple",
-    description: "Full Apple ecosystem. iMessage, iCloud, and macOS apps.",
+    description: "Dedicated Apple machine. iMessage, iCloud, and macOS apps.",
     price: 149,
     currency: "USD",
     interval: "month",
