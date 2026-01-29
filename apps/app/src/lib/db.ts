@@ -225,7 +225,7 @@ export async function setTelegramConfig(instanceId: string, botToken: string, bo
 }
 
 // Get onboarding step based on config
-export function getOnboardingStep(instance: Instance): "anthropic" | "telegram" | "provisioning" | "complete" {
+export function getOnboardingStep(instance: Instance): "welcome" | "anthropic" | "telegram" | "provisioning" | "complete" {
   const config = instance.moltbot_config as Record<string, unknown> | null;
   
   if (instance.status === "ready") {
@@ -237,7 +237,12 @@ export function getOnboardingStep(instance: Instance): "anthropic" | "telegram" 
   }
   
   if (!config) {
-    return "anthropic";
+    return "welcome";
+  }
+
+  // Check if disclaimer was accepted
+  if (!config.disclaimerAccepted) {
+    return "welcome";
   }
   
   const auth = config.auth as Record<string, unknown> | undefined;
@@ -252,4 +257,16 @@ export function getOnboardingStep(instance: Instance): "anthropic" | "telegram" 
   }
   
   return "provisioning";
+}
+
+// Accept disclaimer
+export async function acceptDisclaimer(instanceId: string): Promise<void> {
+  const sql = getDb();
+  
+  await sql`
+    UPDATE instances 
+    SET moltbot_config = COALESCE(moltbot_config, '{}'::jsonb) || '{"disclaimerAccepted": true}'::jsonb,
+        config_updated_at = NOW()
+    WHERE id = ${instanceId}
+  `;
 }

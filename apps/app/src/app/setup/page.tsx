@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { useUser } from "@clerk/nextjs";
 import { useOnboardingStore } from "@/store/onboarding";
 import {
+  WelcomeStep,
   AnthropicStep,
   TelegramStep,
   ProvisioningStep,
@@ -59,7 +60,8 @@ export default function SetupPage() {
   }
 
   const steps = Object.keys(STEP_LABELS) as Array<keyof typeof STEP_LABELS>;
-  const currentIndex = steps.indexOf(step);
+  // Welcome step is not in progress bar, so map it to -1
+  const currentIndex = step === "welcome" ? -1 : steps.indexOf(step as keyof typeof STEP_LABELS);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -125,6 +127,7 @@ export default function SetupPage() {
       {/* Main content */}
       <main className="flex-1 flex items-center justify-center p-3 sm:p-4">
         <div className="w-full max-w-md bg-card rounded-xl sm:rounded-2xl shadow-lg border p-4 sm:p-6 md:p-8">
+          {step === "welcome" && <WelcomeStep />}
           {step === "anthropic" && <AnthropicStep />}
           {step === "telegram" && <TelegramStep />}
           {step === "provisioning" && <ProvisioningStep />}

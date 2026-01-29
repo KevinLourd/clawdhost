@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-export type OnboardingStep = "anthropic" | "telegram" | "provisioning" | "complete";
+export type OnboardingStep = "welcome" | "anthropic" | "telegram" | "provisioning" | "complete";
 
 interface OnboardingState {
   step: OnboardingStep;
@@ -23,7 +23,7 @@ interface OnboardingState {
 }
 
 const initialState = {
-  step: "anthropic" as OnboardingStep,
+  step: "welcome" as OnboardingStep,
   instanceId: null as string | null,
   provisioningStatus: "idle" as const,
   provisioningMessage: "",
