@@ -12,7 +12,7 @@ importers:
         specifier: ^5
         version: 5.9.3
 
-  apps/onboarding:
+  apps/app:
     dependencies:
       '@clerk/nextjs':
         specifier: ^6.37.0
@@ -76,7 +76,7 @@ importers:
         specifier: ^5
         version: 5.9.3
 
-  apps/web:
+  apps/landing:
     dependencies:
       '@radix-ui/react-slot':
         specifier: ^1.2.4
