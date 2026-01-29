@@ -167,6 +167,8 @@ export async function installClawdBot(
                 telegram: {
                   botToken: moltbotConfig.channels.telegram.botToken,
                   enabled: true,
+                  // Use allowlist policy so allowFrom is respected
+                  dmPolicy: ownerUsername ? "allowlist" : "pairing",
                   // Pre-approve the owner so they don't need pairing code
                   ...(ownerUsername && { allowFrom: [ownerUsername] }),
                 },
