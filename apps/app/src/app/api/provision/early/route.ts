@@ -30,9 +30,12 @@ export async function POST() {
       });
     }
 
-    // Start early provisioning in background (without config)
+    // Start early provisioning (without config)
     await updateInstanceStatus(instance.id, "provisioning");
-    startEarlyProvisioning(instance.id, clerkUserId, instance.plan_id);
+    
+    // IMPORTANT: We MUST await this call, otherwise Vercel will kill the function
+    // before the fetch to the worker completes
+    await startEarlyProvisioning(instance.id, clerkUserId, instance.plan_id);
 
     return NextResponse.json({ 
       instanceId: instance.id,
