@@ -50,6 +50,12 @@ export default function Home() {
               </svg>
               GitHub
             </a>
+            <a 
+              href="https://app.clawdhost.tech/sign-in" 
+              className="text-sm font-medium px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+            >
+              Sign In
+            </a>
           </nav>
         </div>
       </header>
