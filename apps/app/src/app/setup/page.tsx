@@ -166,14 +166,14 @@ export default function SetupPage() {
       </header>
 
       {/* Progress bar */}
-      <div className="bg-card border-b">
+      <div className="bg-card border-b overflow-hidden">
         <div className="max-w-2xl mx-auto px-2 sm:px-4 py-3 sm:py-4">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between min-w-0">
             {steps.map((s, index) => (
-              <div key={s} className="flex items-center">
-                <div className="flex flex-col items-center">
+              <div key={s} className="flex items-center min-w-0">
+                <div className="flex flex-col items-center shrink-0">
                   <div
-                    className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-xs sm:text-sm font-medium transition-colors ${
+                    className={`w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-[10px] sm:text-sm font-medium transition-colors ${
                       index < currentIndex
                         ? "bg-primary text-primary-foreground"
                         : index === currentIndex
@@ -184,7 +184,7 @@ export default function SetupPage() {
                     {index < currentIndex ? "✓" : index + 1}
                   </div>
                   <span
-                    className={`text-[10px] sm:text-xs mt-1 ${
+                    className={`text-[8px] sm:text-xs mt-1 whitespace-nowrap ${
                       index <= currentIndex ? "text-foreground" : "text-muted-foreground"
                     }`}
                   >
@@ -193,7 +193,7 @@ export default function SetupPage() {
                 </div>
                 {index < steps.length - 1 && (
                   <div
-                    className={`w-8 sm:w-16 md:w-24 h-0.5 mx-1 sm:mx-2 ${
+                    className={`flex-1 min-w-2 sm:min-w-8 max-w-6 sm:max-w-16 h-0.5 mx-0.5 sm:mx-2 ${
                       index < currentIndex ? "bg-primary" : "bg-border"
                     }`}
                   />
