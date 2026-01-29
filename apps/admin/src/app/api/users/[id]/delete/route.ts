@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { getUserWithInstances, deleteUserAndInstances } from "@/lib/db";
-import { deleteClerkUser } from "@/lib/clerk";
-import { deleteHetznerServer } from "@/lib/hetzner";
+import { deleteClerkUser, getClerkUser } from "@/lib/clerk";
+import { deprovisionServer } from "@/lib/hetzner";
 
 const ALLOWED_EMAILS = ["kevin@clawdhost.tech"];
 
@@ -28,24 +28,34 @@ export async function DELETE(
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
+    // Get Clerk user email for deprovisioning
+    const clerkUser = await getClerkUser(clerkUserId);
+    const customerEmail = clerkUser?.emailAddresses[0]?.emailAddress || "unknown@unknown.com";
+
     const results = {
       clerk: false,
       db: false,
-      hetzner: false,
+      servers: false,
     };
 
-    // 1. Delete Hetzner servers
-    let hetznerSuccess = true;
+    // 1. Deprovision servers via worker
+    let serversSuccess = true;
     for (const instance of userData.instances) {
-      if (instance.server_id && instance.provider === "hetzner") {
-        const hetznerResult = await deleteHetznerServer(instance.server_id);
-        if (!hetznerResult.success) {
-          console.error(`Failed to delete Hetzner server ${instance.server_id}:`, hetznerResult.error);
-          hetznerSuccess = false;
+      if (instance.server_id && instance.provider) {
+        const result = await deprovisionServer({
+          serverId: instance.server_id,
+          tunnelId: instance.tunnel_id || undefined,
+          provider: instance.provider,
+          customerEmail,
+          reason: "admin_deletion",
+        });
+        if (!result.success) {
+          console.error(`Failed to deprovision server ${instance.server_id}:`, result.error);
+          serversSuccess = false;
         }
       }
     }
-    results.hetzner = hetznerSuccess;
+    results.servers = serversSuccess;
 
     // 2. Delete from Clerk
     const clerkResult = await deleteClerkUser(clerkUserId);

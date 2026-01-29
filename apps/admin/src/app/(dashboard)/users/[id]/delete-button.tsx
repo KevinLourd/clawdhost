@@ -9,7 +9,7 @@ export function DeleteUserButton({ userId, clerkUserId }: { userId: string; cler
   const [showConfirm, setShowConfirm] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [result, setResult] = useState<{ clerk: boolean; db: boolean; hetzner: boolean } | null>(null);
+  const [result, setResult] = useState<{ clerk: boolean; db: boolean; servers: boolean } | null>(null);
 
   const handleDelete = async () => {
     setLoading(true);
@@ -48,7 +48,7 @@ export function DeleteUserButton({ userId, clerkUserId }: { userId: string; cler
         <ul className="text-green-700 space-y-1">
           <li>Clerk: {result.clerk ? "✓ Deleted" : "✗ Failed"}</li>
           <li>Database: {result.db ? "✓ Deleted" : "✗ Failed"}</li>
-          <li>Hetzner: {result.hetzner ? "✓ Deleted" : "✗ No servers"}</li>
+          <li>Servers: {result.servers ? "✓ Deleted" : "✗ Failed or none"}</li>
         </ul>
         <p className="text-green-600 mt-2">Redirecting...</p>
       </div>
@@ -68,7 +68,7 @@ export function DeleteUserButton({ userId, clerkUserId }: { userId: string; cler
             <ul className="text-sm text-red-700 list-disc list-inside mt-1">
               <li>Clerk user and their organizations</li>
               <li>Database user and all instances</li>
-              <li>Hetzner servers (if any)</li>
+              <li>Servers and tunnels (via worker)</li>
             </ul>
           </div>
         </div>

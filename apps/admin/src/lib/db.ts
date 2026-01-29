@@ -22,6 +22,7 @@ export interface Instance {
   provider: string | null;
   server_id: string | null;
   server_ip: string | null;
+  tunnel_id: string | null;
   tunnel_url: string | null;
   terminal_url: string | null;
   moltbot_config: Record<string, unknown> | null;
