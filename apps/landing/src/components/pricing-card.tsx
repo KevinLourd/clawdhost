@@ -4,47 +4,33 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Plan } from "@/lib/plans";
-import { useState } from "react";
 
 interface PricingCardProps {
   plan: Plan;
 }
 
 export function PricingCard({ plan }: PricingCardProps) {
-  const [loading, setLoading] = useState(false);
-
-  const handleCheckout = async () => {
-    setLoading(true);
-    try {
-      const response = await fetch("/api/checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ planId: plan.id }),
-      });
-      const data = await response.json();
-      if (data.url) {
-        window.location.href = data.url;
-      }
-    } catch (error) {
-      console.error("Checkout error:", error);
-    } finally {
-      setLoading(false);
+  const handleClick = () => {
+    if (plan.comingSoon) return;
+    if (plan.id === "free") {
+      window.location.href = "https://app.clawdhost.tech";
     }
   };
 
+  const buttonText = plan.comingSoon 
+    ? "Coming Soon" 
+    : plan.price === 0 
+      ? "Get Started Free" 
+      : "Get Started";
+
   return (
-    <Card className={`relative flex flex-col ${plan.popular ? "border-primary border-2 shadow-lg" : ""}`}>
+    <Card className={`relative flex flex-col ${plan.popular ? "border-primary border-2 shadow-lg" : ""} ${plan.comingSoon ? "opacity-75" : ""}`}>
       {plan.badge && (
         <Badge 
           className="absolute -top-3 left-1/2 -translate-x-1/2" 
           variant={plan.popular ? "default" : "secondary"}
         >
           {plan.badge}
-        </Badge>
-      )}
-      {plan.popular && !plan.badge && (
-        <Badge className="absolute -top-3 left-1/2 -translate-x-1/2">
-          Most Popular
         </Badge>
       )}
       
@@ -55,8 +41,14 @@ export function PricingCard({ plan }: PricingCardProps) {
       
       <CardContent className="flex-1">
         <div className="text-center mb-6">
-          <span className="text-4xl font-bold">${plan.price}</span>
-          <span className="text-muted-foreground">/month</span>
+          {plan.price === 0 ? (
+            <span className="text-4xl font-bold">Free</span>
+          ) : (
+            <>
+              <span className="text-4xl font-bold">${plan.price}</span>
+              <span className="text-muted-foreground">/month</span>
+            </>
+          )}
         </div>
         
         <ul className="space-y-2">
@@ -86,10 +78,10 @@ export function PricingCard({ plan }: PricingCardProps) {
           className="w-full" 
           size="lg"
           variant={plan.popular ? "default" : "outline"}
-          onClick={handleCheckout}
-          disabled={loading}
+          onClick={handleClick}
+          disabled={plan.comingSoon}
         >
-          {loading ? "Loading..." : "Get Started"}
+          {buttonText}
         </Button>
       </CardFooter>
     </Card>
