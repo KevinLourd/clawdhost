@@ -7,10 +7,10 @@ import { Button } from "@/components/ui/button";
 
 // 4 user-friendly steps with reassuring vocabulary
 const STEPS = [
-  { id: "infrastructure", label: "Creating secure channel" },
-  { id: "server", label: "Preparing your private server" },
+  { id: "infrastructure", label: "Preparing your private access" },
+  { id: "server", label: "Starting your dedicated server" },
   { id: "installing", label: "Installing MoltBot" },
-  { id: "connecting", label: "Setting up encrypted connections" },
+  { id: "connecting", label: "Almost there..." },
 ];
 
 export function ProvisioningStep() {
