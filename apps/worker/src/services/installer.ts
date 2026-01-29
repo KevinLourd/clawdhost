@@ -14,7 +14,7 @@ export interface MoltBotConfig {
     telegram?: {
       botToken?: string;
       botUsername?: string;
-      dmPolicy?: string;
+      ownerUsername?: string; // Telegram username of the owner to pre-approve
     };
   };
 }
@@ -152,6 +152,7 @@ export async function installClawdBot(
           await executeCommand(conn, "mkdir -p /home/clawdbot/.clawdbot/agents/main/sessions /home/clawdbot/.clawdbot/credentials /home/clawdbot/clawd");
           
           // Build the clawdbot.json config
+          const ownerUsername = moltbotConfig.channels?.telegram?.ownerUsername;
           const config = {
             gateway: {
               mode: "local",
@@ -166,6 +167,8 @@ export async function installClawdBot(
                 telegram: {
                   botToken: moltbotConfig.channels.telegram.botToken,
                   enabled: true,
+                  // Pre-approve the owner so they don't need pairing code
+                  ...(ownerUsername && { allowFrom: [ownerUsername] }),
                 },
               },
             }),

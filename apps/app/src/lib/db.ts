@@ -202,16 +202,21 @@ export async function setAnthropicKey(instanceId: string, anthropicKey: string):
   `;
 }
 
-// Onboarding: update telegram config (token + username)
-export async function setTelegramConfig(instanceId: string, botToken: string, botUsername: string): Promise<void> {
+// Onboarding: update telegram config (token + username + owner)
+export async function setTelegramConfig(
+  instanceId: string, 
+  botToken: string, 
+  botUsername: string,
+  ownerUsername: string
+): Promise<void> {
   const sql = getDb();
   
   const telegramConfig = JSON.stringify({ 
     channels: { 
       telegram: { 
         botToken, 
-        botUsername, 
-        dmPolicy: "allowlist" 
+        botUsername,
+        ownerUsername, // Used to pre-approve the owner in allowFrom
       } 
     } 
   });

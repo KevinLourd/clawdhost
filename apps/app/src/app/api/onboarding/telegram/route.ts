@@ -47,11 +47,18 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { telegramBotToken } = await request.json();
+    const { telegramBotToken, ownerUsername } = await request.json();
 
     if (!telegramBotToken || !telegramBotToken.includes(":")) {
       return NextResponse.json(
         { error: "Invalid Telegram bot token format" },
+        { status: 400 }
+      );
+    }
+
+    if (!ownerUsername || typeof ownerUsername !== "string") {
+      return NextResponse.json(
+        { error: "Your Telegram username is required" },
         { status: 400 }
       );
     }
@@ -69,8 +76,8 @@ export async function POST(request: NextRequest) {
     const user = await getOrCreateUser(clerkUserId);
     const instance = await getOrCreateDraftInstance(user.id);
     
-    // Store token and username
-    await setTelegramConfig(instance.id, telegramBotToken, validation.username!);
+    // Store token, bot username, and owner username
+    await setTelegramConfig(instance.id, telegramBotToken, validation.username!, ownerUsername);
 
     return NextResponse.json({ 
       success: true,
