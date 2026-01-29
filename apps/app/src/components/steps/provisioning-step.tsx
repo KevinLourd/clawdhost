@@ -2,14 +2,14 @@
 
 import { useEffect, useRef } from "react";
 import { useOnboardingStore } from "@/store/onboarding";
-import { Loader2, CheckCircle2, XCircle, Server } from "lucide-react";
+import { Loader2, CheckCircle2, XCircle, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const STEPS = [
-  { id: "create", label: "Creating server" },
-  { id: "configure", label: "Configuring MoltBot" },
-  { id: "install", label: "Installing dependencies" },
-  { id: "start", label: "Starting services" },
+  { id: "create", label: "Preparing your assistant" },
+  { id: "configure", label: "Setting up your preferences" },
+  { id: "install", label: "Adding superpowers" },
+  { id: "start", label: "Waking up your bot" },
 ];
 
 export function ProvisioningStep() {
@@ -94,11 +94,11 @@ export function ProvisioningStep() {
     <div className="space-y-6">
       <div className="text-center space-y-2">
         <div className="mx-auto w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-          <Server className="w-6 h-6 text-primary" />
+          <Sparkles className="w-6 h-6 text-primary" />
         </div>
-        <h2 className="text-2xl font-semibold text-foreground">Setting up your instance</h2>
+        <h2 className="text-2xl font-semibold text-foreground">Creating your AI assistant</h2>
         <p className="text-muted-foreground">
-          This usually takes 2-3 minutes. You can stay on this page.
+          Almost there! This takes about 2 minutes.
         </p>
       </div>
 
@@ -136,10 +136,10 @@ export function ProvisioningStep() {
       {provisioningStatus === "error" && (
         <div className="space-y-3">
           <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-800">
-            {provisioningMessage || "An error occurred during provisioning."}
+            Something went wrong. Please try again.
           </div>
           <Button onClick={startProvisioning} variant="outline" className="w-full">
-            Retry
+            Try again
           </Button>
         </div>
       )}
