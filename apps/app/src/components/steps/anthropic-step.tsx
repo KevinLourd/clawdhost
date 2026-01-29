@@ -7,7 +7,7 @@ import { useOnboardingStore } from "@/store/onboarding";
 import { KeyRound, ExternalLink, Brain, MessageSquare, Code, Sparkles } from "lucide-react";
 
 export function AnthropicStep() {
-  const { setStep } = useOnboardingStore();
+  const { setStep, setInstanceId } = useOnboardingStore();
   const [key, setKey] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -22,16 +22,31 @@ export function AnthropicStep() {
     setError("");
 
     try {
-      const response = await fetch("/api/onboarding/anthropic", {
+      // Step 1: Save the Anthropic key
+      const saveResponse = await fetch("/api/onboarding/anthropic", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ anthropicKey: key }),
       });
 
-      if (!response.ok) {
-        const data = await response.json();
+      if (!saveResponse.ok) {
+        const data = await saveResponse.json();
         throw new Error(data.error || "Failed to save API key");
       }
+
+      // Step 2: Start early provisioning (fire & forget)
+      // This starts the server while the user fills in the rest of the config
+      const provisionResponse = await fetch("/api/provision/early", {
+        method: "POST",
+      });
+
+      if (provisionResponse.ok) {
+        const { instanceId } = await provisionResponse.json();
+        if (instanceId) {
+          setInstanceId(instanceId);
+        }
+      }
+      // Don't fail if early provisioning fails - user can still continue
 
       setStep("openai");
     } catch (err) {

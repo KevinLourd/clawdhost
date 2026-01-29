@@ -1,16 +1,17 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useCallback } from "react";
 import { useOnboardingStore } from "@/store/onboarding";
 import { Loader2, CheckCircle2, XCircle, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-// 4 user-friendly steps with reassuring vocabulary
+// 5 user-friendly steps with reassuring vocabulary
 const STEPS = [
   { id: "infrastructure", label: "Preparing your private access" },
   { id: "server", label: "Starting your dedicated server" },
   { id: "installing", label: "Installing MoltBot" },
-  { id: "connecting", label: "Almost there..." },
+  { id: "connecting", label: "Setting up secure tunnel" },
+  { id: "configuring", label: "Applying your configuration" },
 ];
 
 export function ProvisioningStep() {
@@ -20,60 +21,51 @@ export function ProvisioningStep() {
     provisioningMessage,
     telegramBotUsername,
     setProvisioningStatus,
+    setInstanceId,
     setStep,
     setError,
   } = useOnboardingStore();
 
   const hasStarted = useRef(false);
   const isPolling = useRef(false);
+  const isConfiguring = useRef(false);
 
-  useEffect(() => {
-    // If we already have an instanceId and we're running, resume polling
-    if (provisioningStatus === "running" && instanceId && !isPolling.current) {
-      isPolling.current = true;
-      pollStatus(instanceId);
-      return;
-    }
+  // Configure the instance via Gateway RPC
+  const configureInstance = useCallback(async () => {
+    if (isConfiguring.current) return;
+    isConfiguring.current = true;
     
-    // Start provisioning if idle and never started
-    // (instanceId may already exist from pending instance - that's fine)
-    if (provisioningStatus === "idle" && !hasStarted.current) {
-      hasStarted.current = true;
-      startProvisioning();
-    }
-  }, [provisioningStatus, instanceId]);
-
-  const startProvisioning = async () => {
-    setProvisioningStatus("running", "infrastructure");
-
+    setProvisioningStatus("running", "configuring");
+    
     try {
-      const response = await fetch("/api/provision", {
+      const response = await fetch("/api/provision/configure", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
       });
-
+      
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.error || "Provisioning failed");
+        throw new Error(data.error || "Configuration failed");
       }
-
-      const { provisioningId } = await response.json();
-      pollStatus(provisioningId);
+      
+      setProvisioningStatus("complete");
+      setStep("complete");
     } catch (err) {
       setProvisioningStatus("error", (err as Error).message);
       setError((err as Error).message);
+      isConfiguring.current = false;
     }
-  };
+  }, [setProvisioningStatus, setStep, setError]);
 
-  const pollStatus = async (id: string) => {
+  // Poll for provisioning status
+  const pollStatus = useCallback(async (id: string) => {
     const poll = async () => {
       try {
         const response = await fetch(`/api/provision/status?id=${id}`);
         const data = await response.json();
 
         if (data.status === "complete") {
-          setProvisioningStatus("complete");
-          setStep("complete");
+          // Server is ready - now configure it
+          await configureInstance();
           return;
         }
 
@@ -92,9 +84,66 @@ export function ProvisioningStep() {
     };
 
     poll();
-  };
+  }, [setProvisioningStatus, setError, configureInstance]);
+
+  // Start full provisioning (fallback for resumed users)
+  const startProvisioning = useCallback(async () => {
+    setProvisioningStatus("running", "infrastructure");
+
+    try {
+      const response = await fetch("/api/provision", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || "Provisioning failed");
+      }
+
+      const { provisioningId } = await response.json();
+      setInstanceId(provisioningId);
+      pollStatus(provisioningId);
+    } catch (err) {
+      setProvisioningStatus("error", (err as Error).message);
+      setError((err as Error).message);
+    }
+  }, [setProvisioningStatus, setInstanceId, setError, pollStatus]);
+
+  useEffect(() => {
+    // If we already have an instanceId and we're running, resume polling
+    if (provisioningStatus === "running" && instanceId && !isPolling.current) {
+      isPolling.current = true;
+      pollStatus(instanceId);
+      return;
+    }
+    
+    // Start provisioning if idle and never started
+    // Early provisioning may have already started from anthropic step
+    if (provisioningStatus === "idle" && !hasStarted.current) {
+      hasStarted.current = true;
+      
+      // Check if we have an instanceId from early provisioning
+      if (instanceId) {
+        // Early provisioning was started, just poll for status
+        setProvisioningStatus("running", "infrastructure");
+        isPolling.current = true;
+        pollStatus(instanceId);
+      } else {
+        // No early provisioning, start full provisioning
+        startProvisioning();
+      }
+    }
+  }, [provisioningStatus, instanceId, pollStatus, startProvisioning, setProvisioningStatus]);
 
   const currentStepIndex = STEPS.findIndex((s) => s.id === provisioningMessage);
+
+  const handleRetry = () => {
+    hasStarted.current = false;
+    isPolling.current = false;
+    isConfiguring.current = false;
+    setProvisioningStatus("idle");
+  };
 
   return (
     <div className="space-y-4 sm:space-y-6">
@@ -148,7 +197,7 @@ export function ProvisioningStep() {
           <div className="bg-red-50 border border-red-200 rounded-lg p-2.5 sm:p-3 text-xs sm:text-sm text-red-800">
             Something went wrong. Please try again.
           </div>
-          <Button onClick={startProvisioning} variant="outline" className="w-full">
+          <Button onClick={handleRetry} variant="outline" className="w-full">
             Try again
           </Button>
         </div>

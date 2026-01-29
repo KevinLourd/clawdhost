@@ -70,6 +70,7 @@ interface ProvisionRequest {
   customerName?: string;
   instanceId?: string;
   moltbotConfig?: MoltBotConfig;
+  earlyMode?: boolean; // If true, provision server without config (config will be patched later via Gateway RPC)
   stripeCustomerId?: string;
   stripeSubscriptionId?: string;
   callbackUrl?: string;
@@ -154,7 +155,12 @@ async function sendProgress(request: ProvisionRequest, step: string, progress: n
 }
 
 async function processProvisioning(request: ProvisionRequest) {
-  const { planId, customerEmail, customerName, moltbotConfig } = request;
+  const { planId, customerEmail, customerName, moltbotConfig, earlyMode } = request;
+  
+  // In earlyMode, we provision the server without config
+  // The config will be patched later via Gateway RPC
+  const effectiveConfig = earlyMode ? undefined : moltbotConfig;
+  console.log(`[Provision] earlyMode: ${earlyMode}, hasConfig: ${!!effectiveConfig}`);
   const startTime = Date.now();
   let serverId: string | undefined;
   let tunnelId: string | undefined;
@@ -243,7 +249,8 @@ async function processProvisioning(request: ProvisionRequest) {
     await sendProgress(request, "installing", 55);
 
     // Step 4: Wait for ClawdBot installation to complete and configure
-    const installResult = await installClawdBot(readyServer, customerEmail, customerName, moltbotConfig);
+    // In earlyMode, we pass no config - will be patched via Gateway RPC later
+    const installResult = await installClawdBot(readyServer, customerEmail, customerName, effectiveConfig);
 
     if (!installResult.success) {
       throw new Error(`Installation failed: ${installResult.error}`);
