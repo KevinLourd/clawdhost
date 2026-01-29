@@ -23,7 +23,7 @@ const STEP_LABELS = {
 export default function SetupPage() {
   const { user, isLoaded } = useUser();
   const { signOut } = useClerk();
-  const { step, isLoading, setStep, setInstanceId, setTerminalUrl, setTelegramBotUsername, setLoading } = useOnboardingStore();
+  const { step, isLoading, setStep, setInstanceId, setTerminalUrl, setTelegramBotUsername, setLoading, setProvisioningStatus } = useOnboardingStore();
   const [showMenu, setShowMenu] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -71,6 +71,17 @@ export default function SetupPage() {
           if (data.telegramBotUsername) {
             setTelegramBotUsername(data.telegramBotUsername);
           }
+          // If we're on provisioning step with an instanceId, set status to resume polling
+          if (data.step === "provisioning" && data.instanceId) {
+            // Map DB status to store status
+            if (data.status === "ready") {
+              setProvisioningStatus("complete");
+            } else if (data.status === "error") {
+              setProvisioningStatus("error");
+            } else if (data.status === "provisioning" || data.status === "configuring") {
+              setProvisioningStatus("running", "create");
+            }
+          }
         }
       } catch (error) {
         console.error("Failed to fetch onboarding status:", error);
@@ -82,7 +93,7 @@ export default function SetupPage() {
     if (isLoaded) {
       fetchStatus();
     }
-  }, [isLoaded, setStep, setInstanceId, setTerminalUrl, setTelegramBotUsername, setLoading]);
+  }, [isLoaded, setStep, setInstanceId, setTerminalUrl, setTelegramBotUsername, setLoading, setProvisioningStatus]);
 
   if (!isLoaded || isLoading) {
     return (

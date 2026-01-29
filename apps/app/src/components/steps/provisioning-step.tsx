@@ -25,16 +25,22 @@ export function ProvisioningStep() {
   } = useOnboardingStore();
 
   const hasStarted = useRef(false);
+  const isPolling = useRef(false);
 
   useEffect(() => {
-    if (provisioningStatus === "idle" && !hasStarted.current) {
+    // If we already have an instanceId and we're running, resume polling
+    if (provisioningStatus === "running" && instanceId && !isPolling.current) {
+      isPolling.current = true;
+      pollStatus(instanceId);
+      return;
+    }
+    
+    // Only start new provisioning if idle and never started
+    if (provisioningStatus === "idle" && !hasStarted.current && !instanceId) {
       hasStarted.current = true;
       startProvisioning();
-    } else if (provisioningStatus === "running" && instanceId) {
-      // Resume polling if already running
-      pollStatus(instanceId);
     }
-  }, []);
+  }, [provisioningStatus, instanceId]);
 
   const startProvisioning = async () => {
     setProvisioningStatus("running", "create");
