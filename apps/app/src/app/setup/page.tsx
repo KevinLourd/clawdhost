@@ -65,17 +65,19 @@ export default function SetupPage() {
     <div className="min-h-screen flex flex-col">
       {/* Header */}
       <header className="border-b bg-background/80 backdrop-blur-sm">
-        <div className="max-w-2xl mx-auto px-4 py-4 flex items-center justify-between">
+        <div className="max-w-2xl mx-auto px-4 py-3 sm:py-4 flex items-center justify-between">
           <a href="https://clawdhost.tech" className="flex items-center gap-2">
             <img 
               src="/clawdhost_logo_27kb.jpg" 
               alt="ClawdHost" 
-              className="w-8 h-8 rounded-lg"
+              className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg"
             />
-            <span className="font-semibold text-foreground">ClawdHost</span>
+            <span className="font-semibold text-foreground hidden sm:inline">ClawdHost</span>
           </a>
-          <div className="flex items-center gap-3">
-            <span className="text-sm text-muted-foreground">{user?.emailAddresses[0]?.emailAddress}</span>
+          <div className="flex items-center gap-2 sm:gap-3">
+            <span className="text-xs sm:text-sm text-muted-foreground max-w-[120px] sm:max-w-none truncate">
+              {user?.emailAddresses[0]?.emailAddress}
+            </span>
             <UserButton />
           </div>
         </div>
@@ -83,13 +85,13 @@ export default function SetupPage() {
 
       {/* Progress bar */}
       <div className="bg-card border-b">
-        <div className="max-w-2xl mx-auto px-4 py-4">
+        <div className="max-w-2xl mx-auto px-2 sm:px-4 py-3 sm:py-4">
           <div className="flex items-center justify-between">
             {steps.map((s, index) => (
               <div key={s} className="flex items-center">
                 <div className="flex flex-col items-center">
                   <div
-                    className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors ${
+                    className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-xs sm:text-sm font-medium transition-colors ${
                       index < currentIndex
                         ? "bg-primary text-primary-foreground"
                         : index === currentIndex
@@ -100,7 +102,7 @@ export default function SetupPage() {
                     {index < currentIndex ? "✓" : index + 1}
                   </div>
                   <span
-                    className={`text-xs mt-1 ${
+                    className={`text-[10px] sm:text-xs mt-1 ${
                       index <= currentIndex ? "text-foreground" : "text-muted-foreground"
                     }`}
                   >
@@ -109,7 +111,7 @@ export default function SetupPage() {
                 </div>
                 {index < steps.length - 1 && (
                   <div
-                    className={`w-16 sm:w-24 h-0.5 mx-2 ${
+                    className={`w-8 sm:w-16 md:w-24 h-0.5 mx-1 sm:mx-2 ${
                       index < currentIndex ? "bg-primary" : "bg-border"
                     }`}
                   />
@@ -121,8 +123,8 @@ export default function SetupPage() {
       </div>
 
       {/* Main content */}
-      <main className="flex-1 flex items-center justify-center p-4">
-        <div className="w-full max-w-md bg-card rounded-2xl shadow-lg border p-6 sm:p-8">
+      <main className="flex-1 flex items-center justify-center p-3 sm:p-4">
+        <div className="w-full max-w-md bg-card rounded-xl sm:rounded-2xl shadow-lg border p-4 sm:p-6 md:p-8">
           {step === "anthropic" && <AnthropicStep />}
           {step === "telegram" && <TelegramStep />}
           {step === "provisioning" && <ProvisioningStep />}
@@ -132,7 +134,7 @@ export default function SetupPage() {
 
       {/* Footer */}
       <footer className="border-t bg-background/80">
-        <div className="max-w-2xl mx-auto px-4 py-4 text-center text-sm text-muted-foreground">
+        <div className="max-w-2xl mx-auto px-4 py-3 sm:py-4 text-center text-xs sm:text-sm text-muted-foreground">
           Need help? <a href="mailto:support@clawdhost.tech" className="text-primary hover:underline">Contact support</a>
         </div>
       </footer>

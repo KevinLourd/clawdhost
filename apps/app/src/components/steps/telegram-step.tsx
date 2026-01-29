@@ -85,13 +85,13 @@ export function TelegramStep() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <div className="text-center space-y-2">
-        <div className="mx-auto w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-          <MessageCircle className="w-6 h-6 text-primary" />
+        <div className="mx-auto w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-primary/10 flex items-center justify-center">
+          <MessageCircle className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
         </div>
-        <h2 className="text-2xl font-semibold text-foreground">Telegram Bot</h2>
-        <p className="text-muted-foreground">
+        <h2 className="text-xl sm:text-2xl font-semibold text-foreground">Telegram Bot</h2>
+        <p className="text-sm sm:text-base text-muted-foreground">
           Connect your Telegram bot to chat with your AI assistant.
         </p>
       </div>
@@ -135,7 +135,7 @@ export function TelegramStep() {
           )}
         </div>
 
-        <div className="bg-muted rounded-lg p-4 text-sm text-muted-foreground space-y-2">
+        <div className="bg-muted rounded-lg p-3 sm:p-4 text-xs sm:text-sm text-muted-foreground space-y-2">
           <p className="font-medium text-foreground">How to create a Telegram bot:</p>
           <ol className="list-decimal list-inside space-y-1">
             <li>Open Telegram and search for @BotFather</li>
@@ -148,24 +148,24 @@ export function TelegramStep() {
           href="https://t.me/BotFather"
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-1 text-sm text-primary hover:underline"
+          className="inline-flex items-center gap-1 text-xs sm:text-sm text-primary hover:underline"
         >
           Open BotFather on Telegram
           <ExternalLink className="w-3 h-3" />
         </a>
       </div>
 
-      <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-sm text-amber-800">
+      <div className="bg-amber-50 border border-amber-200 rounded-lg p-2 sm:p-3 text-xs sm:text-sm text-amber-800">
         <p className="font-medium">Coming soon:</p>
         <p>WhatsApp, Discord, iMessage, and more channels.</p>
       </div>
 
-      <div className="flex gap-3">
-        <Button variant="outline" onClick={() => setStep("anthropic")} className="flex-1">
+      <div className="flex gap-2 sm:gap-3">
+        <Button variant="outline" onClick={() => setStep("anthropic")} className="flex-1" size="default">
           <ArrowLeft className="w-4 h-4" />
-          Back
+          <span className="hidden sm:inline ml-1">Back</span>
         </Button>
-        <Button onClick={handleContinue} size="lg" className="flex-[2]" disabled={!token || !botName || loading}>
+        <Button onClick={handleContinue} className="flex-[2]" disabled={!token || !botName || loading}>
           {loading ? "Creating..." : botName ? `Create @${botName}` : "Enter bot token"}
         </Button>
       </div>

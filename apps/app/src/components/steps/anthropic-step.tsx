@@ -42,13 +42,13 @@ export function AnthropicStep() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <div className="text-center space-y-2">
-        <div className="mx-auto w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-          <KeyRound className="w-6 h-6 text-primary" />
+        <div className="mx-auto w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-primary/10 flex items-center justify-center">
+          <KeyRound className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
         </div>
-        <h2 className="text-2xl font-semibold text-foreground">Anthropic API Key</h2>
-        <p className="text-muted-foreground">
+        <h2 className="text-xl sm:text-2xl font-semibold text-foreground">Anthropic API Key</h2>
+        <p className="text-sm sm:text-base text-muted-foreground">
           Your MoltBot will use Claude to power conversations.
         </p>
       </div>

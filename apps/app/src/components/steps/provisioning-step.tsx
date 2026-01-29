@@ -92,20 +92,20 @@ export function ProvisioningStep() {
   const currentStepIndex = STEPS.findIndex((s) => s.id === provisioningMessage);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <div className="text-center space-y-2">
-        <div className="mx-auto w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-          <Sparkles className="w-6 h-6 text-primary" />
+        <div className="mx-auto w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-primary/10 flex items-center justify-center">
+          <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
         </div>
-        <h2 className="text-2xl font-semibold text-foreground">
+        <h2 className="text-xl sm:text-2xl font-semibold text-foreground">
           {telegramBotUsername ? `Creating @${telegramBotUsername}` : "Creating your AI assistant"}
         </h2>
-        <p className="text-muted-foreground">
+        <p className="text-sm sm:text-base text-muted-foreground">
           Almost there! This takes about 2 minutes.
         </p>
       </div>
 
-      <div className="space-y-3">
+      <div className="space-y-2 sm:space-y-3">
         {STEPS.map((step, index) => {
           const isComplete = index < currentStepIndex;
           const isCurrent = index === currentStepIndex && provisioningStatus === "running";
@@ -114,18 +114,18 @@ export function ProvisioningStep() {
           return (
             <div
               key={step.id}
-              className={`flex items-center gap-3 p-3 rounded-lg transition-colors ${
+              className={`flex items-center gap-2 sm:gap-3 p-2.5 sm:p-3 rounded-lg transition-colors ${
                 isCurrent ? "bg-primary/10 border border-primary/20" : "bg-muted"
               }`}
             >
-              {isComplete && <CheckCircle2 className="w-5 h-5 text-primary" />}
-              {isCurrent && <Loader2 className="w-5 h-5 text-primary animate-spin" />}
-              {isError && <XCircle className="w-5 h-5 text-red-600" />}
+              {isComplete && <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-primary shrink-0" />}
+              {isCurrent && <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 text-primary animate-spin shrink-0" />}
+              {isError && <XCircle className="w-4 h-4 sm:w-5 sm:h-5 text-red-600 shrink-0" />}
               {!isComplete && !isCurrent && !isError && (
-                <div className="w-5 h-5 rounded-full border-2 border-muted-foreground/30" />
+                <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full border-2 border-muted-foreground/30 shrink-0" />
               )}
               <span
-                className={`text-sm ${
+                className={`text-xs sm:text-sm ${
                   isComplete || isCurrent ? "text-foreground font-medium" : "text-muted-foreground"
                 }`}
               >
@@ -137,8 +137,8 @@ export function ProvisioningStep() {
       </div>
 
       {provisioningStatus === "error" && (
-        <div className="space-y-3">
-          <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-800">
+        <div className="space-y-2 sm:space-y-3">
+          <div className="bg-red-50 border border-red-200 rounded-lg p-2.5 sm:p-3 text-xs sm:text-sm text-red-800">
             Something went wrong. Please try again.
           </div>
           <Button onClick={startProvisioning} variant="outline" className="w-full">
