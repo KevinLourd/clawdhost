@@ -89,7 +89,7 @@ export default function PrivacyPolicy() {
             <ul className="list-disc pl-6 text-muted-foreground space-y-2 mt-2">
               <li><strong>Stripe</strong> (USA) - Payment processing</li>
               <li><strong>Clerk</strong> (USA) - Authentication and identity management</li>
-              <li><strong>Hetzner</strong> (Germany) - Linux server infrastructure</li>
+              <li><strong>Hetzner</strong> (Singapore) - Linux server infrastructure</li>
               <li><strong>Scaleway</strong> (France) - macOS server infrastructure</li>
               <li><strong>Cloudflare</strong> (USA) - Secure tunnel access and DNS</li>
               <li><strong>Resend</strong> (USA) - Email delivery</li>
@@ -130,8 +130,8 @@ export default function PrivacyPolicy() {
             </ul>
             <p className="text-muted-foreground mt-3">
               To exercise these rights, contact us at{" "}
-              <a href="mailto:privacy@clawdhost.tech" className="text-primary hover:underline">
-                privacy@clawdhost.tech
+              <a href="mailto:support@clawdhost.tech" className="text-primary hover:underline">
+                support@clawdhost.tech
               </a>. We will respond within 30 days.
             </p>
           </section>
@@ -198,8 +198,8 @@ export default function PrivacyPolicy() {
             </p>
             <p className="text-muted-foreground mt-3">
               Email:{" "}
-              <a href="mailto:privacy@clawdhost.tech" className="text-primary hover:underline">
-                privacy@clawdhost.tech
+              <a href="mailto:support@clawdhost.tech" className="text-primary hover:underline">
+                support@clawdhost.tech
               </a>
             </p>
           </section>

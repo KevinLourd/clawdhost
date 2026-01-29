@@ -28,7 +28,25 @@ export default function TermsOfService() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-semibold mb-4">2. Assumption of Risk</h2>
+            <h2 className="text-2xl font-semibold mb-4">2. Eligibility</h2>
+            <p className="text-muted-foreground mb-3">
+              To use ClawdHost, you must:
+            </p>
+            <ul className="list-disc pl-6 text-muted-foreground space-y-2">
+              <li>Be at least 18 years of age</li>
+              <li>Have the legal capacity to enter into a binding contract</li>
+              <li>Not be prohibited from using the service under applicable laws</li>
+            </ul>
+            <p className="text-muted-foreground mt-3">
+              By using ClawdHost, you represent and warrant that you meet these requirements. 
+              If you are using the service on behalf of an organization, you represent that you 
+              have the authority to bind that organization to these terms. We reserve the right 
+              to terminate accounts that do not meet these eligibility requirements.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-2xl font-semibold mb-4">3. Assumption of Risk</h2>
             <p className="text-muted-foreground mb-3">
               <strong>YOU EXPRESSLY ACKNOWLEDGE AND AGREE THAT:</strong>
             </p>
@@ -44,7 +62,7 @@ export default function TermsOfService() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-semibold mb-4">3. Disclaimer of Warranties</h2>
+            <h2 className="text-2xl font-semibold mb-4">4. Disclaimer of Warranties</h2>
             <p className="text-muted-foreground">
               THE SERVICE IS PROVIDED &quot;AS IS&quot; AND &quot;AS AVAILABLE&quot; WITHOUT WARRANTIES OF ANY KIND, 
               EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO IMPLIED WARRANTIES OF MERCHANTABILITY, 
@@ -56,7 +74,7 @@ export default function TermsOfService() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-semibold mb-4">4. Limitation of Liability</h2>
+            <h2 className="text-2xl font-semibold mb-4">5. Limitation of Liability</h2>
             <p className="text-muted-foreground mb-3">
               TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, IN NO EVENT SHALL CLAWDHOST, ITS OFFICERS, 
               DIRECTORS, EMPLOYEES, AGENTS, OR AFFILIATES BE LIABLE FOR ANY:
@@ -78,7 +96,7 @@ export default function TermsOfService() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-semibold mb-4">5. Indemnification</h2>
+            <h2 className="text-2xl font-semibold mb-4">6. Indemnification</h2>
             <p className="text-muted-foreground">
               You agree to indemnify, defend, and hold harmless ClawdHost and its officers, directors, 
               employees, agents, and affiliates from and against any and all claims, damages, losses, 
@@ -91,7 +109,7 @@ export default function TermsOfService() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-semibold mb-4">6. Third-Party Services</h2>
+            <h2 className="text-2xl font-semibold mb-4">7. Third-Party Services</h2>
             <p className="text-muted-foreground mb-3">
               Your use of MoltBot may involve integration with third-party services including but not 
               limited to WhatsApp, Telegram, iMessage, iCloud, Anthropic Claude, and various APIs. 
@@ -108,7 +126,7 @@ export default function TermsOfService() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-semibold mb-4">7. Acceptable Use</h2>
+            <h2 className="text-2xl font-semibold mb-4">8. Acceptable Use</h2>
             <p className="text-muted-foreground">
               You agree not to use ClawdHost for:
             </p>
@@ -124,7 +142,7 @@ export default function TermsOfService() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-semibold mb-4">8. Subscription and Billing</h2>
+            <h2 className="text-2xl font-semibold mb-4">9. Subscription and Billing</h2>
             <ul className="list-disc pl-6 text-muted-foreground space-y-2">
               <li>Subscriptions are billed monthly in advance</li>
               <li>Prices are listed in USD</li>
@@ -135,7 +153,7 @@ export default function TermsOfService() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-semibold mb-4">9. Service Availability</h2>
+            <h2 className="text-2xl font-semibold mb-4">10. Service Availability</h2>
             <p className="text-muted-foreground">
               We target 99.9% uptime but do not guarantee uninterrupted service. We are not liable 
               for downtime caused by: (a) scheduled or emergency maintenance; (b) third-party 
@@ -145,7 +163,7 @@ export default function TermsOfService() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-semibold mb-4">10. Your Responsibilities</h2>
+            <h2 className="text-2xl font-semibold mb-4">11. Your Responsibilities</h2>
             <ul className="list-disc pl-6 text-muted-foreground space-y-2">
               <li>Keep your access credentials and API keys secure</li>
               <li>Configure MoltBot&apos;s permissions and capabilities responsibly</li>
@@ -157,7 +175,7 @@ export default function TermsOfService() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-semibold mb-4">11. Termination</h2>
+            <h2 className="text-2xl font-semibold mb-4">12. Termination</h2>
             <p className="text-muted-foreground">
               We reserve the right to suspend or terminate your account immediately and without notice 
               if you violate these terms, engage in abusive behavior, or pose a risk to our infrastructure 
@@ -167,7 +185,7 @@ export default function TermsOfService() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-semibold mb-4">12. Open Source</h2>
+            <h2 className="text-2xl font-semibold mb-4">13. Open Source</h2>
             <p className="text-muted-foreground">
               MoltBot is third-party open-source software. We are not the developers of MoltBot and 
               make no representations regarding its functionality, security, or fitness for any purpose. 
@@ -176,7 +194,7 @@ export default function TermsOfService() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-semibold mb-4">13. Governing Law and Disputes</h2>
+            <h2 className="text-2xl font-semibold mb-4">14. Governing Law and Disputes</h2>
             <p className="text-muted-foreground">
               These terms shall be governed by and construed in accordance with the laws of France, 
               without regard to its conflict of law provisions. Any disputes arising from these terms 
@@ -186,7 +204,7 @@ export default function TermsOfService() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-semibold mb-4">14. Severability</h2>
+            <h2 className="text-2xl font-semibold mb-4">15. Severability</h2>
             <p className="text-muted-foreground">
               If any provision of these terms is found to be unenforceable or invalid, that provision 
               shall be limited or eliminated to the minimum extent necessary, and the remaining provisions 
@@ -195,7 +213,7 @@ export default function TermsOfService() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-semibold mb-4">15. Entire Agreement</h2>
+            <h2 className="text-2xl font-semibold mb-4">16. Entire Agreement</h2>
             <p className="text-muted-foreground">
               These terms, together with our Privacy Policy, constitute the entire agreement between 
               you and ClawdHost regarding the service and supersede all prior agreements.
@@ -203,7 +221,7 @@ export default function TermsOfService() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-semibold mb-4">16. Changes to Terms</h2>
+            <h2 className="text-2xl font-semibold mb-4">17. Changes to Terms</h2>
             <p className="text-muted-foreground">
               We may update these terms from time to time. We will notify you of material changes via 
               email or through the service. Continued use of the service after changes take effect 
@@ -212,11 +230,11 @@ export default function TermsOfService() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-semibold mb-4">17. Contact</h2>
+            <h2 className="text-2xl font-semibold mb-4">18. Contact</h2>
             <p className="text-muted-foreground">
               For questions about these terms, contact us at{" "}
-              <a href="mailto:legal@clawdhost.tech" className="text-primary hover:underline">
-                legal@clawdhost.tech
+              <a href="mailto:support@clawdhost.tech" className="text-primary hover:underline">
+                support@clawdhost.tech
               </a>
             </p>
           </section>
