@@ -1,20 +1,61 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useOnboardingStore } from "@/store/onboarding";
-import { MessageCircle, ExternalLink, ArrowLeft } from "lucide-react";
+import { MessageCircle, ExternalLink, ArrowLeft, CheckCircle2 } from "lucide-react";
 
 export function TelegramStep() {
   const { setStep } = useOnboardingStore();
   const [token, setToken] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [validating, setValidating] = useState(false);
+  const [botName, setBotName] = useState<string | null>(null);
+  const validateTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Validate token and fetch bot name
+  useEffect(() => {
+    if (validateTimeoutRef.current) {
+      clearTimeout(validateTimeoutRef.current);
+    }
+    
+    setBotName(null);
+    
+    if (!token.includes(":")) {
+      return;
+    }
+
+    setValidating(true);
+    validateTimeoutRef.current = setTimeout(async () => {
+      try {
+        const res = await fetch(`https://api.telegram.org/bot${token}/getMe`);
+        const data = await res.json();
+        
+        if (data.ok && data.result?.username) {
+          setBotName(data.result.username);
+          setError("");
+        } else {
+          setError("Invalid bot token");
+        }
+      } catch {
+        setError("Failed to validate token");
+      } finally {
+        setValidating(false);
+      }
+    }, 500);
+
+    return () => {
+      if (validateTimeoutRef.current) {
+        clearTimeout(validateTimeoutRef.current);
+      }
+    };
+  }, [token]);
 
   const handleContinue = async () => {
-    if (!token.includes(":")) {
-      setError("Invalid bot token format");
+    if (!token.includes(":") || !botName) {
+      setError("Please enter a valid bot token");
       return;
     }
 
@@ -58,18 +99,38 @@ export function TelegramStep() {
           <label htmlFor="bot-token" className="block text-sm font-medium text-foreground mb-1">
             Bot Token
           </label>
-          <Input
-            id="bot-token"
-            type="password"
-            placeholder="123456789:ABCdefGHIjklMNOpqrsTUVwxyz"
-            value={token}
-            onChange={(e) => {
-              setToken(e.target.value);
-              setError("");
-            }}
-            className={error ? "border-red-500" : ""}
-          />
+          <div className="relative">
+            <Input
+              id="bot-token"
+              type="password"
+              placeholder="123456789:ABCdefGHIjklMNOpqrsTUVwxyz"
+              value={token}
+              onChange={(e) => {
+                setToken(e.target.value);
+                setError("");
+              }}
+              className={error ? "border-red-500" : botName ? "border-green-500 pr-10" : ""}
+              autoComplete="off"
+              data-1p-ignore
+              data-lpignore="true"
+            />
+            {validating && (
+              <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+              </div>
+            )}
+            {botName && !validating && (
+              <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                <CheckCircle2 className="w-5 h-5 text-green-500" />
+              </div>
+            )}
+          </div>
           {error && <p className="text-sm text-red-600 mt-1">{error}</p>}
+          {botName && (
+            <p className="text-sm text-green-600 mt-1 flex items-center gap-1">
+              Bot found: <span className="font-medium">@{botName}</span>
+            </p>
+          )}
         </div>
 
         <div className="bg-muted rounded-lg p-4 text-sm text-muted-foreground space-y-2">
@@ -102,8 +163,8 @@ export function TelegramStep() {
           <ArrowLeft className="w-4 h-4" />
           Back
         </Button>
-        <Button onClick={handleContinue} size="lg" className="flex-[2]" disabled={!token || loading}>
-          {loading ? "Saving..." : "Launch Instance"}
+        <Button onClick={handleContinue} size="lg" className="flex-[2]" disabled={!token || !botName || loading}>
+          {loading ? "Creating..." : botName ? `Create @${botName}` : "Enter bot token"}
         </Button>
       </div>
     </div>

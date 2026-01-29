@@ -68,6 +68,9 @@ export function AnthropicStep() {
               setError("");
             }}
             className={error ? "border-red-500" : ""}
+            autoComplete="off"
+            data-1p-ignore
+            data-lpignore="true"
           />
           {error && <p className="text-sm text-red-600 mt-1">{error}</p>}
         </div>
