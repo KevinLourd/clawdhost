@@ -1,10 +1,10 @@
 "use client";
 
 import { useOnboardingStore } from "@/store/onboarding";
-import { CheckCircle2, ExternalLink, MessageCircle, Terminal } from "lucide-react";
+import { CheckCircle2, ExternalLink, MessageCircle } from "lucide-react";
 
 export function CompleteStep() {
-  const { terminalUrl, telegramBotUsername } = useOnboardingStore();
+  const { telegramBotUsername } = useOnboardingStore();
 
   const telegramLink = telegramBotUsername 
     ? `https://t.me/${telegramBotUsername}` 
@@ -47,27 +47,12 @@ export function CompleteStep() {
           </div>
         )}
 
-        {terminalUrl && (
-          <a
-            href={terminalUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-2 sm:gap-3 p-3 sm:p-4 rounded-lg bg-muted border border-border hover:bg-accent transition-colors"
-          >
-            <Terminal className="w-5 h-5 text-muted-foreground shrink-0" />
-            <div className="flex-1 min-w-0">
-              <p className="font-medium text-foreground text-sm sm:text-base">Web Terminal</p>
-              <p className="text-xs sm:text-sm text-muted-foreground">Advanced configuration and logs</p>
-            </div>
-            <ExternalLink className="w-4 h-4 text-muted-foreground shrink-0" />
-          </a>
-        )}
       </div>
 
       <div className="bg-green-50 border border-green-200 rounded-lg p-3 sm:p-4 text-xs sm:text-sm text-green-800">
         <p className="font-medium mb-1">What&apos;s included:</p>
         <ul className="space-y-0.5 sm:space-y-1">
-          <li>• Claude Sonnet 4 as your AI model</li>
+          <li>• Claude Opus 4.5 as your AI model</li>
           <li>• Pre-installed skills: web search, coding, file management</li>
           <li>• Session memory (conversations saved automatically)</li>
           <li>• 24/7 availability on your dedicated server</li>
