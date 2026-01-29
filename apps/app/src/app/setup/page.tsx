@@ -7,6 +7,8 @@ import { identifyUser } from "@/lib/posthog";
 import {
   WelcomeStep,
   AnthropicStep,
+  OpenAIStep,
+  GeminiStep,
   TelegramStep,
   TelegramUserStep,
   ProvisioningStep,
@@ -15,7 +17,9 @@ import {
 import { LogOut } from "lucide-react";
 
 const STEP_LABELS = {
-  anthropic: "API Key",
+  anthropic: "Claude",
+  openai: "OpenAI",
+  gemini: "Gemini",
   telegram: "Bot",
   "telegram-user": "Access",
   provisioning: "Setup",
@@ -205,6 +209,8 @@ export default function SetupPage() {
         <div className="w-full max-w-md bg-card rounded-xl sm:rounded-2xl shadow-lg border p-4 sm:p-6 md:p-8">
           {step === "welcome" && <WelcomeStep />}
           {step === "anthropic" && <AnthropicStep />}
+          {step === "openai" && <OpenAIStep />}
+          {step === "gemini" && <GeminiStep />}
           {step === "telegram" && <TelegramStep />}
           {step === "telegram-user" && <TelegramUserStep />}
           {step === "provisioning" && <ProvisioningStep />}

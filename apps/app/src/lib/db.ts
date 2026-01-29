@@ -34,6 +34,9 @@ export interface Instance {
   provisioned_at: Date | null;
   ready_at: Date | null;
   terminated_at: Date | null;
+  gateway_url: string | null;
+  gateway_token: string | null;
+  provisioning_status: { step: string; progress: number } | null;
 }
 
 // User operations
@@ -202,6 +205,76 @@ export async function setAnthropicKey(instanceId: string, anthropicKey: string):
   `;
 }
 
+// Onboarding: update OpenAI key in config (optional)
+export async function setOpenAIKey(instanceId: string, openaiKey: string | null): Promise<void> {
+  const sql = getDb();
+  
+  if (openaiKey) {
+    // Set the key using jsonb_set to preserve existing auth keys
+    await sql`
+      UPDATE instances 
+      SET moltbot_config = jsonb_set(
+        jsonb_set(
+          COALESCE(moltbot_config, '{}'::jsonb),
+          '{auth,openaiKey}',
+          ${JSON.stringify(openaiKey)}::jsonb
+        ),
+        '{_openaiConfigured}',
+        'true'::jsonb
+      ),
+      config_updated_at = NOW()
+      WHERE id = ${instanceId}
+    `;
+  } else {
+    // Just mark as configured (skipped)
+    await sql`
+      UPDATE instances 
+      SET moltbot_config = jsonb_set(
+        COALESCE(moltbot_config, '{}'::jsonb),
+        '{_openaiConfigured}',
+        'true'::jsonb
+      ),
+      config_updated_at = NOW()
+      WHERE id = ${instanceId}
+    `;
+  }
+}
+
+// Onboarding: update Gemini key in config (optional)
+export async function setGeminiKey(instanceId: string, geminiKey: string | null): Promise<void> {
+  const sql = getDb();
+  
+  if (geminiKey) {
+    // Set the key using jsonb_set to preserve existing auth keys
+    await sql`
+      UPDATE instances 
+      SET moltbot_config = jsonb_set(
+        jsonb_set(
+          COALESCE(moltbot_config, '{}'::jsonb),
+          '{auth,geminiKey}',
+          ${JSON.stringify(geminiKey)}::jsonb
+        ),
+        '{_geminiConfigured}',
+        'true'::jsonb
+      ),
+      config_updated_at = NOW()
+      WHERE id = ${instanceId}
+    `;
+  } else {
+    // Just mark as configured (skipped)
+    await sql`
+      UPDATE instances 
+      SET moltbot_config = jsonb_set(
+        COALESCE(moltbot_config, '{}'::jsonb),
+        '{_geminiConfigured}',
+        'true'::jsonb
+      ),
+      config_updated_at = NOW()
+      WHERE id = ${instanceId}
+    `;
+  }
+}
+
 // Onboarding: update telegram bot config (token + bot username)
 export async function setTelegramBotConfig(
   instanceId: string, 
@@ -248,7 +321,7 @@ export async function setTelegramOwner(
 }
 
 // Get onboarding step based on config
-export function getOnboardingStep(instance: Instance): "welcome" | "anthropic" | "telegram" | "telegram-user" | "provisioning" | "complete" {
+export function getOnboardingStep(instance: Instance): "welcome" | "anthropic" | "openai" | "gemini" | "telegram" | "telegram-user" | "provisioning" | "complete" {
   const config = instance.moltbot_config as Record<string, unknown> | null;
   
   if (instance.status === "ready") {
@@ -276,6 +349,16 @@ export function getOnboardingStep(instance: Instance): "welcome" | "anthropic" |
     return "anthropic";
   }
   
+  // OpenAI step (optional) - check if user has passed this step
+  if (!config._openaiConfigured) {
+    return "openai";
+  }
+  
+  // Gemini step (optional) - check if user has passed this step
+  if (!config._geminiConfigured) {
+    return "gemini";
+  }
+  
   if (!telegram?.botToken) {
     return "telegram";
   }
@@ -299,7 +382,7 @@ export async function acceptDisclaimer(instanceId: string): Promise<void> {
   `;
 }
 
-// Update provisioning progress (stored in moltbot_config._provisioning)
+// Update provisioning progress (stored in dedicated column)
 export async function updateProvisioningProgress(
   instanceId: string,
   step: string,
@@ -307,37 +390,21 @@ export async function updateProvisioningProgress(
 ): Promise<void> {
   const sql = getDb();
   
-  const provisioningData = JSON.stringify({
-    _provisioning: {
-      currentStep: step,
-      progress,
-      updatedAt: new Date().toISOString(),
-    }
-  });
+  const provisioningStatus = JSON.stringify({ step, progress });
   
   await sql`
     UPDATE instances 
-    SET moltbot_config = COALESCE(moltbot_config, '{}'::jsonb) || ${provisioningData}::jsonb
+    SET provisioning_status = ${provisioningStatus}::jsonb
     WHERE id = ${instanceId}
   `;
 }
 
-// Get provisioning progress from moltbot_config
+// Get provisioning progress from dedicated column
 export function getProvisioningProgress(instance: Instance): { step: string; progress: number } | null {
-  const config = instance.moltbot_config as Record<string, unknown> | null;
-  const provisioning = config?._provisioning as { currentStep?: string; progress?: number } | undefined;
-  
-  if (!provisioning?.currentStep) {
-    return null;
-  }
-  
-  return {
-    step: provisioning.currentStep,
-    progress: provisioning.progress || 0,
-  };
+  return instance.provisioning_status;
 }
 
-// Store gateway credentials for remote RPC access
+// Store gateway credentials for remote RPC access (dedicated columns)
 export async function setGatewayCredentials(
   instanceId: string,
   gatewayUrl: string,
@@ -345,32 +412,22 @@ export async function setGatewayCredentials(
 ): Promise<void> {
   const sql = getDb();
   
-  const gatewayConfig = JSON.stringify({
-    gateway: {
-      url: gatewayUrl,
-      token: gatewayToken,
-    }
-  });
-  
   await sql`
     UPDATE instances 
-    SET moltbot_config = COALESCE(moltbot_config, '{}'::jsonb) || ${gatewayConfig}::jsonb,
-        config_updated_at = NOW()
+    SET gateway_url = ${gatewayUrl},
+        gateway_token = ${gatewayToken}
     WHERE id = ${instanceId}
   `;
 }
 
-// Get gateway credentials from moltbot_config
+// Get gateway credentials from dedicated columns
 export function getGatewayCredentials(instance: Instance): { url: string; token: string } | null {
-  const config = instance.moltbot_config as Record<string, unknown> | null;
-  const gateway = config?.gateway as { url?: string; token?: string } | undefined;
-  
-  if (!gateway?.url || !gateway?.token) {
+  if (!instance.gateway_url || !instance.gateway_token) {
     return null;
   }
   
   return {
-    url: gateway.url,
-    token: gateway.token,
+    url: instance.gateway_url,
+    token: instance.gateway_token,
   };
 }

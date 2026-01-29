@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
     let currentStep = "infrastructure";
     let progress = 0;
 
-    // Get real-time provisioning progress from moltbot_config
+    // Get real-time provisioning progress
     const provisioningProgress = getProvisioningProgress(instance);
 
     switch (instance.status) {

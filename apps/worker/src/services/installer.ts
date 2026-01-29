@@ -9,6 +9,8 @@ import { ServerInfo } from "../providers";
 export interface MoltBotConfig {
   auth?: {
     anthropicKey?: string;
+    openaiKey?: string;
+    geminiKey?: string;
   };
   channels?: {
     telegram?: {
@@ -201,9 +203,19 @@ export async function installClawdBot(
           const configJson = JSON.stringify(config, null, 2).replace(/"/g, '\\"');
           await executeCommand(conn, `echo "${configJson}" > /home/clawdbot/.clawdbot/clawdbot.json`);
           
-          // Write Anthropic key to separate file (more secure)
+          // Write API keys to .env file (more secure than in config)
+          const envLines: string[] = [];
           if (moltbotConfig.auth?.anthropicKey) {
-            await executeCommand(conn, `echo "ANTHROPIC_API_KEY=${moltbotConfig.auth.anthropicKey}" > /home/clawdbot/.clawdbot/.env`);
+            envLines.push(`ANTHROPIC_API_KEY=${moltbotConfig.auth.anthropicKey}`);
+          }
+          if (moltbotConfig.auth?.openaiKey) {
+            envLines.push(`OPENAI_API_KEY=${moltbotConfig.auth.openaiKey}`);
+          }
+          if (moltbotConfig.auth?.geminiKey) {
+            envLines.push(`GEMINI_API_KEY=${moltbotConfig.auth.geminiKey}`);
+          }
+          if (envLines.length > 0) {
+            await executeCommand(conn, `echo "${envLines.join("\\n")}" > /home/clawdbot/.clawdbot/.env`);
           }
           
           // Set permissions

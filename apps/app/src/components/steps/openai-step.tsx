@@ -4,17 +4,23 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useOnboardingStore } from "@/store/onboarding";
-import { KeyRound, ExternalLink, Brain, MessageSquare, Code, Sparkles } from "lucide-react";
+import { KeyRound, ExternalLink, Mic, Image, RefreshCw } from "lucide-react";
 
-export function AnthropicStep() {
+export function OpenAIStep() {
   const { setStep } = useOnboardingStore();
   const [key, setKey] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleContinue = async () => {
-    if (!key.startsWith("sk-ant-")) {
-      setError("Invalid API key format. It should start with sk-ant-");
+    // Skip if empty (optional key)
+    if (!key) {
+      setStep("gemini");
+      return;
+    }
+
+    if (!key.startsWith("sk-")) {
+      setError("Invalid API key format. It should start with sk-");
       return;
     }
 
@@ -22,10 +28,10 @@ export function AnthropicStep() {
     setError("");
 
     try {
-      const response = await fetch("/api/onboarding/anthropic", {
+      const response = await fetch("/api/onboarding/openai", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ anthropicKey: key }),
+        body: JSON.stringify({ openaiKey: key }),
       });
 
       if (!response.ok) {
@@ -33,12 +39,16 @@ export function AnthropicStep() {
         throw new Error(data.error || "Failed to save API key");
       }
 
-      setStep("openai");
+      setStep("gemini");
     } catch (err) {
       setError((err as Error).message);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleSkip = () => {
+    setStep("gemini");
   };
 
   return (
@@ -47,44 +57,40 @@ export function AnthropicStep() {
         <div className="mx-auto w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-primary/10 flex items-center justify-center">
           <KeyRound className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
         </div>
-        <h2 className="text-xl sm:text-2xl font-semibold text-foreground">Anthropic API Key</h2>
+        <h2 className="text-xl sm:text-2xl font-semibold text-foreground">OpenAI API Key</h2>
         <p className="text-sm sm:text-base text-muted-foreground">
-          Required. Powers the main AI capabilities of your assistant.
+          Optional. Enables voice messages and additional features.
         </p>
       </div>
 
       {/* Use cases */}
       <div className="bg-muted/50 rounded-lg p-4 space-y-3">
-        <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Claude Opus 4.5 enables</p>
-        <div className="grid grid-cols-2 gap-2 text-sm">
+        <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">OpenAI enables</p>
+        <div className="grid grid-cols-1 gap-2 text-sm">
           <div className="flex items-center gap-2 text-foreground">
-            <MessageSquare className="w-4 h-4 text-primary" />
-            <span>Conversations</span>
+            <Mic className="w-4 h-4 text-primary" />
+            <span>Voice message transcription (Whisper)</span>
           </div>
           <div className="flex items-center gap-2 text-foreground">
-            <Brain className="w-4 h-4 text-primary" />
-            <span>Reasoning</span>
+            <Image className="w-4 h-4 text-primary" />
+            <span>Image understanding (GPT-4o)</span>
           </div>
           <div className="flex items-center gap-2 text-foreground">
-            <Code className="w-4 h-4 text-primary" />
-            <span>Code execution</span>
-          </div>
-          <div className="flex items-center gap-2 text-foreground">
-            <Sparkles className="w-4 h-4 text-primary" />
-            <span>Tool calling</span>
+            <RefreshCw className="w-4 h-4 text-primary" />
+            <span>Fallback AI model if Claude is unavailable</span>
           </div>
         </div>
       </div>
 
       <div className="space-y-4">
         <div>
-          <label htmlFor="api-key" className="block text-sm font-medium text-foreground mb-1">
+          <label htmlFor="openai-key" className="block text-sm font-medium text-foreground mb-1">
             API Key
           </label>
           <Input
-            id="api-key"
+            id="openai-key"
             type="password"
-            placeholder="sk-ant-..."
+            placeholder="sk-..."
             value={key}
             onChange={(e) => {
               setKey(e.target.value);
@@ -99,19 +105,24 @@ export function AnthropicStep() {
         </div>
 
         <a
-          href="https://console.anthropic.com/settings/keys"
+          href="https://platform.openai.com/api-keys"
           target="_blank"
           rel="noopener noreferrer"
           className="inline-flex items-center gap-1 text-sm text-primary hover:underline"
         >
-          Get your API key from Anthropic Console
+          Get your API key from OpenAI Platform
           <ExternalLink className="w-3 h-3" />
         </a>
       </div>
 
-      <Button onClick={handleContinue} size="lg" className="w-full" disabled={!key || loading}>
-        {loading ? "Saving..." : "Continue"}
-      </Button>
+      <div className="flex gap-3">
+        <Button variant="outline" onClick={handleSkip} size="lg" className="flex-1">
+          Skip
+        </Button>
+        <Button onClick={handleContinue} size="lg" className="flex-1" disabled={loading}>
+          {loading ? "Saving..." : key ? "Continue" : "Skip"}
+        </Button>
+      </div>
     </div>
   );
 }
