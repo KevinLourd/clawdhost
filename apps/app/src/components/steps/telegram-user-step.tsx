@@ -7,7 +7,7 @@ import { useOnboardingStore } from "@/store/onboarding";
 import { ArrowLeft, Shield, Users } from "lucide-react";
 import Image from "next/image";
 
-const logoDevToken = process.env.NEXT_PUBLIC_LOGO_DEV_TOKEN;
+const logoDevToken = process.env.NEXT_PUBLIC_LOGO_DEV_TOKEN?.trim();
 
 export function TelegramUserStep() {
   const { setStep, telegramBotUsername } = useOnboardingStore();
