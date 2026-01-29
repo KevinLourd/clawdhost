@@ -89,6 +89,16 @@ export function OpenAIStep() {
       </div>
 
       <div className="space-y-4">
+        <a
+          href="https://platform.openai.com/api-keys"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1 text-sm text-primary hover:underline"
+        >
+          Get your API key from OpenAI Platform
+          <ExternalLink className="w-3 h-3" />
+        </a>
+
         <div>
           <label htmlFor="openai-key" className="block text-sm font-medium text-foreground mb-1">
             API Key
@@ -109,16 +119,6 @@ export function OpenAIStep() {
           />
           {error && <p className="text-sm text-red-600 mt-1">{error}</p>}
         </div>
-
-        <a
-          href="https://platform.openai.com/api-keys"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-1 text-sm text-primary hover:underline"
-        >
-          Get your API key from OpenAI Platform
-          <ExternalLink className="w-3 h-3" />
-        </a>
       </div>
 
       <div className="flex gap-3">

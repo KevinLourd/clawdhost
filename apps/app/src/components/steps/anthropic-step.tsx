@@ -92,6 +92,16 @@ export function AnthropicStep() {
       </div>
 
       <div className="space-y-4">
+        <a
+          href="https://console.anthropic.com/settings/keys"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1 text-sm text-primary hover:underline"
+        >
+          Get your API key from Anthropic Console
+          <ExternalLink className="w-3 h-3" />
+        </a>
+
         <div>
           <label htmlFor="api-key" className="block text-sm font-medium text-foreground mb-1">
             API Key
@@ -112,16 +122,6 @@ export function AnthropicStep() {
           />
           {error && <p className="text-sm text-red-600 mt-1">{error}</p>}
         </div>
-
-        <a
-          href="https://console.anthropic.com/settings/keys"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-1 text-sm text-primary hover:underline"
-        >
-          Get your API key from Anthropic Console
-          <ExternalLink className="w-3 h-3" />
-        </a>
       </div>
 
       <Button onClick={handleContinue} size="lg" className="w-full" disabled={!key || loading}>
