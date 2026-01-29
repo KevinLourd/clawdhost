@@ -78,9 +78,7 @@ async function startProvisioning(
     }
 
     // Get app URL for callback
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL 
-      || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null) 
-      || "https://app.clawdhost.tech";
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://app.clawdhost.tech";
 
     // Call worker API with config
     const response = await fetch(`${workerUrl}/provision`, {
