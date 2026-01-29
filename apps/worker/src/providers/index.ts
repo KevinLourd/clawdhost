@@ -55,8 +55,11 @@ export interface Provider {
  */
 export function getProviderForPlan(planId: string): "hetzner" | "scaleway" {
   switch (planId) {
+    case "free":
+    case "pro":
     case "linux":
       return "hetzner";
+    case "apple":
     case "macos-m1":
     case "macos-m4":
       return "scaleway";
