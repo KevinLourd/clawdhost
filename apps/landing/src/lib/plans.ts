@@ -12,10 +12,27 @@ export interface Plan {
 
 export const plans: Plan[] = [
   {
+    id: "free-trial",
+    name: "Free Trial",
+    description: "Try ClawdBot for 7 days. No credit card required.",
+    price: 0,
+    currency: "USD",
+    interval: "month",
+    features: [
+      "Full ClawdBot access",
+      "Telegram channel",
+      "Web automation",
+      "Internet search",
+      "7 days free",
+      "No commitment",
+    ],
+    badge: "Start Here",
+  },
+  {
     id: "linux",
     name: "Essential",
     description: "All ClawdBot features. Reliable, fast, affordable.",
-    price: 29,
+    price: 9,
     currency: "USD",
     interval: "month",
     features: [
@@ -26,7 +43,7 @@ export const plans: Plan[] = [
       "Email management",
       "24/7 web terminal access",
     ],
-    badge: "Popular",
+    popular: true,
   },
   {
     id: "macos-m1",
@@ -43,7 +60,7 @@ export const plans: Plan[] = [
       "Full desktop access",
       "Priority support",
     ],
-    popular: true,
+    badge: "Apple Ecosystem",
   },
   {
     id: "macos-m4",
