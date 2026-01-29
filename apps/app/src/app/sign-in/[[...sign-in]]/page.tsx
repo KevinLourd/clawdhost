@@ -147,10 +147,22 @@ export default function SignInPage() {
               disabled={!isLoaded || isLoading}
               className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-border rounded-lg hover:bg-accent transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <GoogleIcon />
-              <span className="font-medium">
-                {isLoading ? "Connecting..." : "Continue with Google"}
-              </span>
+              {!isLoaded ? (
+                <>
+                  <div className="w-5 h-5 border-2 border-muted-foreground border-t-transparent rounded-full animate-spin" />
+                  <span className="font-medium">Loading...</span>
+                </>
+              ) : isLoading ? (
+                <>
+                  <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                  <span className="font-medium">Connecting...</span>
+                </>
+              ) : (
+                <>
+                  <GoogleIcon />
+                  <span className="font-medium">Continue with Google</span>
+                </>
+              )}
             </button>
 
             <p className="text-center text-sm text-muted-foreground">
