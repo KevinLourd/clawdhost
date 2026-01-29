@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { trackEvent, identifyUser } from "@/lib/posthog";
 
 interface WaitlistModalProps {
   isOpen: boolean;
@@ -34,6 +35,8 @@ export function WaitlistModal({ isOpen, onClose, planName }: WaitlistModalProps)
         throw new Error(data.error || "Something went wrong");
       }
 
+      identifyUser(email, { waitlist_plan: planName });
+      trackEvent("waitlist_joined", { plan_name: planName, email });
       setSuccess(true);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");

@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Plan } from "@/lib/plans";
 import { WaitlistModal } from "./waitlist-modal";
+import { trackEvent } from "@/lib/posthog";
 
 interface PricingCardProps {
   plan: Plan;
@@ -16,6 +17,13 @@ export function PricingCard({ plan }: PricingCardProps) {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleClick = () => {
+    trackEvent("pricing_card_clicked", {
+      plan_id: plan.id,
+      plan_name: plan.name,
+      plan_price: plan.price,
+      coming_soon: plan.comingSoon,
+    });
+
     if (plan.comingSoon) {
       setShowWaitlist(true);
       return;

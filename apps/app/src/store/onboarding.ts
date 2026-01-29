@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { trackEvent } from "@/lib/posthog";
 
 export type OnboardingStep = "welcome" | "anthropic" | "telegram" | "provisioning" | "complete";
 
@@ -36,10 +37,15 @@ const initialState = {
 export const useOnboardingStore = create<OnboardingState>((set) => ({
   ...initialState,
 
-  setStep: (step) => set({ step }),
+  setStep: (step) => {
+    trackEvent("onboarding_step_reached", { step });
+    set({ step });
+  },
   setInstanceId: (instanceId) => set({ instanceId }),
-  setProvisioningStatus: (provisioningStatus, provisioningMessage = "") =>
-    set({ provisioningStatus, provisioningMessage }),
+  setProvisioningStatus: (provisioningStatus, provisioningMessage = "") => {
+    trackEvent("provisioning_status_changed", { status: provisioningStatus, message: provisioningMessage });
+    set({ provisioningStatus, provisioningMessage });
+  },
   setTerminalUrl: (terminalUrl) => set({ terminalUrl }),
   setTelegramBotUsername: (telegramBotUsername) => set({ telegramBotUsername }),
   setError: (error) => set({ error }),

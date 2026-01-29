@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useUser, useClerk } from "@clerk/nextjs";
 import { useOnboardingStore } from "@/store/onboarding";
+import { identifyUser } from "@/lib/posthog";
 import {
   WelcomeStep,
   AnthropicStep,
@@ -40,6 +41,20 @@ export default function SetupPage() {
   // Get display name (prefer name over email)
   const displayName = user?.firstName || user?.fullName || user?.emailAddresses[0]?.emailAddress;
   const initials = user?.firstName?.[0]?.toUpperCase() || user?.emailAddresses[0]?.emailAddress?.[0]?.toUpperCase() || "?";
+
+  // Identify user in PostHog when loaded
+  useEffect(() => {
+    if (isLoaded && user) {
+      const email = user.emailAddresses[0]?.emailAddress;
+      if (email) {
+        identifyUser(email, {
+          name: user.fullName || user.firstName,
+          clerk_user_id: user.id,
+          created_at: user.createdAt,
+        });
+      }
+    }
+  }, [isLoaded, user]);
 
   // Fetch onboarding status on mount
   useEffect(() => {
