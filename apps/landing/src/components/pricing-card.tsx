@@ -52,19 +52,19 @@ export function PricingCard({ plan }: PricingCardProps) {
           </Badge>
         )}
         
-        <CardHeader className="text-center pb-2">
-          <CardTitle className="text-2xl">{plan.name}</CardTitle>
-          <CardDescription className="min-h-[40px]">{plan.description}</CardDescription>
+        <CardHeader className="text-center pb-2 px-4 sm:px-6">
+          <CardTitle className="text-xl sm:text-2xl">{plan.name}</CardTitle>
+          <CardDescription className="min-h-[40px] text-xs sm:text-sm">{plan.description}</CardDescription>
         </CardHeader>
         
-        <CardContent className="flex-1">
-          <div className="text-center mb-6">
+        <CardContent className="flex-1 px-4 sm:px-6">
+          <div className="text-center mb-4 sm:mb-6">
             {plan.price === 0 ? (
-              <span className="text-4xl font-bold">Free</span>
+              <span className="text-3xl sm:text-4xl font-bold">Free</span>
             ) : (
               <>
-                <span className="text-4xl font-bold">${plan.price}</span>
-                <span className="text-muted-foreground">/month/moltbot</span>
+                <span className="text-3xl sm:text-4xl font-bold">${plan.price}</span>
+                <span className="text-muted-foreground text-xs sm:text-sm">/month/moltbot</span>
               </>
             )}
           </div>
@@ -91,7 +91,7 @@ export function PricingCard({ plan }: PricingCardProps) {
           </ul>
         </CardContent>
         
-        <CardFooter>
+        <CardFooter className="px-4 sm:px-6 pb-4 sm:pb-6">
           <Button 
             className="w-full" 
             size="lg"

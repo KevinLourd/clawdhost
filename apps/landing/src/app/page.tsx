@@ -61,17 +61,17 @@ export default function Home() {
       </header>
 
       {/* Hero */}
-      <section className="container mx-auto px-4 py-16 md:py-24 text-center">
-        <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 rounded-full px-4 py-1.5 mb-6">
-          <span className="text-lg">🦞</span>
-          <span className="text-sm font-medium">Managed MoltBot Hosting</span>
+      <section className="container mx-auto px-4 py-12 sm:py-16 md:py-24 text-center">
+        <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 rounded-full px-3 sm:px-4 py-1.5 mb-4 sm:mb-6">
+          <span className="text-base sm:text-lg">🦞</span>
+          <span className="text-xs sm:text-sm font-medium">Managed MoltBot Hosting</span>
         </div>
-        <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-6">
+        <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold tracking-tight mb-4 sm:mb-6">
           Your MoltBot,
           <br />
           <span className="text-primary">ready in 5 minutes</span>
         </h1>
-        <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
+        <p className="text-base sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-6 sm:mb-8 px-2">
           No AWS account needed. No terminal required.
           <br className="hidden md:block" />
           We host <a href="https://github.com/moltbot/moltbot" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">MoltBot</a> for you — manage everything from your browser.
@@ -99,15 +99,15 @@ export default function Home() {
       </section>
 
       {/* Pricing */}
-      <section className="relative py-16">
+      <section className="relative py-12 sm:py-16">
         <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-primary/10 to-primary/5 -z-10" />
         <div className="container mx-auto px-4">
-        <h2 className="text-3xl font-bold text-center mb-4">Choose your plan</h2>
-        <p className="text-muted-foreground text-center mb-12 max-w-xl mx-auto">
+        <h2 className="text-2xl sm:text-3xl font-bold text-center mb-3 sm:mb-4">Choose your plan</h2>
+        <p className="text-sm sm:text-base text-muted-foreground text-center mb-8 sm:mb-12 max-w-xl mx-auto px-2">
           All plans include MoltBot ready to use, accessible from your browser.
         </p>
         
-        <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+        <div className="grid gap-6 sm:gap-8 md:grid-cols-3 max-w-5xl mx-auto">
           {plans.map((plan) => (
             <PricingCard key={plan.id} plan={plan} />
           ))}
@@ -116,12 +116,12 @@ export default function Home() {
       </section>
 
       {/* FAQ */}
-      <section className="container mx-auto px-4 py-16">
-        <h2 className="text-3xl font-bold text-center mb-12">Frequently Asked Questions</h2>
+      <section className="container mx-auto px-4 py-12 sm:py-16">
+        <h2 className="text-2xl sm:text-3xl font-bold text-center mb-8 sm:mb-12">Frequently Asked Questions</h2>
         
-        <div className="max-w-2xl mx-auto space-y-6">
-          <div className="border rounded-lg p-6 bg-background/80 backdrop-blur-sm hover:border-primary/30 transition-colors">
-            <h3 className="font-semibold mb-2">What is MoltBot?</h3>
+        <div className="max-w-2xl mx-auto space-y-4 sm:space-y-6">
+          <div className="border rounded-lg p-4 sm:p-6 bg-background/80 backdrop-blur-sm hover:border-primary/30 transition-colors">
+            <h3 className="font-semibold mb-2 text-sm sm:text-base">What is MoltBot?</h3>
             <p className="text-muted-foreground text-sm">
               <a 
                 href="https://github.com/moltbot/moltbot" 
@@ -136,8 +136,8 @@ export default function Home() {
             </p>
           </div>
           
-          <div className="border rounded-lg p-6 bg-background/80 backdrop-blur-sm hover:border-primary/30 transition-colors">
-            <h3 className="font-semibold mb-2">Why use ClawdHost?</h3>
+          <div className="border rounded-lg p-4 sm:p-6 bg-background/80 backdrop-blur-sm hover:border-primary/30 transition-colors">
+            <h3 className="font-semibold mb-2 text-sm sm:text-base">Why use ClawdHost?</h3>
             <p className="text-muted-foreground text-sm">
               To be truly useful, MoltBot needs to run 24/7. With ClawdHost, 
               your assistant is always available — no need to keep your computer 
@@ -145,8 +145,8 @@ export default function Home() {
             </p>
           </div>
           
-          <div className="border rounded-lg p-6 bg-background/80 backdrop-blur-sm hover:border-primary/30 transition-colors">
-            <h3 className="font-semibold mb-2">Why choose an Apple plan?</h3>
+          <div className="border rounded-lg p-4 sm:p-6 bg-background/80 backdrop-blur-sm hover:border-primary/30 transition-colors">
+            <h3 className="font-semibold mb-2 text-sm sm:text-base">Why choose an Apple plan?</h3>
             <p className="text-muted-foreground text-sm">
               Apple plans give you access to iMessage and your iCloud files. 
               If you use Apple devices, your MoltBot will have access to 
@@ -154,16 +154,16 @@ export default function Home() {
             </p>
           </div>
           
-          <div className="border rounded-lg p-6 bg-background/80 backdrop-blur-sm hover:border-primary/30 transition-colors">
-            <h3 className="font-semibold mb-2">How does it work?</h3>
+          <div className="border rounded-lg p-4 sm:p-6 bg-background/80 backdrop-blur-sm hover:border-primary/30 transition-colors">
+            <h3 className="font-semibold mb-2 text-sm sm:text-base">How does it work?</h3>
             <p className="text-muted-foreground text-sm">
               After payment, we set everything up automatically. In a few minutes, 
               you receive an email with a link to access your MoltBot.
             </p>
           </div>
 
-          <div className="border rounded-lg p-6 bg-background/80 backdrop-blur-sm hover:border-primary/30 transition-colors">
-            <h3 className="font-semibold mb-2">Is it open source?</h3>
+          <div className="border rounded-lg p-4 sm:p-6 bg-background/80 backdrop-blur-sm hover:border-primary/30 transition-colors">
+            <h3 className="font-semibold mb-2 text-sm sm:text-base">Is it open source?</h3>
             <p className="text-muted-foreground text-sm">
               Yes! Our platform is 100% open source on{" "}
               <a 

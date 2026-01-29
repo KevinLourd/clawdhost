@@ -32,7 +32,7 @@ export function LogoDownload({ size = "md" }: LogoDownloadProps) {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const logoSize = size === "sm" ? 32 : 44;
+  const logoSize = size === "sm" ? 28 : 36;
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -77,7 +77,7 @@ export function LogoDownload({ size = "md" }: LogoDownloadProps) {
       <button
         onClick={handleClick}
         onContextMenu={handleContextMenu}
-        className="flex items-center gap-3 hover:opacity-80 transition-opacity cursor-pointer"
+        className="flex items-center gap-2 sm:gap-3 hover:opacity-80 transition-opacity cursor-pointer"
         title="Click to download logo"
       >
         <Image
@@ -87,10 +87,10 @@ export function LogoDownload({ size = "md" }: LogoDownloadProps) {
           height={logoSize}
           className="rounded-lg"
         />
-        <span className={`font-bold ${size === "sm" ? "text-base" : "text-xl"}`}>
+        <span className={`font-bold hidden sm:inline ${size === "sm" ? "text-base" : "text-lg sm:text-xl"}`}>
           ClawdHost
         </span>
-        <span className="text-[10px] font-medium bg-primary/10 text-primary px-1.5 py-0.5 rounded-full uppercase tracking-wide">
+        <span className="text-[9px] sm:text-[10px] font-medium bg-primary/10 text-primary px-1 sm:px-1.5 py-0.5 rounded-full uppercase tracking-wide">
           beta
         </span>
       </button>
