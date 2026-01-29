@@ -32,12 +32,12 @@ export default function Home() {
           <LogoDownload size="md" />
           <nav className="flex items-center gap-6">
             <a 
-              href="https://clawd.bot" 
+              href="https://molt.bot" 
               target="_blank" 
               rel="noopener noreferrer"
               className="text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
-              What is ClawdBot?
+              What is MoltBot?
             </a>
             <a 
               href="https://github.com/KevinLourd/clawdhost" 
@@ -64,17 +64,21 @@ export default function Home() {
       <section className="container mx-auto px-4 py-16 md:py-24 text-center">
         <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 rounded-full px-4 py-1.5 mb-6">
           <span className="text-lg">🦞</span>
-          <span className="text-sm font-medium">Managed ClawdBot Hosting</span>
+          <span className="text-sm font-medium">Managed MoltBot Hosting</span>
         </div>
         <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-6">
-          Your ClawdBot,
+          Your <span className="relative inline-block">
+            <span className="text-muted-foreground/40 line-through decoration-2">Clawd</span>
+            <span className="absolute -top-1 left-full ml-1 text-primary animate-pulse">Molt</span>
+          </span>
+          <span className="ml-16 md:ml-20">Bot,</span>
           <br />
           <span className="text-primary">ready in 5 minutes</span>
         </h1>
         <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
           No AWS account needed. No terminal required.
           <br className="hidden md:block" />
-          We host <a href="https://github.com/clawdbot/clawdbot" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">ClawdBot</a> for you — manage everything from your browser.
+          We host <a href="https://github.com/moltbot/moltbot" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">MoltBot</a> for you — manage everything from your browser.
         </p>
         <div className="flex flex-wrap items-center justify-center gap-4 text-sm text-muted-foreground">
           <div className="flex items-center gap-1">
@@ -104,7 +108,7 @@ export default function Home() {
         <div className="container mx-auto px-4">
         <h2 className="text-3xl font-bold text-center mb-4">Choose your plan</h2>
         <p className="text-muted-foreground text-center mb-12 max-w-xl mx-auto">
-          All plans include ClawdBot ready to use, accessible from your browser.
+          All plans include MoltBot ready to use, accessible from your browser.
         </p>
         
         <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
@@ -121,15 +125,15 @@ export default function Home() {
         
         <div className="max-w-2xl mx-auto space-y-6">
           <div className="border rounded-lg p-6 bg-background/80 backdrop-blur-sm hover:border-primary/30 transition-colors">
-            <h3 className="font-semibold mb-2">What is ClawdBot?</h3>
+            <h3 className="font-semibold mb-2">What is MoltBot?</h3>
             <p className="text-muted-foreground text-sm">
               <a 
-                href="https://github.com/clawdbot/clawdbot" 
+                href="https://github.com/moltbot/moltbot" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="text-primary hover:underline"
               >
-                ClawdBot
+                MoltBot
               </a>
               {" "}is an open-source personal AI assistant. It can manage your emails, 
               browse the web, automate tasks — all via WhatsApp, Telegram, or Discord.
@@ -137,9 +141,9 @@ export default function Home() {
           </div>
           
           <div className="border rounded-lg p-6 bg-background/80 backdrop-blur-sm hover:border-primary/30 transition-colors">
-            <h3 className="font-semibold mb-2">Why use Clawd Host?</h3>
+            <h3 className="font-semibold mb-2">Why use MoltHost?</h3>
             <p className="text-muted-foreground text-sm">
-              To be truly useful, ClawdBot needs to run 24/7. With Clawd Host, 
+              To be truly useful, MoltBot needs to run 24/7. With MoltHost, 
               your assistant is always available — no need to keep your computer 
               running or manage anything yourself.
             </p>
@@ -149,7 +153,7 @@ export default function Home() {
             <h3 className="font-semibold mb-2">Why choose an Apple plan?</h3>
             <p className="text-muted-foreground text-sm">
               Apple plans give you access to iMessage and your iCloud files. 
-              If you use Apple devices, your ClawdBot will have access to 
+              If you use Apple devices, your MoltBot will have access to 
               your entire ecosystem.
             </p>
           </div>
@@ -158,7 +162,7 @@ export default function Home() {
             <h3 className="font-semibold mb-2">How does it work?</h3>
             <p className="text-muted-foreground text-sm">
               After payment, we set everything up automatically. In a few minutes, 
-              you receive an email with a link to access your ClawdBot.
+              you receive an email with a link to access your MoltBot.
             </p>
           </div>
 
@@ -176,12 +180,12 @@ export default function Home() {
               </a>
               . We host the original{" "}
               <a 
-                href="https://github.com/clawdbot/clawdbot" 
+                href="https://github.com/moltbot/moltbot" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="text-primary hover:underline"
               >
-                ClawdBot project
+                MoltBot project
               </a>
               .
             </p>
@@ -204,12 +208,12 @@ export default function Home() {
                 GitHub
               </a>
               <a 
-                href="https://github.com/clawdbot/clawdbot" 
+                href="https://github.com/moltbot/moltbot" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="hover:text-foreground transition-colors"
               >
-                ClawdBot OSS
+                MoltBot OSS
               </a>
               <a 
                 href="mailto:support@clawdhost.tech" 
@@ -231,7 +235,7 @@ export default function Home() {
               </a>
             </div>
             <div className="text-sm text-muted-foreground text-right">
-              <p>© 2026 Clawd Host</p>
+              <p>© 2026 MoltHost</p>
             </div>
           </div>
         </div>
