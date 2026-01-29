@@ -1,26 +1,43 @@
 /**
  * Gateway RPC client for remote MoltBot configuration
  * Uses WebSocket to communicate with the MoltBot Gateway
+ * 
+ * Protocol: https://docs.clawd.bot/gateway/protocol
+ * 1. Gateway sends connect.challenge with nonce
+ * 2. Client responds with connect request (auth, device info)
+ * 3. Gateway responds with hello-ok
+ * 4. Client can now send RPC requests
  */
 
 import WebSocket from "ws";
+import crypto from "crypto";
 
-interface RpcRequest {
-  jsonrpc: "2.0";
-  id: number;
+// MoltBot protocol message types
+interface ProtocolRequest {
+  type: "req";
+  id: string;
   method: string;
   params?: Record<string, unknown>;
 }
 
-interface RpcResponse {
-  jsonrpc: "2.0";
-  id: number;
-  result?: unknown;
+interface ProtocolResponse {
+  type: "res";
+  id: string;
+  ok: boolean;
+  payload?: unknown;
   error?: {
     code: number;
     message: string;
   };
 }
+
+interface ProtocolEvent {
+  type: "event";
+  event: string;
+  payload?: Record<string, unknown>;
+}
+
+type ProtocolMessage = ProtocolRequest | ProtocolResponse | ProtocolEvent;
 
 /**
  * Wait for a specified number of milliseconds
@@ -30,7 +47,15 @@ function sleep(ms: number): Promise<void> {
 }
 
 /**
+ * Generate a unique request ID
+ */
+function generateRequestId(): string {
+  return `${Date.now()}-${crypto.randomBytes(4).toString("hex")}`;
+}
+
+/**
  * Send an RPC request to the Gateway (single attempt)
+ * Implements the MoltBot gateway protocol handshake
  */
 async function sendRpcRequestOnce(
   gatewayUrl: string,
@@ -40,14 +65,12 @@ async function sendRpcRequestOnce(
 ): Promise<unknown> {
   return new Promise((resolve, reject) => {
     const ws = new WebSocket(gatewayUrl, {
-      headers: {
-        Authorization: `Bearer ${gatewayToken}`,
-      },
       handshakeTimeout: 10000,
     });
 
-    const requestId = Date.now();
+    let handshakeComplete = false;
     let responseReceived = false;
+    const rpcRequestId = generateRequestId();
 
     const timeout = setTimeout(() => {
       if (!responseReceived) {
@@ -57,27 +80,80 @@ async function sendRpcRequestOnce(
     }, 30000);
 
     ws.on("open", () => {
-      const request: RpcRequest = {
-        jsonrpc: "2.0",
-        id: requestId,
-        method,
-        params,
-      };
-      ws.send(JSON.stringify(request));
+      // WebSocket is open, wait for connect.challenge from gateway
+      console.log("[Gateway RPC] WebSocket connected, waiting for challenge...");
     });
 
     ws.on("message", (data: Buffer) => {
       try {
-        const response: RpcResponse = JSON.parse(data.toString());
-        if (response.id === requestId) {
+        const message: ProtocolMessage = JSON.parse(data.toString());
+
+        // Handle connect.challenge event
+        if (message.type === "event" && message.event === "connect.challenge") {
+          console.log("[Gateway RPC] Received connect.challenge, sending connect request...");
+          
+          // Send connect request with authentication
+          const connectRequest: ProtocolRequest = {
+            type: "req",
+            id: generateRequestId(),
+            method: "connect",
+            params: {
+              minProtocol: 3,
+              maxProtocol: 3,
+              client: {
+                id: "clawdhost-provisioner",
+                version: "1.0.0",
+                platform: "server",
+                mode: "operator",
+              },
+              role: "operator",
+              scopes: ["operator.read", "operator.write", "operator.admin"],
+              caps: [],
+              commands: [],
+              permissions: {},
+              auth: {
+                token: gatewayToken,
+              },
+              locale: "en-US",
+              userAgent: "clawdhost-provisioner/1.0.0",
+            },
+          };
+          ws.send(JSON.stringify(connectRequest));
+          return;
+        }
+
+        // Handle connect response (hello-ok)
+        if (message.type === "res" && !handshakeComplete) {
+          if (message.ok) {
+            console.log("[Gateway RPC] Handshake complete, sending RPC request...");
+            handshakeComplete = true;
+            
+            // Now send the actual RPC request
+            const rpcRequest: ProtocolRequest = {
+              type: "req",
+              id: rpcRequestId,
+              method,
+              params,
+            };
+            ws.send(JSON.stringify(rpcRequest));
+          } else {
+            clearTimeout(timeout);
+            ws.close();
+            reject(new Error(`Handshake failed: ${message.error?.message || "Unknown error"}`));
+          }
+          return;
+        }
+
+        // Handle RPC response
+        if (message.type === "res" && message.id === rpcRequestId) {
           responseReceived = true;
           clearTimeout(timeout);
           ws.close();
 
-          if (response.error) {
-            reject(new Error(response.error.message));
+          if (message.ok) {
+            resolve(message.payload);
           } else {
-            resolve(response.result);
+            reject(new Error(message.error?.message || "RPC request failed"));
           }
         }
       } catch {

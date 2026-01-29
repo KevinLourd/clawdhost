@@ -175,6 +175,8 @@ export async function installClawdBot(
             auth: {
               token: gatewayToken,
             },
+            // Trust cloudflared proxy running locally for forwarded headers
+            trustedProxies: ["127.0.0.1", "::1"],
           },
           agents: {
             defaults: {
