@@ -90,6 +90,9 @@ export function LogoDownload({ size = "md" }: LogoDownloadProps) {
         <span className={`font-bold ${size === "sm" ? "text-base" : "text-xl"}`}>
           ClawdHost
         </span>
+        <span className="text-[10px] font-medium bg-primary/10 text-primary px-1.5 py-0.5 rounded-full uppercase tracking-wide">
+          beta
+        </span>
       </button>
 
       {isOpen && (

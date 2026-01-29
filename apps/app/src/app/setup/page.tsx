@@ -121,6 +121,9 @@ export default function SetupPage() {
               className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg"
             />
             <span className="font-semibold text-foreground hidden sm:inline">ClawdHost</span>
+            <span className="text-[10px] font-medium bg-primary/10 text-primary px-1.5 py-0.5 rounded-full uppercase tracking-wide">
+              beta
+            </span>
           </a>
           <div className="relative" ref={menuRef}>
             <button
