@@ -21,7 +21,7 @@ export const plans: Plan[] = [
     interval: "month",
     features: [
       "1 MoltBot running 24/7",
-      "3 messaging apps (WhatsApp, Telegram...)",
+      "Talk to your MoltBot in Telegram",
       "10 automations (email, calendar...)",
       "10 triggers (reminders, alerts...)",
       "Bring your own AI key",
