@@ -22,7 +22,7 @@ export const plans: Plan[] = [
     features: [
       "1 MoltBot running 24/7",
       "Talk to your MoltBot in Telegram",
-      "10 automations (email, calendar...)",
+      "10 integrations (email, calendar...)",
       "10 triggers (reminders, alerts...)",
       "Bring your own AI key",
       "Free forever",
@@ -39,7 +39,7 @@ export const plans: Plan[] = [
     features: [
       "Unlimited MoltBots",
       "Unlimited messaging apps",
-      "Unlimited automations",
+      "Unlimited integrations",
       "Unlimited triggers",
       "Bring your own AI key",
       "Priority support",
