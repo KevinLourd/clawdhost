@@ -1,4 +1,4 @@
-FROM node:22-alpine
+FROM node:22.23.4-alpine
 
 # Cache buster - update to force rebuild
 ARG CACHE_BUST=2026-01-29-v2

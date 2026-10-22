@@ -16,5 +16,27 @@
   "packageManager": "pnpm@9.15.0",
   "engines": {
     "node": ">=22"
+  },
+  "pnpm": {
+    "overrides": {
+      "minimatch@3": "^3.1.4",
+      "minimatch@9": "^9.0.7",
+      "brace-expansion@1": "^1.1.20",
+      "brace-expansion@2": "^2.1.6",
+      "flatted@3": "^3.4.2",
+      "path-to-regexp@0": "^0.1.13",
+      "picomatch@2": "^2.3.2",
+      "picomatch@4": "^4.0.4",
+      "protobufjs@7": "^7.6.1",
+      "js-cookie@3": "^3.0.7",
+      "ws@8": "^8.21.0",
+      "js-yaml@4": "^4.3.2",
+      "postcss@8": "^8.5.31",
+      "nanoid@3": "^3.3.18",
+      "browserslist@4": "^4.28.7",
+      "source-map-js@1": "^1.2.2",
+      "proxy-addr@2": "^2.0.8",
+      "sharp": "^0.35.5"
+    }
   }
 }
